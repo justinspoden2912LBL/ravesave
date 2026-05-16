@@ -149,14 +149,27 @@ function RisksPage() {
             <>
               <div className="rounded-2xl glass p-5">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
                       {CATEGORY_LABEL[selected.category]}
                     </div>
                     <h2 className="text-2xl font-bold mt-0.5">{selected.name}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{selected.shortDescription}</p>
+                    {profileFor(selected.id) && (
+                      <div className="mt-3 space-y-2">
+                        <RiskFlagChips flags={profileFor(selected.id)!.flags} size="sm" />
+                        <CypBadges cyp={profileFor(selected.id)!.cyp} />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  {profileFor(selected.id) && (
+                    <ReceptorMap
+                      targets={profileFor(selected.id)!.targets}
+                      size={110}
+                      className="shrink-0"
+                    />
+                  )}
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
                     <Link
                       to="/mix"
