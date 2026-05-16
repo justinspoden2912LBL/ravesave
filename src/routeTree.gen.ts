@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -25,6 +26,11 @@ const SubstancesRoute = SubstancesRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MixRoute = MixRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/onboarding': typeof OnboardingRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/onboarding': typeof OnboardingRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/onboarding': typeof OnboardingRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -88,17 +97,27 @@ export interface FileRouteTypes {
     | '/chat'
     | '/log'
     | '/mix'
+    | '/onboarding'
     | '/stats'
     | '/substances'
     | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/log' | '/mix' | '/stats' | '/substances' | '/api/chat'
+  to:
+    | '/'
+    | '/chat'
+    | '/log'
+    | '/mix'
+    | '/onboarding'
+    | '/stats'
+    | '/substances'
+    | '/api/chat'
   id:
     | '__root__'
     | '/'
     | '/chat'
     | '/log'
     | '/mix'
+    | '/onboarding'
     | '/stats'
     | '/substances'
     | '/api/chat'
@@ -109,6 +128,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
+  OnboardingRoute: typeof OnboardingRoute
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -128,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mix': {
@@ -173,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
+  OnboardingRoute: OnboardingRoute,
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
   ApiChatRoute: ApiChatRoute,
@@ -180,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
