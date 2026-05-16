@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Search, ShieldAlert, Clock, OctagonAlert, Activity, ListChecks } from "lucide-react";
+import { AlertTriangle, Search, ShieldAlert, Clock, OctagonAlert, Activity, ListChecks, ExternalLink, Pill } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
@@ -504,6 +504,12 @@ function PairingCard({
             </div>
           )}
 
+          <div className="grid gap-2 sm:grid-cols-2">
+            {[self, other].map((s) => (
+              <SubstanceBrief key={s.id} s={s} />
+            ))}
+          </div>
+
           {(self.warnings.length > 0 || other.warnings.length > 0) && (
             <div className="grid gap-2 sm:grid-cols-2">
               {[self, other].map((s) =>
@@ -538,5 +544,79 @@ function PairingCard({
         </div>
       )}
     </li>
+  );
+}
+
+function SubstanceBrief({ s }: { s: import("@/lib/substances").Substance }) {
+  const primary = s.doses[0];
+  const evidence = s.evidence.slice(0, 2);
+  return (
+    <div className="rounded-lg bg-background/50 p-2.5 border border-border/40 space-y-2">
+      <div className="text-[10px] uppercase tracking-wider font-semibold text-foreground/70 flex items-center gap-1">
+        <Pill className="h-3 w-3 text-secondary" />
+        Dosis & Evidenz — {s.name}
+      </div>
+
+      {primary ? (
+        <div className="space-y-1">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            {primary.route}
+          </div>
+          <div className="flex flex-wrap gap-1 text-[10px]">
+            {([
+              ["Schwelle", primary.threshold],
+              ["Leicht", primary.light],
+              ["Üblich", primary.common],
+              ["Stark", primary.strong],
+              ["Heavy", primary.heavy],
+            ] as const)
+              .filter(([, v]) => v)
+              .map(([k, v]) => (
+                <span
+                  key={k}
+                  className={`rounded-md px-1.5 py-0.5 font-mono ${
+                    k === "Üblich" ? "bg-secondary/20 text-secondary" : "bg-muted/60 text-foreground/80"
+                  }`}
+                >
+                  <span className="opacity-60 mr-1">{k}</span>
+                  {v}
+                </span>
+              ))}
+          </div>
+          {primary.notes && (
+            <p className="text-[10px] text-muted-foreground/80 leading-snug">{primary.notes}</p>
+          )}
+          {s.doses.length > 1 && (
+            <p className="text-[10px] text-muted-foreground/60">
+              + {s.doses.length - 1} weitere Applikationsform(en) im Wiki.
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-[10px] text-muted-foreground italic">Keine Dosis-Daten hinterlegt.</p>
+      )}
+
+      {evidence.length > 0 ? (
+        <div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+            Evidenz
+          </div>
+          <ul className="space-y-0.5">
+            {evidence.map((e, i) => (
+              <li key={i}>
+                <a
+                  href={e.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-secondary hover:underline inline-flex items-center gap-1"
+                >
+                  {e.label} <ExternalLink className="h-2.5 w-2.5" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
   );
 }
