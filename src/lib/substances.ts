@@ -1089,13 +1089,47 @@ const CATEGORY_MATRIX: Record<string, RiskInfo> = {
 
 // Specific id-pair overrides where category logic is too coarse.
 const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
-  [pairKey("mdma", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko (Tramadol ist auch SNRI)." },
-  [pairKey("mdma", "alcohol")]: { level: "caution", reason: "Dehydrierung + Leber- und Herzbelastung." },
-  [pairKey("cocaine", "alcohol")]: { level: "unsafe", reason: "Bildet Cocaethylen – hepato- und kardiotoxisch." },
-  [pairKey("ghb", "alcohol")]: { level: "danger", reason: "Atemdepression, Bewusstlosigkeit, Aspirationsgefahr." },
-  [pairKey("fentanyl", "alcohol")]: { level: "danger", reason: "Extrem hohes Atemstillstand-Risiko." },
-  [pairKey("lsd", "lithium")]: { level: "danger", reason: "Krampfanfälle dokumentiert." },
-  [pairKey("dmt", "mdma")]: { level: "caution", reason: "Serotonerge Last erhöht." },
+  [pairKey("mdma", "tramadol")]: {
+    level: "danger",
+    reason: "Serotonin-Syndrom-Risiko (Tramadol ist auch SNRI).",
+    mechanism: "Tramadol erhöht selbst Serotonin im Gehirn. Zusammen mit MDMA wird die Schwelle für ein Serotonin-Syndrom (Hitze, Zittern, Verwirrung) leicht überschritten.",
+    expert: "Tramadol = µ-Agonist + SNRI mit zusätzlicher 5-HT-Freisetzung. Kombiniert mit MDMA (SERT-Substrat) → exzessive 5-HT-Akkumulation. Tramadol senkt zudem die Krampfschwelle; CYP2D6-Hemmung durch MDMA erhöht Tramadol-Spiegel.",
+  },
+  [pairKey("mdma", "alcohol")]: {
+    level: "caution",
+    reason: "Dehydrierung + Leber- und Herzbelastung.",
+    mechanism: "MDMA macht durstig und wach, Alkohol entwässert — der Körper kommt in einen Hitzestress, der oft erst spät auffällt.",
+    expert: "Hepatische Belastung durch MDMA-Metaboliten (α-MeDA) + CYP2E1-Induktion durch Ethanol. Erhöhtes Hyperthermie- und Hyponatriämie-Risiko.",
+  },
+  [pairKey("cocaine", "alcohol")]: {
+    level: "unsafe",
+    reason: "Bildet Cocaethylen – hepato- und kardiotoxisch.",
+    mechanism: "Im Körper entsteht ein neuer Stoff (Cocaethylen), der länger wirkt und das Herz stärker belastet als Kokain allein.",
+    expert: "Hepatische Transesterifizierung via Carboxylesterase 1 → Cocaethylen. HWZ 3–4× länger als Cocain, höhere kardiale Affinität, dokumentiert ~18–25× höheres Risiko für plötzlichen Herztod vs. Cocain allein.",
+  },
+  [pairKey("ghb", "alcohol")]: {
+    level: "danger",
+    reason: "Atemdepression, Bewusstlosigkeit, Aspirationsgefahr.",
+    mechanism: "GHB hat eine sehr steile Dosis-Wirkungs-Kurve. Schon wenig Alkohol verschiebt die Kurve so, dass aus 'angenehm' schnell 'bewusstlos' wird.",
+    expert: "GHB-Pharmakokinetik nicht-linear (sättigbare β-Oxidation). Co-Administration mit Ethanol potenziert GABA_B-Agonismus und supprimiert Atem-Schutzreflexe. LD50 sinkt drastisch.",
+  },
+  [pairKey("fentanyl", "alcohol")]: {
+    level: "danger",
+    reason: "Extrem hohes Atemstillstand-Risiko.",
+    mechanism: "Fentanyl ist 50–100× stärker als Morphin. Mit Alkohol kann schon eine kleinste Menge tödlich sein.",
+    expert: "Hohe intrinsische µ-Aktivität + Ethanol-GABAerge Suppression → therapeutischer Index praktisch eliminiert. Naloxon-Dosis oft mehrfach nötig (Lipophilie, Re-Distribution).",
+  },
+  [pairKey("lsd", "lithium")]: {
+    level: "danger",
+    reason: "Krampfanfälle dokumentiert.",
+    mechanism: "Lithium und LSD zusammen können einen epileptischen Anfall auslösen — auch bei Leuten, die noch nie einen hatten.",
+    expert: "Mechanismus nicht final geklärt; vermutet serotonerge + glutamaterge Dysregulation und Senkung der Krampfschwelle. Multiple Case Reports mit Grand-mal trotz therapeutischer Lithium-Spiegel.",
+  },
+  [pairKey("dmt", "mdma")]: {
+    level: "caution",
+    reason: "Serotonerge Last erhöht.",
+    mechanism: "Beide treiben Serotonin hoch — Risiko für Hitze und Herzbelastung steigt.",
+  },
 
   // 5-MeO-DMT – schon kleinste serotonerge Zusatzbelastung kann Serotonin-Syndrom auslösen.
   [pairKey("5-meo-dmt", "mdma")]: { level: "danger", reason: "Massive serotonerge Synergie – Serotonin-Syndrom-Risiko." },
