@@ -64,7 +64,20 @@ async function extractText(file: File): Promise<string> {
 }
 
 function ChatPage() {
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
+  const [profileSummary, setProfileSummary] = useState<string>("");
+  useEffect(() => {
+    const p = loadProfile();
+    setProfileSummary(p ? summarizeProfile(p) : "");
+  }, []);
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        body: () => ({ profile: profileSummary || undefined }),
+      }),
+    [profileSummary],
+  );
   const { messages, sendMessage, status, stop, error } = useChat({ transport });
 
   const [input, setInput] = useState("");
