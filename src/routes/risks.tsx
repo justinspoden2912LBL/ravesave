@@ -576,6 +576,7 @@ function SubstanceBrief({ s }: { s: import("@/lib/substances").Substance }) {
         <Pill className="h-3 w-3 text-secondary" />
         Dosis & Evidenz — {s.name}
       </div>
+      {profileFor(s.id) && <CypBadges cyp={profileFor(s.id)!.cyp} />}
 
       {primary ? (
         <div className="space-y-1">
