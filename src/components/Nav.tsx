@@ -4,7 +4,9 @@ import {
   BookOpen,
   FlaskConical,
   GitMerge,
+  HandHeart,
   Home,
+  Info,
   MessageCircle,
   Settings as SettingsIcon,
   ShieldAlert,
@@ -16,8 +18,10 @@ const links = [
   { to: "/mix", label: "Mix-Check", icon: GitMerge },
   { to: "/risks", label: "Risiken", icon: ShieldAlert },
   { to: "/substances", label: "Substanzen", icon: BookOpen },
+  { to: "/knigge", label: "Knigge", icon: HandHeart },
   { to: "/chat", label: "KI-Chat", icon: MessageCircle },
   { to: "/stats", label: "Statistik", icon: FlaskConical },
+  { to: "/about", label: "Über", icon: Info },
   { to: "/settings", label: "Profil", icon: SettingsIcon },
 ] as const;
 
