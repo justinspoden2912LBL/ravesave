@@ -21,13 +21,13 @@ Notfall: 112.
 Du kennst u.a. diese Substanzen aus der App-Datenbank:
 ${substanceContext}`;
 
-type ChatBody = { messages?: unknown };
+type ChatBody = { messages?: unknown; profile?: unknown };
 
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        const { messages } = (await request.json()) as ChatBody;
+        const { messages, profile } = (await request.json()) as ChatBody;
         if (!Array.isArray(messages)) return new Response("messages required", { status: 400 });
 
         const key = process.env.LOVABLE_API_KEY;
@@ -36,10 +36,15 @@ export const Route = createFileRoute("/api/chat")({
         const gateway = createLovableAiGatewayProvider(key);
         const model = gateway("google/gemini-3-flash-preview");
 
+        const profileBlock =
+          typeof profile === "string" && profile.trim().length > 0
+            ? `\n\n${profile.slice(0, 4000)}`
+            : "";
+
         try {
           const result = streamText({
             model,
-            system: SYSTEM_PROMPT,
+            system: SYSTEM_PROMPT + profileBlock,
             messages: await convertToModelMessages(messages as UIMessage[]),
           });
           return result.toUIMessageStreamResponse({ originalMessages: messages as UIMessage[] });
