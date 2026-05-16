@@ -150,12 +150,15 @@ function RisksPage() {
                     <h2 className="text-2xl font-bold mt-0.5">{selected.name}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{selected.shortDescription}</p>
                   </div>
-                  <Link
-                    to="/mix"
-                    className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
-                  >
-                    → Mehrfach-Mix prüfen
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+                    <Link
+                      to="/mix"
+                      className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
+                    >
+                      → Mehrfach-Mix
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Risiko-Counts */}
