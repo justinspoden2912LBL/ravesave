@@ -178,17 +178,64 @@ function Home() {
   );
 }
 
-function FeatureCard({ to, icon: Icon, title, desc }: any) {
+type CatItem = { to: string; icon: LucideIcon; label: string; desc: string };
+
+function CategoryCard({
+  icon: Icon,
+  title,
+  subtitle,
+  items,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+  items: CatItem[];
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <Link
-      to={to}
-      className="group relative overflow-hidden rounded-2xl glass p-6 transition-all hover:scale-[1.02] hover:glow"
+    <div
+      className={`rounded-2xl glass overflow-hidden transition-all ${
+        open ? "ring-1 ring-primary/40" : ""
+      }`}
     >
-      <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-aurora opacity-0 blur-2xl transition-opacity group-hover:opacity-40" />
-      <Icon className="h-6 w-6 text-aurora" style={{ color: "oklch(0.78 0.22 320)" }} />
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
-    </Link>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/20 transition"
+        aria-expanded={open}
+      >
+        <div className="h-10 w-10 shrink-0 rounded-xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold">{title}</div>
+          <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <ul className="px-3 pb-3 space-y-2 border-t border-border/40 pt-3">
+          {items.map((it) => (
+            <li key={it.to}>
+              <Link
+                to={it.to}
+                className="group flex items-start gap-3 rounded-xl bg-background/40 border border-border/40 px-3 py-2.5 hover:bg-muted/30 transition"
+              >
+                <it.icon className="h-4 w-4 mt-0.5 text-aurora shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-sm font-medium group-hover:text-foreground">{it.label}</div>
+                  <div className="text-[11px] text-muted-foreground">{it.desc}</div>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
