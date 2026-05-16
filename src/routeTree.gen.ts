@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubstancesRouteImport } from './routes/substances'
+import { Route as StatsRouteImport } from './routes/stats'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const SubstancesRoute = SubstancesRouteImport.update({
   id: '/substances',
   path: '/substances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MixRoute = MixRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/mix' | '/substances'
+  fullPaths: '/' | '/log' | '/mix' | '/stats' | '/substances'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/mix' | '/substances'
-  id: '__root__' | '/' | '/log' | '/mix' | '/substances'
+  to: '/' | '/log' | '/mix' | '/stats' | '/substances'
+  id: '__root__' | '/' | '/log' | '/mix' | '/stats' | '/substances'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
+  StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
 }
 
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/substances'
       fullPath: '/substances'
       preLoaderRoute: typeof SubstancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mix': {
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
+  StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
 }
 export const routeTree = rootRouteImport
