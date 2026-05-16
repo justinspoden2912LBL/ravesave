@@ -464,7 +464,7 @@ function ChatPage() {
                 {isUser ? (
                   text
                 ) : (
-                  <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 prose-a:text-secondary prose-a:underline prose-headings:mt-3 prose-headings:mb-1">
+                  <div className="space-y-2 [&_a]:text-secondary [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:opacity-80 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_p]:my-1.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h3]:font-semibold [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
