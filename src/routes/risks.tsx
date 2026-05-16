@@ -435,3 +435,108 @@ function HarmReductionPanel({
     </div>
   );
 }
+
+function PairingCard({
+  self,
+  other,
+  risk,
+  detail,
+  onSelectOther,
+}: {
+  self: import("@/lib/substances").Substance;
+  other: import("@/lib/substances").Substance;
+  risk: import("@/lib/substances").RiskInfo;
+  detail: DetailLevel;
+  onSelectOther: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ex = explainRisk(risk, "expert"); // full info for detail view
+  const meta = RISK_META[risk.level];
+
+  return (
+    <li className="rounded-xl bg-background/40 backdrop-blur-sm border border-border/50 overflow-hidden">
+      <div className="p-3">
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={onSelectOther}
+            className="font-medium text-sm hover:underline text-left"
+          >
+            + {other.name}
+          </button>
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            {CATEGORY_LABEL[other.category]}
+          </span>
+        </div>
+        <RiskExplain risk={risk} detail={detail} />
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="mt-2 text-[11px] text-muted-foreground hover:text-foreground transition inline-flex items-center gap-1"
+          aria-expanded={open}
+        >
+          {open ? "− Details ausblenden" : "+ Details zur Kombination"}
+        </button>
+      </div>
+
+      {open && (
+        <div className={`px-3 pb-3 pt-2 border-t border-border/40 space-y-2.5 ${meta.bg}`}>
+          <div>
+            <div className={`text-[10px] uppercase tracking-wider font-semibold ${meta.color}`}>
+              Einstufung: {meta.label}
+            </div>
+            <p className="mt-1 text-[12px] leading-relaxed text-foreground/90">{ex.headline}</p>
+          </div>
+
+          {ex.detail && (
+            <div className="rounded-lg bg-background/50 p-2.5 border border-border/40">
+              <div className="text-[10px] uppercase tracking-wider font-semibold text-foreground/70 mb-1">
+                Mechanismus
+              </div>
+              <p className="text-[12px] leading-relaxed text-muted-foreground">{ex.detail}</p>
+            </div>
+          )}
+
+          {ex.expert && ex.expert !== ex.detail && (
+            <div className="rounded-lg bg-background/50 p-2.5 border-l-2 border-secondary/60">
+              <div className="text-[10px] uppercase tracking-wider font-semibold text-secondary mb-1">
+                Fachebene
+              </div>
+              <p className="text-[12px] leading-relaxed text-muted-foreground">{ex.expert}</p>
+            </div>
+          )}
+
+          {(self.warnings.length > 0 || other.warnings.length > 0) && (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {[self, other].map((s) =>
+                s.warnings.length > 0 ? (
+                  <div key={s.id} className="rounded-lg bg-background/50 p-2.5 border border-border/40">
+                    <div className="text-[10px] uppercase tracking-wider font-semibold text-foreground/70 mb-1 flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3 text-aurora" />
+                      Warnungen — {s.name}
+                    </div>
+                    <ul className="text-[11px] text-muted-foreground list-disc pl-4 space-y-0.5">
+                      {s.warnings.slice(0, 4).map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null,
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-1.5 text-[11px] text-muted-foreground">
+            <span className="rounded-full glass px-2 py-0.5">
+              {CATEGORY_LABEL[self.category]} × {CATEGORY_LABEL[other.category]}
+            </span>
+            {self.onset && (
+              <span className="rounded-full glass px-2 py-0.5">{self.name}: {self.onset}</span>
+            )}
+            {other.onset && (
+              <span className="rounded-full glass px-2 py-0.5">{other.name}: {other.onset}</span>
+            )}
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
