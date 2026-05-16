@@ -83,6 +83,7 @@ const SYMPTOMS: Symptom[] = [
 interface GuideStep {
   do: string;
   detail?: string;
+  illus?: IllusKey;
 }
 interface Guide {
   title: string;
@@ -98,10 +99,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     call112: true,
     intro: "Lebensbedrohlich. Jede Sekunde zählt — meistens Opioide, Benzos, GHB oder Mischkonsum.",
     steps: [
-      { do: "112 anrufen", detail: "Lautsprecher an, Adresse zuerst." },
-      { do: "Auf den Rücken legen, Kopf überstrecken, Kinn anheben", detail: "Atemweg frei machen." },
-      { do: "Falls Naloxon (Nyxoid/Narcan) verfügbar: 1 Sprühstoß pro Nasenloch", detail: "Bei Opioid-Verdacht. Alle 2–3 min wiederholen, bis Atmung kommt." },
-      { do: "Keine eigenständige Atmung? Beatmen: 2 Atemstöße, dann 30 Herzdruckmassagen", detail: "Tempo 100–120/min, 5–6 cm tief, Mitte Brustkorb." },
+      { do: "112 anrufen", detail: "Lautsprecher an, Adresse zuerst.", illus: "phone112" },
+      { do: "Auf den Rücken legen, Kopf überstrecken, Kinn anheben", detail: "Atemweg frei machen.", illus: "airway" },
+      { do: "Falls Naloxon (Nyxoid/Narcan) verfügbar: 1 Sprühstoß pro Nasenloch", detail: "Bei Opioid-Verdacht. Alle 2–3 min wiederholen, bis Atmung kommt.", illus: "naloxone" },
+      { do: "Keine eigenständige Atmung? Beatmen: 2 Atemstöße, dann 30 Herzdruckmassagen", detail: "Tempo 100–120/min, 5–6 cm tief, Mitte Brustkorb.", illus: "cpr" },
       { do: "Nicht aufhören, bis Rettung übernimmt", detail: "Auch wenn es ewig wirkt." },
     ],
     followup: { label: "Mehr zu Opioiden & Naloxon", to: "/substances" },
@@ -112,9 +113,9 @@ const GUIDES: Record<SymptomId, Guide> = {
     intro: "Stabile Seitenlage rettet Leben — verhindert Ersticken an Erbrochenem.",
     steps: [
       { do: "Ansprechen, Schulter rütteln, Schmerzreiz (Brustbein reiben)", detail: "Wirklich bewusstlos?" },
-      { do: "112 anrufen", detail: "Substanz(en) und Zeitpunkt ehrlich nennen." },
-      { do: "Atmung 10 Sek prüfen", detail: "Hören, sehen, fühlen. Keine Atmung → Herzdruckmassage." },
-      { do: "Stabile Seitenlage", detail: "Arm 90°, andere Hand an Wange, fernes Bein anwinkeln, zu dir drehen, Kopf überstrecken." },
+      { do: "112 anrufen", detail: "Substanz(en) und Zeitpunkt ehrlich nennen.", illus: "phone112" },
+      { do: "Atmung 10 Sek prüfen", detail: "Hören, sehen, fühlen. Keine Atmung → Herzdruckmassage.", illus: "checkBreath" },
+      { do: "Stabile Seitenlage", detail: "Arm 90°, andere Hand an Wange, fernes Bein anwinkeln, zu dir drehen, Kopf überstrecken.", illus: "recovery" },
       { do: "Bleib daneben, beobachte Atmung", detail: "Erbricht die Person, Mund ausräumen." },
     ],
   },
@@ -124,10 +125,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     intro: "Häufig bei Stimulanzien-Überdosis, GHB-Entzug, Tramadol, Mischkonsum oder unbekannter RC.",
     steps: [
       { do: "Person nicht festhalten", detail: "Krampf nicht stoppen wollen — Verletzungsgefahr." },
-      { do: "Umgebung sichern: harte Kanten weg, Kopf weich polstern", detail: "Jacke unter den Kopf." },
-      { do: "Nichts in den Mund stecken", detail: "Kein Löffel, kein Finger — Erstickungs- und Bissgefahr." },
+      { do: "Umgebung sichern: harte Kanten weg, Kopf weich polstern", detail: "Jacke unter den Kopf.", illus: "seizurePad" },
+      { do: "Nichts in den Mund stecken", detail: "Kein Löffel, kein Finger — Erstickungs- und Bissgefahr.", illus: "noMouth" },
       { do: "Zeit messen", detail: "Krampf >2 Min oder zweiter Anfall hintereinander = sofort 112." },
-      { do: "Nach dem Krampf: stabile Seitenlage, ansprechen, ruhig bleiben", detail: "Verwirrung danach ist normal." },
+      { do: "Nach dem Krampf: stabile Seitenlage, ansprechen, ruhig bleiben", detail: "Verwirrung danach ist normal.", illus: "recovery" },
     ],
     followup: { label: "Risiken nachschlagen", to: "/risks" },
   },
@@ -137,9 +138,9 @@ const GUIDES: Record<SymptomId, Guide> = {
     intro: "Klassiker bei MDMA, Amphetamin, Kokain, 2C-B + Tanzen + warmer Raum. Ab 40 °C lebensbedrohlich.",
     steps: [
       { do: "Sofort raus aus der Hitze", detail: "Kühler Raum, Schatten, vor den Lüfter." },
-      { do: "Kleidung lockern, Haut nass machen", detail: "Lauwarmes Wasser auf Hals, Achseln, Leisten. Fächeln." },
+      { do: "Kleidung lockern, Haut nass machen", detail: "Lauwarmes Wasser auf Hals, Achseln, Leisten. Fächeln.", illus: "cooling" },
       { do: "Schluckweise Wasser oder isotonisches Getränk", detail: "Max ~500 ml/h — kein Wasser ex, sonst Hyponatriämie." },
-      { do: "Bewusstsein & Atmung beobachten", detail: "Verwirrung, Krampf, Bewusstlosigkeit → 112." },
+      { do: "Bewusstsein & Atmung beobachten", detail: "Verwirrung, Krampf, Bewusstlosigkeit → 112.", illus: "checkBreath" },
       { do: "Nicht weiter tanzen, nicht nachlegen", detail: "Der Abend ist vorbei. Wirklich." },
     ],
     followup: { label: "Stimulanzien-Risiken", to: "/risks" },
@@ -149,10 +150,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     call112: true,
     intro: "Stimulanzien (Kokain, Speed, MDMA) + Vorerkrankung oder hohe Dosis können Herzinfarkt auslösen.",
     steps: [
-      { do: "112 anrufen", detail: "Genau sagen: Brustschmerz, Substanz, Dosis." },
-      { do: "Hinsetzen, Oberkörper hoch, beruhigen", detail: "Nicht hinlegen — erleichtert die Atmung." },
+      { do: "112 anrufen", detail: "Genau sagen: Brustschmerz, Substanz, Dosis.", illus: "phone112" },
+      { do: "Hinsetzen, Oberkörper hoch, beruhigen", detail: "Nicht hinlegen — erleichtert die Atmung.", illus: "sitUp" },
       { do: "Keine weitere Substanz, kein Alkohol", detail: "Keine Aufputscher, kein Energy Drink." },
-      { do: "Wenn Atmung aussetzt: Herzdruckmassage", detail: "100–120/min, ohne Pause bis Rettung kommt." },
+      { do: "Wenn Atmung aussetzt: Herzdruckmassage", detail: "100–120/min, ohne Pause bis Rettung kommt.", illus: "cpr" },
     ],
   },
   panic: {
