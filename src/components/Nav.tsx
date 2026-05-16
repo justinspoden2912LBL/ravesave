@@ -70,7 +70,7 @@ export function Footer() {
   return (
     <footer className="mx-auto max-w-6xl px-4 py-10 text-xs text-muted-foreground">
       <p className="leading-relaxed">
-        <strong className="text-foreground">Rave Safe, Fun</strong> ist ein Harm-Reduction-Werkzeug.
+        <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein Harm-Reduction-Werkzeug.
         Alle Daten bleiben lokal in deinem Browser. Dosis-Angaben sind grobe Orientierungswerte
         aus PsychonautWiki, TripSit, EMCDDA und Fachliteratur — keine medizinische Empfehlung.
         Reinheit und individuelle Verträglichkeit sind nicht abschätzbar; nutze Drug-Checking,
