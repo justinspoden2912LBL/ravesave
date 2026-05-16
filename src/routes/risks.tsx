@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Search, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Search, ShieldAlert, Clock, OctagonAlert, Activity, ListChecks } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
   RISK_META,
+  HARM_REDUCTION,
   assessPair,
   explainRisk,
   type RiskLevel,
@@ -215,7 +216,8 @@ function RisksPage() {
                       {RISK_META[lvl].label}
                       <span className="ml-2 text-xs font-normal opacity-70">{items.length}</span>
                     </h3>
-                    <ul className="grid gap-2 md:grid-cols-2">
+                    <HarmReductionPanel level={lvl} substanceId={selected.id} />
+                    <ul className="grid gap-2 md:grid-cols-2 mt-4">
                       {items.map(({ other, risk }) => (
                         <li
                           key={other.id}
@@ -334,5 +336,111 @@ function RiskExplain({
         </p>
       )}
     </>
+  );
+}
+
+const SECTION_META = [
+  { key: "waiting" as const, label: "Wartezeiten & Re-Dosing", Icon: Clock },
+  { key: "abort" as const, label: "Abbruchkriterien", Icon: OctagonAlert },
+  { key: "warningSigns" as const, label: "Warnzeichen", Icon: Activity },
+  { key: "actions" as const, label: "Sofort umsetzbar", Icon: ListChecks },
+];
+
+function HarmReductionPanel({
+  level,
+  substanceId,
+}: {
+  level: RiskLevel;
+  substanceId: string;
+}) {
+  const data = HARM_REDUCTION[level];
+  const storageKey = `trace.hr.${substanceId}.${level}`;
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [open, setOpen] = useState(level === "danger" || level === "unsafe");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      setChecked(raw ? JSON.parse(raw) : {});
+    } catch {
+      setChecked({});
+    }
+  }, [storageKey]);
+
+  const toggle = (id: string) => {
+    setChecked((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
+  const totalItems = SECTION_META.reduce((n, s) => n + data[s.key].length, 0);
+  const doneItems = Object.values(checked).filter(Boolean).length;
+
+  return (
+    <div className="rounded-xl border border-border/60 bg-background/50 backdrop-blur-sm">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left"
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          <ShieldAlert className="h-4 w-4 shrink-0 text-foreground/70" />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold truncate">Harm-Reduction-Checkliste</div>
+            <div className="text-[11px] text-muted-foreground truncate">{data.intent}</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] tabular-nums rounded-full bg-muted/60 px-2 py-0.5 text-muted-foreground">
+            {doneItems}/{totalItems}
+          </span>
+          <span className="text-xs text-muted-foreground">{open ? "−" : "+"}</span>
+        </div>
+      </button>
+      {open && (
+        <div className="grid gap-3 px-3 pb-3 md:grid-cols-2">
+          {SECTION_META.map(({ key, label, Icon }) => (
+            <div key={key} className="rounded-lg bg-background/60 p-3 border border-border/40">
+              <div className="flex items-center gap-1.5 mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/80">
+                <Icon className="h-3.5 w-3.5" />
+                {label}
+              </div>
+              <ul className="space-y-1.5">
+                {data[key].map((item, i) => {
+                  const id = `${key}-${i}`;
+                  const isChecked = !!checked[id];
+                  return (
+                    <li key={id}>
+                      <label className="flex items-start gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggle(id)}
+                          className="mt-0.5 h-3.5 w-3.5 rounded accent-foreground shrink-0"
+                        />
+                        <span
+                          className={`text-[12px] leading-snug ${
+                            isChecked
+                              ? "text-muted-foreground line-through"
+                              : "text-foreground/85 group-hover:text-foreground"
+                          }`}
+                        >
+                          {item}
+                        </span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

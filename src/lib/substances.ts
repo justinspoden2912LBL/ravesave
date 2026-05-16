@@ -1427,6 +1427,155 @@ export const RISK_META: Record<RiskLevel, { label: string; color: string; bg: st
   unknown: { label: "Unbekannt", color: "text-muted-foreground", bg: "bg-muted/40 border-border" },
 };
 
+export interface HarmReductionChecklist {
+  /** Kurzes Intent-Statement für diese Risiko-Kategorie. */
+  intent: string;
+  /** Wartezeiten / Re-Dosing-Regeln. */
+  waiting: string[];
+  /** Klare Abbruchkriterien — wenn X passiert, sofort stoppen. */
+  abort: string[];
+  /** Beobachtbare Warnzeichen am Körper / Bewusstsein. */
+  warningSigns: string[];
+  /** Sofortige Handlungen, die jeder umsetzen kann. */
+  actions: string[];
+}
+
+export const HARM_REDUCTION: Record<RiskLevel, HarmReductionChecklist> = {
+  danger: {
+    intent: "Diese Kombination kann tödlich enden. Plan ist: nicht kombinieren — und falls schon konsumiert, sofortige Schutzmaßnahmen.",
+    waiting: [
+      "Nicht nachlegen. Kein Re-Dose, egal wie 'wenig' angekommen scheint.",
+      "Mindestens 24 h Abstand zwischen den Substanzen, bei Opioiden/Benzos eher 48–72 h.",
+      "Niemals allein konsumieren — Sitter mit Handy in Sichtweite, Türe entriegelt.",
+    ],
+    abort: [
+      "Atemfrequenz < 10/min, blaue Lippen oder Fingerspitzen → sofort 112.",
+      "Person nicht erweckbar auf lautes Ansprechen oder Schmerzreiz → 112.",
+      "Krampfanfall, anhaltendes Erbrechen im Liegen, Brustschmerz → 112.",
+      "Bei Opioid-Beteiligung: Naloxon-Nasenspray geben, auch wenn nur Verdacht.",
+    ],
+    warningSigns: [
+      "Schnarchendes, gurgelndes Atmen ('Death Rattle').",
+      "Kalte, klamme Haut, Pupillen stecknadelgroß (Opioide) oder weit (Stimulanzien/Serotonin).",
+      "Verwirrtheit, Sturz, Bewusstsein flackert weg.",
+      "Puls < 50 oder > 140 in Ruhe, Körpertemperatur > 39 °C.",
+    ],
+    actions: [
+      "112 rufen — ehrlich sagen was konsumiert wurde, kein Strafverfolgungs-Risiko für Helfer (§ 323c StGB).",
+      "Stabile Seitenlage, Atemwege frei, Person warmhalten.",
+      "Naloxon bereitstellen falls Opioid im Spiel — alle 2–3 min nachgeben bis Atmung stabil.",
+      "Bei Krampfanfall: Umgebung sichern, nichts in den Mund, Zeit stoppen.",
+    ],
+  },
+  unsafe: {
+    intent: "Hohes Risiko. Wenn überhaupt, dann konservativ dosieren, langes Zeitfenster, Sitter Pflicht.",
+    waiting: [
+      "Wenigstens 6–12 h Abstand zur zweiten Substanz, je nach Halbwertszeit länger.",
+      "Erst-Dosis halbieren, mindestens 90 min warten, bevor irgendetwas dazukommt.",
+      "Kein Alkohol als 'Beruhiger' dazwischen — addiert sich verdeckt.",
+    ],
+    abort: [
+      "Atmung wird langsam/flach oder Person wirkt zunehmend desorientiert → keine weitere Dosis, Notruf-Bereitschaft.",
+      "Herzrasen > 140 in Ruhe oder Engegefühl in der Brust → stoppen, hinlegen, 112 erwägen.",
+      "Starke Übelkeit + Schwindel + Schwitzen gleichzeitig (Schock-Trias) → 112.",
+    ],
+    warningSigns: [
+      "Zittern, Zuckungen, Muskelsteifigkeit (Serotonin-Syndrom-Frühzeichen).",
+      "Plötzliche Stimmungs-Umschwünge, Panik, Derealisation.",
+      "Übermäßiges Schwitzen oder im Gegenteil komplett trockene Haut bei Hitze.",
+    ],
+    actions: [
+      "Wasser in kleinen Schlucken (max. 500 ml/h), kein Sturztrinken.",
+      "Sitter informiert lassen welche Substanz, welche Dosis, welche Uhrzeit.",
+      "Ruhe, gedämpftes Licht, frische Luft. Reize reduzieren.",
+      "Naloxon / Benzo-Notfallplan griffbereit, je nach Substanzklasse.",
+    ],
+  },
+  caution: {
+    intent: "Erhöhte Aufmerksamkeit nötig. Mit Plan, niedriger Dosis und Pausen handhabbar.",
+    waiting: [
+      "Mindestens 2 h zwischen Substanzen, Effekt der ersten muss voll bewertet sein.",
+      "Re-Dose frühestens nach 2× Peak-Zeit der ersten Substanz und nur ≤ 50 % der Initialdosis.",
+      "Bei MDMA / Stimulanzien: 6+ Wochen Mindestabstand zur letzten Session bleibt davon unberührt.",
+    ],
+    abort: [
+      "Wenn nach 30 min unerwartet starke Effekte → keine weitere Substanz.",
+      "Schlafmangel, leerer Magen, Fieber, Infekt → Session abbrechen oder verschieben.",
+      "Bei aufkommender Panik, die nicht durch Atmen/Set-Change kippt → stoppen.",
+    ],
+    warningSigns: [
+      "Pulsdruck-Anstieg, Pochen im Kopf, leichte Übelkeit.",
+      "Konzentration kippt, Worte verlieren, Tunnelblick.",
+      "Hände/Füße werden kalt — Vasokonstriktion.",
+    ],
+    actions: [
+      "Set & Setting prüfen: vertraute Umgebung, keine Termine, Sitter erreichbar.",
+      "Boxenatmung (4-4-4-4) bei Anspannung, Elektrolyte bereitstellen.",
+      "Notiz machen: Substanz, Dosis, Uhrzeit — fürs Log und für Helfer.",
+    ],
+  },
+  synergy: {
+    intent: "Synergie ≠ harmlos. Wirkung wird stärker als die Summe — Dosis runter, Achtsamkeit hoch.",
+    waiting: [
+      "Beide Substanzen je um 25–50 % reduzieren gegenüber Solo-Dosis.",
+      "Versetzt einnehmen: zweite Substanz erst, wenn erste klar einsortiert ist (mind. 45–90 min).",
+      "Re-Dose nur an einer der beiden Substanzen, nicht an beiden.",
+    ],
+    abort: [
+      "Wenn die Kombi überraschend intensiv wird → kein Nachlegen, Trip aussitzen.",
+      "Anhaltende Dysphorie statt Empathogenie → Session beenden, Sitter dazu.",
+    ],
+    warningSigns: [
+      "Plötzliche Überforderung, Wahrnehmung kippt zu schnell.",
+      "Stark beschleunigter Puls trotz ruhigem Setting.",
+      "Kiefer-Pressen, Bruxismus deutlich stärker als bei Solo-Dosis.",
+    ],
+    actions: [
+      "Magnesium / Kaugummi gegen Bruxismus, Wasser portionsweise.",
+      "Wechsel ins ruhige Setting, Augenbinde, vertraute Musik.",
+      "Integration: nach Ende kurze Notiz — Dosis, Wirkung, was tat gut, was nicht.",
+    ],
+  },
+  unknown: {
+    intent: "Datenlage dünn. Behandle die Kombi wie potenziell unsicher, bis du es besser weißt.",
+    waiting: [
+      "Allergologisches Prinzip: 1/4 der üblichen Dosis als Test-Dosis, 2 h warten.",
+      "Mindestens 24 h Abstand bis zur zweiten Substanz.",
+    ],
+    abort: [
+      "Jedes ungewöhnliche Symptom (Hautausschlag, Sehstörung, abnorme Müdigkeit) → stoppen.",
+      "Bei Unklarheit Giftnotruf (Berlin: 030 19240, Wien: 01 406 43 43) — anonym.",
+    ],
+    warningSigns: [
+      "Effekte, die nicht zu den dokumentierten Solo-Wirkungen passen.",
+      "Verzögerter Wirkungseintritt > 2× Erwartung (Hinweis auf Verunreinigung).",
+    ],
+    actions: [
+      "Reagenzien-Test (Marquis/Mecke/Mandelin) vor dem Konsum.",
+      "Drug-Checking-Stelle nutzen, falls verfügbar (z. B. Schweiz, Österreich, NL).",
+      "Sitter informieren, dass die Kombi 'unbekannt' ist — niedrige Eingreif-Schwelle.",
+    ],
+  },
+  safe: {
+    intent: "Nach aktueller Datenlage unproblematisch — Grundregeln gelten trotzdem.",
+    waiting: [
+      "Re-Dosing wie bei Solo-Konsum, nicht häufiger.",
+      "Pausentage zwischen Sessions einhalten (Toleranz/Neuroprotektion).",
+    ],
+    abort: [
+      "Wenn Wirkung untypisch stark/lang → trotzdem stoppen und beobachten.",
+      "Bei körperlicher Vorerkrankung (Herz, Leber, Epilepsie) eigenständige Risiko-Abwägung.",
+    ],
+    warningSigns: [
+      "Untypische Symptome ernst nehmen — 'safe' heißt statistisch, nicht garantiert.",
+    ],
+    actions: [
+      "Hydration, Schlaf, Ernährung wie immer mitdenken.",
+      "Log führen — auch sichere Kombis dokumentieren, baut persönliche Erfahrungsbasis.",
+    ],
+  },
+};
+
 export const CATEGORY_LABEL: Record<SubstanceCategory, string> = {
   psychedelic: "Psychedelika",
   stimulant: "Stimulanzien",
