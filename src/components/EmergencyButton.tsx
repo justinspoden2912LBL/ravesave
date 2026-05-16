@@ -113,11 +113,11 @@ const GUIDES: Record<SymptomId, Guide> = {
     call112: true,
     intro: "Stabile Seitenlage rettet Leben — verhindert Ersticken an Erbrochenem.",
     steps: [
-      { do: "Ansprechen, Schulter rütteln, Schmerzreiz (Brustbein reiben)", detail: "Wirklich bewusstlos?" },
+      { do: "Ansprechen, Schulter rütteln, Schmerzreiz (Brustbein reiben)", detail: "Wirklich bewusstlos?", illus: "shake" },
       { do: "112 anrufen", detail: "Substanz(en) und Zeitpunkt ehrlich nennen.", illus: "phone112" },
       { do: "Atmung 10 Sek prüfen", detail: "Hören, sehen, fühlen. Keine Atmung → Herzdruckmassage.", illus: "checkBreath" },
       { do: "Stabile Seitenlage", detail: "Arm 90°, andere Hand an Wange, fernes Bein anwinkeln, zu dir drehen, Kopf überstrecken.", illus: "recovery" },
-      { do: "Bleib daneben, beobachte Atmung", detail: "Erbricht die Person, Mund ausräumen." },
+      { do: "Bleib daneben, beobachte Atmung", detail: "Erbricht die Person, Mund ausräumen.", illus: "clearMouth" },
     ],
   },
   seizure: {
