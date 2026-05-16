@@ -23,8 +23,22 @@ export const Route = createFileRoute("/risks")({
   head: () => ({
     meta: [
       { title: "Risiko-Übersicht — Rave Safe, have Fun" },
-      { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick." },
+      { name: "description", content: "Alle Mischkonsum-Paarungen pro Substanz mit Risikostufe, Rezeptorprofil, CYP-Konflikten und Begründung." },
+      { property: "og:title", content: "Risiko-Übersicht — Rave Safe, have Fun" },
+      { property: "og:description", content: "Risiko-Matrix pro Substanz mit pharmakologischer Begründung." },
+      { property: "og:url", content: "https://ravesave.lovable.app/risks" },
     ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/risks" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "MedicalWebPage",
+        name: "Risiko-Übersicht — Mischkonsum",
+        about: "Harm Reduction, Wechselwirkungen psychoaktiver Substanzen",
+        url: "https://ravesave.lovable.app/risks",
+      }),
+    }],
   }),
 });
 
