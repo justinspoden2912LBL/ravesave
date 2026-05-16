@@ -263,6 +263,149 @@ function CheckBreath(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+function Shake(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Kopf liegend */}
+      <circle cx="40" cy="50" r="8" />
+      {/* Körper */}
+      <path d="M48 52 L 95 58" />
+      {/* Hand an Schulter */}
+      <path d="M50 44 q 6 -4 12 0 q 2 4 -2 6 l -8 2" />
+      {/* Bewegungslinien */}
+      <path d="M64 32 l 6 -4 M70 38 l 8 -2 M62 26 l 4 -6" />
+    </svg>
+  );
+}
+
+function CoolRoom(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Sonne links */}
+      <circle cx="20" cy="22" r="6" />
+      <path d="M20 10 v -4 M20 38 v 4 M8 22 h -4 M32 22 h 4 M11 13 l -3 -3 M29 13 l 3 -3" />
+      {/* Pfeil nach rechts */}
+      <path d="M44 50 h 32 M70 44 l 6 6 -6 6" />
+      {/* Schneeflocke rechts */}
+      <path d="M100 22 v 18 M91 31 h 18 M94 25 l 12 12 M106 25 l -12 12" />
+    </svg>
+  );
+}
+
+function Hydrate(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Glas */}
+      <path d="M44 20 L 50 70 L 78 70 L 84 20 Z" />
+      {/* Wasserlinie */}
+      <path d="M48 38 q 8 -4 16 0 t 16 0" />
+      {/* Tropfen oben */}
+      <path d="M64 6 q 4 6 0 10 q -4 -4 0 -10 Z" />
+    </svg>
+  );
+}
+
+function NoSubstance(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Pille */}
+      <rect x="40" y="36" width="40" height="16" rx="8" />
+      <line x1="60" y1="36" x2="60" y2="52" />
+      {/* Verbotskreis */}
+      <circle cx="60" cy="44" r="28" />
+      <line x1="40" y1="24" x2="80" y2="64" />
+    </svg>
+  );
+}
+
+function Stopwatch(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Knopf oben */}
+      <path d="M56 10 h 8 M60 10 v 6" />
+      {/* Gehäuse */}
+      <circle cx="60" cy="46" r="24" />
+      {/* Zeiger */}
+      <path d="M60 46 L 60 30 M60 46 L 72 50" />
+      {/* Markierungen */}
+      <path d="M60 24 v 3 M60 65 v 3 M38 46 h 3 M79 46 h 3" />
+    </svg>
+  );
+}
+
+function Blanket(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Boden */}
+      <line x1="20" y1="72" x2="100" y2="72" strokeDasharray="3 4" />
+      {/* Kopf */}
+      <circle cx="60" cy="26" r="7" />
+      {/* Decke um sitzende Person */}
+      <path d="M38 70 q 4 -30 22 -30 q 18 0 22 30 Z" />
+      {/* Deckenfalten */}
+      <path d="M50 60 l 4 6 M70 60 l -4 6" />
+    </svg>
+  );
+}
+
+function QuietRoom(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Note */}
+      <path d="M40 18 v 30" />
+      <ellipse cx="34" cy="48" rx="6" ry="4" />
+      <path d="M40 18 q 12 4 14 14" />
+      {/* Durchgestrichen */}
+      <circle cx="42" cy="40" r="22" />
+      <line x1="26" y1="24" x2="58" y2="56" />
+      {/* Person rechts */}
+      <circle cx="84" cy="36" r="6" />
+      <path d="M84 42 v 18 M84 50 l -8 6 M84 50 l 8 6" />
+    </svg>
+  );
+}
+
+function ClearMouth(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Kopf seitlich */}
+      <path d="M44 30 q 20 -14 36 4 q 6 14 -4 24 q -16 8 -28 -2 q -10 -10 -4 -26 Z" />
+      {/* Mund offen */}
+      <path d="M70 48 q 6 2 10 0" />
+      {/* Finger zeigt zum Mund */}
+      <path d="M96 60 L 82 50 M82 50 l -2 -6 M82 50 l -6 -2" />
+    </svg>
+  );
+}
+
+function DontHold(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Person mittig */}
+      <circle cx="60" cy="26" r="7" />
+      <path d="M60 33 v 24 M60 42 l -10 -4 M60 42 l 10 -4 M60 57 l -8 12 M60 57 l 8 12" />
+      {/* Hände greifen von außen */}
+      <path d="M28 44 q 8 -2 14 2 M92 44 q -8 -2 -14 2" />
+      {/* Verbotszeichen */}
+      <circle cx="60" cy="44" r="30" />
+      <line x1="38" y1="22" x2="82" y2="66" />
+    </svg>
+  );
+}
+
+function DontStop(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      {/* Hand drückend */}
+      <path d="M44 38 q 0 -10 8 -10 q 8 0 8 10 v 8 q 0 8 -8 8 q -8 0 -8 -8 Z" />
+      <path d="M44 46 l -6 -2 M60 46 l 6 -2" />
+      {/* Endlos-Pfeil */}
+      <path d="M76 56 q 16 0 16 -12 q 0 -12 -16 -12 M76 56 l -4 -4 M76 56 l -4 4" />
+    </svg>
+  );
+}
+
+
 function Talkdown(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
