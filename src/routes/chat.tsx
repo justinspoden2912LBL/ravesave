@@ -453,13 +453,28 @@ function ChatPage() {
           return (
             <div key={m.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${
+                className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   isUser
-                    ? "bg-aurora animate-aurora text-primary-foreground"
+                    ? "bg-aurora animate-aurora text-primary-foreground whitespace-pre-wrap"
                     : "glass"
                 }`}
               >
-                {text}
+                {isUser ? (
+                  text
+                ) : (
+                  <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 prose-a:text-secondary prose-a:underline prose-headings:mt-3 prose-headings:mb-1">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        a: ({ node, ...props }) => (
+                          <a {...props} target="_blank" rel="noopener noreferrer" />
+                        ),
+                      }}
+                    >
+                      {text}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           );
