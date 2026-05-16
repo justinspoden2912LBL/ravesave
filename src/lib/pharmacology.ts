@@ -99,7 +99,7 @@ export const RISK_FLAG_META: Record<
 
 // ─── CYP ─────────────────────────────────────────────────────────────────
 
-export type CypEnzyme = "CYP2D6" | "CYP3A4" | "CYP1A2" | "CYP2C9" | "CYP2C19" | "CYP2B6";
+export type CypEnzyme = "CYP2D6" | "CYP3A4" | "CYP1A2" | "CYP2C9" | "CYP2C19" | "CYP2B6" | "CYP2E1";
 export type CypRole = "substrate" | "inhibitor" | "inducer";
 
 export type CypInteraction = { enzyme: CypEnzyme; role: CypRole };
@@ -394,7 +394,7 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "GABA-A", action: "positiveModulator", strength: 2 },
       { target: "NMDA", action: "antagonist", strength: 2 },
     ],
-    [{ enzyme: "CYP2E1" as CypEnzyme, role: "substrate" }],
+    [{ enzyme: "CYP2E1", role: "substrate" }],
   ),
   ghb: p(
     ["respiratoryDepression"],
