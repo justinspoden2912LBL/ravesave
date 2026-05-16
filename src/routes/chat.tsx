@@ -86,7 +86,7 @@ function ChatPage() {
       }),
     [profileSummary],
   );
-  const { messages, sendMessage, status, stop, error } = useChat({ transport });
+  const { messages, sendMessage, status, stop, error, setMessages } = useChat({ transport });
 
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -98,7 +98,72 @@ function ChatPage() {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const spokenIdsRef = useRef<Set<string>>(new Set());
 
-  const isLoading = status === "submitted" || status === "streaming";
+  // ----- Local persistence -----
+  const [persist, setPersist] = useState(false);
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+  const [sessions, setSessions] = useState<ReturnType<typeof listSessions>>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [renameId, setRenameId] = useState<string | null>(null);
+  const [renameVal, setRenameVal] = useState("");
+
+  const refreshSessions = useCallback(() => setSessions(listSessions()), []);
+
+  useEffect(() => {
+    setPersist(isPersistEnabled());
+    refreshSessions();
+  }, [refreshSessions]);
+
+  // Auto-save current chat whenever messages change (if enabled and non-empty)
+  useEffect(() => {
+    if (!persist || messages.length === 0) return;
+    saveSession(sessionId, messages as UIMessage[]);
+    refreshSessions();
+  }, [messages, persist, sessionId, refreshSessions]);
+
+  function togglePersist(v: boolean) {
+    setPersistEnabled(v);
+    setPersist(v);
+    if (v && messages.length > 0) {
+      saveSession(sessionId, messages as UIMessage[]);
+      refreshSessions();
+    }
+  }
+
+  function newChat() {
+    setSessionId(newSessionId());
+    setMessages([]);
+    setInput("");
+    setAttachments([]);
+    spokenIdsRef.current = new Set();
+  }
+
+  function openSession(id: string) {
+    const s = loadSession(id);
+    if (!s) return;
+    setSessionId(s.id);
+    setMessages(s.messages);
+    setShowHistory(false);
+    spokenIdsRef.current = new Set();
+  }
+
+  function removeSession(id: string) {
+    if (!confirm("Diesen Chat wirklich löschen?")) return;
+    deleteSession(id);
+    refreshSessions();
+    if (id === sessionId) newChat();
+  }
+
+  function startRename(id: string, current: string) {
+    setRenameId(id);
+    setRenameVal(current);
+  }
+  function commitRename() {
+    if (renameId) {
+      renameSession(renameId, renameVal);
+      refreshSessions();
+    }
+    setRenameId(null);
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
