@@ -188,9 +188,21 @@ export function summarizeProfile(p: UserProfile): string {
   );
   if (p.saferUseGoals.trim()) lines.push(`Eigene Safer-Use-Ziele: ${p.saferUseGoals.trim()}`);
 
+  const detail = getDetailLevel(p);
+  if (p.profession && p.profession !== "none") lines.push(`Beruflicher Hintergrund: ${PROFESSION_LABEL[p.profession]}`);
+  if (p.expertiseLevel) lines.push(`Selbsteinschätzung Wissen: ${EXPERTISE_LABEL[p.expertiseLevel]}`);
+  lines.push(`Gewünschte Detailtiefe: ${detail}`);
+
+  const styleInstruction = {
+    lay: "Antworte in einfacher Alltagssprache, vermeide Fachbegriffe oder erkläre sie kurz in Klammern. Kein Pharmakologie-Jargon.",
+    intermediate: "Verwende gängige pharmakologische Begriffe (Rezeptor-Klassen, Halbwertszeit, Tachyphylaxie) ohne sie jedes Mal zu definieren. Erkläre Mechanismen knapp.",
+    expert: "Schreibe auf Fachniveau (medizinische Fachkraft): konkrete Rezeptor-Subtypen, CYP-Enzyme, Halbwertszeiten, klinische Kontraindikationen, relevante Studien. Keine Vereinfachung, keine moralisierenden Disclaimer wenn nicht nötig.",
+  }[detail];
+
   lines.push(
     "",
     "Beziehe diese Angaben sachlich ein: passe Dosis-Hinweise an Erfahrung & Gewicht an, weise auf relevante Wechselwirkungen mit genannten Medikamenten hin, vermeide Belehrung, kein Moralisieren.",
+    styleInstruction,
   );
   return lines.join("\n");
 }
