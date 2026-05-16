@@ -83,6 +83,8 @@ export function emptyProfile(): UserProfile {
     version: 1,
     createdAt: now,
     updatedAt: now,
+    expertiseLevel: "casual",
+    profession: "none",
     experiences: [],
     contexts: [],
     motivations: [],
@@ -94,6 +96,41 @@ export function emptyProfile(): UserProfile {
     shareWithAI: true,
   };
 }
+
+/** Detailtiefe für Erklärungen — abgeleitet aus Beruf + Selbsteinschätzung. */
+export type DetailLevel = "lay" | "intermediate" | "expert";
+
+export function getDetailLevel(p: UserProfile | null | undefined): DetailLevel {
+  if (!p) return "lay";
+  if (p.profession === "medical" || p.profession === "pharmacy" || p.profession === "research") {
+    return "expert";
+  }
+  if (p.profession === "psychology" || p.profession === "harm_reduction") {
+    return p.expertiseLevel === "expert" ? "expert" : "intermediate";
+  }
+  switch (p.expertiseLevel) {
+    case "expert": return "expert";
+    case "experienced": return "intermediate";
+    default: return "lay";
+  }
+}
+
+export const PROFESSION_LABEL: Record<Profession, string> = {
+  none: "keine Angabe",
+  medical: "Medizin (Arzt/Pflege/Rettung)",
+  pharmacy: "Pharmazie / Apotheke",
+  psychology: "Psychologie / Psychotherapie",
+  harm_reduction: "Drogenhilfe / Streetwork",
+  research: "Forschung (Pharma/Tox)",
+  other: "anderer Fachbereich",
+};
+
+export const EXPERTISE_LABEL: Record<ExpertiseLevel, string> = {
+  none: "keine Vorkenntnisse",
+  casual: "Grundwissen / Freizeit",
+  experienced: "erfahren, kenne Wirkmechanismen grob",
+  expert: "Fachwissen / pharmakologisch versiert",
+};
 
 const FREQ_LABEL: Record<Frequency, string> = {
   never: "nie",
