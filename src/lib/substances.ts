@@ -929,7 +929,26 @@ export type RiskLevel = "safe" | "caution" | "unsafe" | "danger" | "synergy" | "
 
 export interface RiskInfo {
   level: RiskLevel;
+  /** Kurze Laien-Erklärung. */
   reason: string;
+  /** Optional: physiologischer Mechanismus in 1–2 Sätzen (intermediate). */
+  mechanism?: string;
+  /** Optional: Fachebene — Rezeptoren/Enzyme/Kontraindikationen (expert). */
+  expert?: string;
+}
+
+/** Formatiert das Risiko entsprechend dem Detail-Level des Users. */
+export function explainRisk(
+  info: RiskInfo,
+  level: "lay" | "intermediate" | "expert" = "lay",
+): { headline: string; detail?: string; expert?: string } {
+  if (level === "lay" || (!info.mechanism && !info.expert)) {
+    return { headline: info.reason };
+  }
+  if (level === "intermediate") {
+    return { headline: info.reason, detail: info.mechanism };
+  }
+  return { headline: info.reason, detail: info.mechanism, expert: info.expert ?? info.mechanism };
 }
 
 const CAT = (id: string) => SUBSTANCES.find((s) => s.id === id)!.category;
