@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "clean": "rm -rf node_modules/.vite node_modules/.cache .vite .tanstack dist .next tsconfig.tsbuildinfo",
     "build": "vite build",
+    "build:clean": "npm run clean && vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
