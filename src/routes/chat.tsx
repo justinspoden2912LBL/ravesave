@@ -468,7 +468,7 @@ function ChatPage() {
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        a: ({ node, ...props }) => (
+                        a: ({ ...props }: any) => (
                           <a {...props} target="_blank" rel="noopener noreferrer" />
                         ),
                       }}
