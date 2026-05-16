@@ -153,7 +153,7 @@ const GUIDES: Record<SymptomId, Guide> = {
     steps: [
       { do: "112 anrufen", detail: "Genau sagen: Brustschmerz, Substanz, Dosis.", illus: "phone112" },
       { do: "Hinsetzen, Oberkörper hoch, beruhigen", detail: "Nicht hinlegen — erleichtert die Atmung.", illus: "sitUp" },
-      { do: "Keine weitere Substanz, kein Alkohol", detail: "Keine Aufputscher, kein Energy Drink." },
+      { do: "Keine weitere Substanz, kein Alkohol", detail: "Keine Aufputscher, kein Energy Drink.", illus: "noSubstance" },
       { do: "Wenn Atmung aussetzt: Herzdruckmassage", detail: "100–120/min, ohne Pause bis Rettung kommt.", illus: "cpr" },
     ],
   },
