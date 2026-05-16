@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "Rave Safe, Fun — Harm Reduction Companion" },
+      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen." },
     ],
   }),
@@ -80,7 +80,7 @@ function Home() {
           </div>
           <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
-            <span className="text-foreground">, </span>
+            <span className="text-foreground">, have </span>
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
             <br />
             <span className="text-foreground/80 text-2xl md:text-4xl font-medium">Wissen statt Bauchgefühl.</span>

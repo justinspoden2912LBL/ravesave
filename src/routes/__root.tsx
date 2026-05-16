@@ -73,10 +73,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rave Safe, Fun — Harm Reduction Companion" },
+      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
-      { name: "author", content: "Rave Safe, Fun" },
-      { property: "og:title", content: "Rave Safe, Fun — Harm Reduction Companion" },
+      { name: "author", content: "Rave Safe, have Fun" },
+      { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
