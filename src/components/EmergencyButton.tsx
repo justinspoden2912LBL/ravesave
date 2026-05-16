@@ -125,10 +125,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     call112: true,
     intro: "Häufig bei Stimulanzien-Überdosis, GHB-Entzug, Tramadol, Mischkonsum oder unbekannter RC.",
     steps: [
-      { do: "Person nicht festhalten", detail: "Krampf nicht stoppen wollen — Verletzungsgefahr." },
+      { do: "Person nicht festhalten", detail: "Krampf nicht stoppen wollen — Verletzungsgefahr.", illus: "dontHold" },
       { do: "Umgebung sichern: harte Kanten weg, Kopf weich polstern", detail: "Jacke unter den Kopf.", illus: "seizurePad" },
       { do: "Nichts in den Mund stecken", detail: "Kein Löffel, kein Finger — Erstickungs- und Bissgefahr.", illus: "noMouth" },
-      { do: "Zeit messen", detail: "Krampf >2 Min oder zweiter Anfall hintereinander = sofort 112." },
+      { do: "Zeit messen", detail: "Krampf >2 Min oder zweiter Anfall hintereinander = sofort 112.", illus: "stopwatch" },
       { do: "Nach dem Krampf: stabile Seitenlage, ansprechen, ruhig bleiben", detail: "Verwirrung danach ist normal.", illus: "recovery" },
     ],
     followup: { label: "Risiken nachschlagen", to: "/risks" },
