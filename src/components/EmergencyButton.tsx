@@ -37,6 +37,7 @@ import {
   clearEmergencyInfo,
   type EmergencyInfo,
 } from "@/lib/emergencyInfo";
+import { StepIllustration, ILLUSTRATION_LABEL, type IllusKey } from "@/components/EmergencyIllustrations";
 
 const SCENARIOS: { label: string; to: string; hint: string }[] = [
   { label: "Opioid-Überdosis (Atemstillstand)", to: "/substances", hint: "Naloxon, Atemspende" },
