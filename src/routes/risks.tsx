@@ -216,7 +216,8 @@ function RisksPage() {
                       {RISK_META[lvl].label}
                       <span className="ml-2 text-xs font-normal opacity-70">{items.length}</span>
                     </h3>
-                    <ul className="grid gap-2 md:grid-cols-2">
+                    <HarmReductionPanel level={lvl} substanceId={selected.id} />
+                    <ul className="grid gap-2 md:grid-cols-2 mt-4">
                       {items.map(({ other, risk }) => (
                         <li
                           key={other.id}
