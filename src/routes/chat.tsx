@@ -17,7 +17,7 @@ import {
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
-  head: () => ({ meta: [{ title: "KI-Chat — trace" }] }),
+  head: () => ({ meta: [{ title: "KI-Chat — Rave Safe, have Fun" }] }),
 });
 
 interface Attachment {

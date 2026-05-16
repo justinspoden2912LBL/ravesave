@@ -17,7 +17,7 @@ export const Route = createFileRoute("/risks")({
   component: RisksPage,
   head: () => ({
     meta: [
-      { title: "Risiko-Übersicht — trace" },
+      { title: "Risiko-Übersicht — Rave Safe, have Fun" },
       { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick." },
     ],
   }),

@@ -113,7 +113,7 @@ export function newSessionId(): string {
 export function sessionToMarkdown(s: ChatSession): string {
   const lines: string[] = [`# ${s.title}`, "", `_Erstellt: ${s.createdAt}_`, ""];
   for (const m of s.messages) {
-    const role = m.role === "user" ? "**Du**" : m.role === "assistant" ? "**trace KI**" : `**${m.role}**`;
+    const role = m.role === "user" ? "**Du**" : m.role === "assistant" ? "**Rave Safe KI**" : `**${m.role}**`;
     const text = (m.parts ?? []).map((p: any) => (p.type === "text" ? p.text : "")).join("");
     lines.push(role, "", text, "", "---", "");
   }

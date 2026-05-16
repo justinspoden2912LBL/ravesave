@@ -19,7 +19,7 @@ import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
-  head: () => ({ meta: [{ title: "Mischkonsum-Check — trace" }] }),
+  head: () => ({ meta: [{ title: "Mischkonsum-Check — Rave Safe, have Fun" }] }),
 });
 
 function MixPage() {

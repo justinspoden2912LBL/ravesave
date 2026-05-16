@@ -37,7 +37,7 @@ import { SUBSTANCES } from "@/lib/substances";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
-  head: () => ({ meta: [{ title: "Dein Profil — trace" }] }),
+  head: () => ({ meta: [{ title: "Dein Profil — Rave Safe, have Fun" }] }),
 });
 
 const FREQS: { v: Frequency; label: string }[] = [
@@ -147,7 +147,7 @@ function Onboarding() {
               Hey. <span className="text-aurora bg-aurora animate-aurora bg-clip-text">Erzähl uns</span> kurz von dir.
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Damit trace dir relevantere Hinweise geben kann — bessere Dosis-Bereiche, präzisere
+              Damit Rave Safe, have Fun dir relevantere Hinweise geben kann — bessere Dosis-Bereiche, präzisere
               Wechselwirkungs-Checks, eine KI, die weiß, wovon du sprichst. Es geht nicht um Bewertung.
               Du entscheidest, was du teilst, alles bleibt auf deinem Gerät.
             </p>
