@@ -12,6 +12,11 @@ import {
   type SubstanceCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
+import { profileFor, aggregateFlags, aggregateCyp } from "@/lib/pharmacology";
+import { RiskFlagChips } from "@/components/viz/RiskFlagChips";
+import { ReceptorMap, ReceptorOverlap } from "@/components/viz/ReceptorMap";
+import { CypBadges, CypConflicts } from "@/components/viz/CypBadges";
+import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
 
 export const Route = createFileRoute("/risks")({
   component: RisksPage,
