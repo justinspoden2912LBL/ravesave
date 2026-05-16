@@ -80,8 +80,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Rave Safe, have Fun" },
+      { property: "og:url", content: "https://ravesave.lovable.app/" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
@@ -91,6 +92,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: appCss,
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Rave Safe, have Fun",
+          url: "https://ravesave.lovable.app/",
+          description:
+            "Harm-Reduction-Companion: Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen.",
+          publisher: {
+            "@type": "Organization",
+            name: "Rave Safe, have Fun",
+            url: "https://ravesave.lovable.app/",
+          },
+        }),
       },
     ],
   }),
