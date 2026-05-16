@@ -1251,7 +1251,7 @@ export const SUBSTANCES: Substance[] = [
     warnings: ["Aggressivität, Selbst-/Fremdverletzung", "Lange Nachwirkungen, Psychose-Risiko"],
   },
   {
-    id: "n2o-amphetamine-warning",
+    id: "mxipr",
     name: "MXiPr",
     aliases: ["Methoxisopropamin"],
     category: "dissociative",
