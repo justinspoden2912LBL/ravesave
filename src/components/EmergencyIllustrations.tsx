@@ -16,7 +16,17 @@ export type IllusKey =
   | "phone112"
   | "naloxone"
   | "checkBreath"
-  | "talkdown";
+  | "talkdown"
+  | "shake"
+  | "coolRoom"
+  | "hydrate"
+  | "noSubstance"
+  | "stopwatch"
+  | "blanket"
+  | "quietRoom"
+  | "clearMouth"
+  | "dontHold"
+  | "dontStop";
 
 const base: SVGProps<SVGSVGElement> = {
   viewBox: "0 0 120 80",
