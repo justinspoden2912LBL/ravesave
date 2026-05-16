@@ -195,6 +195,17 @@ function ChatPage() {
           Stelle Fragen zu Substanzen, lade Dokumente hoch (txt, md, pdf, docx, pages…) oder sprich direkt mit der KI.
           Alles bleibt zwischen dir und dem KI-Endpunkt — kein Verlauf wird gespeichert.
         </p>
+        <div className="mt-2">
+          {profileSummary ? (
+            <Link to="/settings" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs text-secondary">
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil aktiv — KI kennt deinen Kontext
+            </Link>
+          ) : (
+            <Link to="/onboarding" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs">
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil einrichten für bessere Antworten
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Messages */}
