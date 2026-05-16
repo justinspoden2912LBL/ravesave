@@ -16,6 +16,10 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
+import { aggregateFlags, aggregateCyp, profileFor } from "@/lib/pharmacology";
+import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
+import { ReceptorOverlap } from "@/components/viz/ReceptorMap";
+import { CypConflicts } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
@@ -92,6 +96,9 @@ function MixPage() {
           </div>
         )}
       </div>
+
+      {/* Pharmakologisches Profil — visuell */}
+      {selected.length >= 1 && <PharmaProfileBlock ids={selected} />}
 
       {/* Pair breakdown */}
       {pairs.length > 0 && (
@@ -279,6 +286,59 @@ function DetailToggle({
           {l === profileDetail && <span className="ml-1 opacity-60">·</span>}
         </button>
       ))}
+    </div>
+  );
+}
+
+function PharmaProfileBlock({ ids }: { ids: string[] }) {
+  const flagLoads = aggregateFlags(ids);
+  const cypConflicts = aggregateCyp(ids);
+  const layers = ids
+    .map((id) => {
+      const s = SUBSTANCES.find((x) => x.id === id);
+      const prof = profileFor(id);
+      if (!s || !prof) return null;
+      return { id, name: s.name, targets: prof.targets };
+    })
+    .filter((l): l is { id: string; name: string; targets: NonNullable<ReturnType<typeof profileFor>>["targets"] } => !!l);
+
+  const hasData = flagLoads.length > 0 || layers.length > 0 || cypConflicts.length > 0;
+  if (!hasData) return null;
+
+  return (
+    <div className="rounded-2xl glass p-5 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="font-semibold">Pharmakologisches Profil deines Mix</h2>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          Additiv über alle ausgewählten Substanzen
+        </span>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-[1fr_auto]">
+        <div className="space-y-2 min-w-0">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            Risiko-Last
+          </div>
+          <RiskLoadBars loads={flagLoads} />
+        </div>
+        {layers.length > 0 && (
+          <div className="space-y-2">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Rezeptor-Überlagerung
+            </div>
+            <ReceptorOverlap layers={layers} size={160} />
+          </div>
+        )}
+      </div>
+
+      {cypConflicts.some((c) => c.conflict) && (
+        <div className="space-y-2">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            CYP-Interaktions-Konflikte
+          </div>
+          <CypConflicts conflicts={cypConflicts} />
+        </div>
+      )}
     </div>
   );
 }

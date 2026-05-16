@@ -11,6 +11,10 @@ import {
   type SuperCategory,
   type Substance,
 } from "@/lib/substances";
+import { profileFor } from "@/lib/pharmacology";
+import { RiskFlagChips } from "@/components/viz/RiskFlagChips";
+import { ReceptorMap } from "@/components/viz/ReceptorMap";
+import { CypBadges } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
@@ -119,14 +123,28 @@ function SubstancesPage() {
                                     className="w-full text-left px-3 py-2"
                                   >
                                     <div className="flex items-start justify-between gap-2">
-                                      <div className="min-w-0">
+                                      <div className="min-w-0 flex-1">
                                         <div className="font-medium text-sm truncate">{s.name}</div>
                                         {s.aliases.length > 0 && (
                                           <div className="text-[10px] text-muted-foreground truncate">
                                             {s.aliases.join(", ")}
                                           </div>
                                         )}
+                                        {profileFor(s.id) && (
+                                          <RiskFlagChips
+                                            flags={profileFor(s.id)!.flags}
+                                            size="xs"
+                                            className="mt-1.5"
+                                          />
+                                        )}
                                       </div>
+                                      {profileFor(s.id) && (
+                                        <ReceptorMap
+                                          targets={profileFor(s.id)!.targets}
+                                          size={48}
+                                          className="shrink-0"
+                                        />
+                                      )}
                                       <ChevronRight className={`h-4 w-4 mt-0.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`} />
                                     </div>
                                     {!open && (
@@ -139,6 +157,22 @@ function SubstancesPage() {
                                   {open && (
                                     <div className="px-3 pb-3 space-y-3 border-t border-border/40 pt-3 text-sm">
                                       <p className="text-muted-foreground">{s.shortDescription}</p>
+                                      {profileFor(s.id) && (
+                                        <div className="rounded-xl glass p-3 grid gap-3 sm:grid-cols-[140px_1fr] items-start">
+                                          <ReceptorMap
+                                            targets={profileFor(s.id)!.targets}
+                                            size={140}
+                                            showLegend
+                                          />
+                                          <div className="space-y-2 min-w-0">
+                                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                                              Rezeptor-Profil
+                                            </div>
+                                            <RiskFlagChips flags={profileFor(s.id)!.flags} />
+                                            <CypBadges cyp={profileFor(s.id)!.cyp} />
+                                          </div>
+                                        </div>
+                                      )}
                                       <Row label="Mechanismus">{s.mechanism}</Row>
                                       <Row label="Eintritt">{s.onset}</Row>
                                       <Row label="Dauer">{s.duration}</Row>

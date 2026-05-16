@@ -79,6 +79,25 @@
   --risk-unsafe: oklch(0.72 0.22 35);
   --risk-danger: oklch(0.62 0.28 20);
 
+  /* Receptor target families */
+  --target-monoamine: oklch(0.75 0.22 320);
+  --target-opioid: oklch(0.68 0.22 25);
+  --target-gaba: oklch(0.72 0.18 200);
+  --target-glutamate: oklch(0.78 0.22 145);
+  --target-cannabinoid: oklch(0.78 0.2 100);
+  --target-cholinergic: oklch(0.7 0.18 270);
+
+  /* Risk-flag accents */
+  --flag-serotonergic: oklch(0.75 0.22 320);
+  --flag-qt: oklch(0.65 0.27 25);
+  --flag-respiratory: oklch(0.7 0.22 250);
+  --flag-seizure: oklch(0.82 0.22 90);
+  --flag-hyperthermia: oklch(0.7 0.25 40);
+  --flag-vaso: oklch(0.72 0.22 350);
+  --flag-psychosis: oklch(0.7 0.22 290);
+  --flag-hepatotoxic: oklch(0.7 0.18 70);
+  --flag-cardiotoxic: oklch(0.62 0.28 15);
+
   /* Aurora gradient stops */
   --aurora-1: oklch(0.7 0.27 320);
   --aurora-2: oklch(0.72 0.24 260);
