@@ -76,6 +76,7 @@ function LogPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 lg:grid-cols-[400px_1fr]">
+      <h1 className="sr-only">Konsum-Protokoll</h1>
       {/* Form */}
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
