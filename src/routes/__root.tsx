@@ -78,10 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { name: "author", content: "Rave Safe, have Fun" },
       { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos." },
+      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
+      { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
     ],
     links: [
       {
