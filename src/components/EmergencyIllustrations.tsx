@@ -1,7 +1,7 @@
 // Schlichte, klare SVG-Illustrationen für Erste-Hilfe-Schritte.
 // Stilrichtlinie: 2px Stroke, currentColor, abgerundete Enden, keine Farben —
 // erbt die Textfarbe des Kontexts (z. B. text-destructive im Notfall-Dialog).
-import type { SVGProps } from "react";
+import type { ReactElement, SVGProps } from "react";
 
 export type IllusKey =
   | "recovery"
@@ -267,7 +267,7 @@ function Talkdown(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-const MAP: Record<IllusKey, (p: SVGProps<SVGSVGElement>) => JSX.Element> = {
+const MAP: Record<IllusKey, (p: SVGProps<SVGSVGElement>) => ReactElement> = {
   recovery: Recovery,
   airway: Airway,
   cpr: CPR,
