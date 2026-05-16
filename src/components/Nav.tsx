@@ -1,10 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Activity, BookOpen, FlaskConical, GitMerge, Home, MessageCircle, Settings as SettingsIcon } from "lucide-react";
+import { Activity, BookOpen, FlaskConical, GitMerge, Home, MessageCircle, Settings as SettingsIcon, ShieldAlert } from "lucide-react";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
   { to: "/log", label: "Protokoll", icon: Activity },
   { to: "/mix", label: "Mix-Check", icon: GitMerge },
+  { to: "/risks", label: "Risiken", icon: ShieldAlert },
   { to: "/substances", label: "Substanzen", icon: BookOpen },
   { to: "/chat", label: "KI-Chat", icon: MessageCircle },
   { to: "/stats", label: "Statistik", icon: FlaskConical },
