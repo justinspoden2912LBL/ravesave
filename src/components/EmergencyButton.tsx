@@ -16,6 +16,8 @@ import {
   Pencil,
   Save,
   Trash2,
+  Maximize2,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -358,6 +360,7 @@ function MedicalCard() {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<EmergencyInfo>(emptyEmergencyInfo());
   const [error, setError] = useState<string | null>(null);
+  const [showcase, setShowcase] = useState(false);
 
   useEffect(() => {
     const loaded = loadEmergencyInfo();
@@ -365,6 +368,20 @@ function MedicalCard() {
     setDraft(loaded);
     if (!hasAnyEmergencyInfo(loaded)) setEditing(true);
   }, []);
+
+  // Bildschirm im Showcase wach halten + Helligkeit-Hinweis via Esc-Schließen
+  useEffect(() => {
+    if (!showcase) return;
+    let sentinel: WakeLockSentinel | null = null;
+    const nav = navigator as Navigator & { wakeLock?: { request: (type: "screen") => Promise<WakeLockSentinel> } };
+    nav.wakeLock?.request("screen").then((s) => (sentinel = s)).catch(() => {});
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setShowcase(false); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      sentinel?.release().catch(() => {});
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [showcase]);
 
   function startEdit() {
     setDraft(info);
@@ -405,14 +422,26 @@ function MedicalCard() {
           <IdCard className="h-4 w-4 text-secondary" /> Medizinische Notfall-Karte
         </h3>
         {!editing && (
-          <button
-            onClick={startEdit}
-            className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
-          >
-            <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
-          </button>
+          <div className="flex items-center gap-1.5">
+            {has && (
+              <button
+                onClick={() => setShowcase(true)}
+                className="inline-flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1 text-xs font-semibold text-destructive-foreground hover:brightness-110"
+              >
+                <Maximize2 className="h-3 w-3" /> Jetzt zeigen
+              </button>
+            )}
+            <button
+              onClick={startEdit}
+              className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
+            >
+              <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
+            </button>
+          </div>
         )}
       </div>
+
+      {showcase && <FullscreenMedicalCard info={info} onClose={() => setShowcase(false)} />}
 
       {!editing && (
         has ? (
@@ -524,5 +553,111 @@ function Area({ label, value, onChange, max, placeholder }: { label: string; val
         className="w-full resize-y rounded-lg bg-background/60 px-2.5 py-1.5 text-sm ring-1 ring-border focus:ring-secondary outline-none"
       />
     </label>
+  );
+}
+
+function FullscreenMedicalCard({ info, onClose }: { info: EmergencyInfo; onClose: () => void }) {
+  const phoneHref = info.contactPhone ? `tel:${info.contactPhone.replace(/[^\d+]/g, "")}` : null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Notfall-Karte Vollbild"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-background"
+    >
+      <div className="mx-auto min-h-full max-w-3xl px-5 py-6 sm:px-8 sm:py-10 space-y-6">
+        <header className="flex items-start justify-between gap-3">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-1 text-xs font-bold uppercase tracking-wider text-destructive-foreground">
+              <Siren className="h-3.5 w-3.5" /> Medizinische Notfall-Karte
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Für Ersthelfer:innen und Rettungsdienst. Esc oder Schließen-Button beendet.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Schließen"
+            className="rounded-full glass p-2 hover:bg-muted/40"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </header>
+
+        {(info.contactName || info.contactPhone) && (
+          <section className="rounded-3xl bg-secondary/15 ring-2 ring-secondary/40 p-5 sm:p-7 space-y-3">
+            <div className="text-xs font-semibold uppercase tracking-widest text-secondary">
+              Notfallkontakt
+            </div>
+            <div className="text-3xl sm:text-4xl font-bold leading-tight break-words">
+              {info.contactName || "—"}
+              {info.contactRelation && (
+                <span className="block text-base font-medium text-muted-foreground mt-1">
+                  {info.contactRelation}
+                </span>
+              )}
+            </div>
+            {phoneHref && (
+              <a
+                href={phoneHref}
+                className="flex items-center justify-center gap-3 rounded-2xl bg-secondary px-5 py-4 text-2xl font-bold text-secondary-foreground shadow-md hover:brightness-110"
+              >
+                <Phone className="h-7 w-7" /> {info.contactPhone}
+              </a>
+            )}
+          </section>
+        )}
+
+        {info.bloodType && (
+          <BigRow label="Blutgruppe" value={info.bloodType} />
+        )}
+        {info.allergies && (
+          <BigRow label="Allergien" value={info.allergies} highlight />
+        )}
+        {info.conditions && (
+          <BigRow label="Vorerkrankungen" value={info.conditions} highlight />
+        )}
+        {info.medications && (
+          <BigRow label="Aktuelle Medikamente" value={info.medications} highlight />
+        )}
+        {info.notes && (
+          <BigRow label="Sonstiges" value={info.notes} />
+        )}
+
+        <a
+          href="tel:112"
+          className="flex items-center justify-center gap-3 rounded-2xl bg-destructive px-5 py-5 text-2xl font-bold text-destructive-foreground shadow-md hover:brightness-110"
+        >
+          <Phone className="h-7 w-7" /> 112 anrufen
+        </a>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Daten lokal gespeichert. Bildschirm bleibt im Vollbild-Modus aktiv.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function BigRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <section
+      className={`rounded-3xl p-5 sm:p-7 ${
+        highlight
+          ? "bg-destructive/15 ring-2 ring-destructive/40"
+          : "bg-muted/20 ring-1 ring-border"
+      }`}
+    >
+      <div
+        className={`text-xs font-semibold uppercase tracking-widest ${
+          highlight ? "text-destructive" : "text-muted-foreground"
+        }`}
+      >
+        {label}
+      </div>
+      <div className="mt-2 whitespace-pre-wrap break-words text-2xl sm:text-3xl font-semibold leading-snug">
+        {value}
+      </div>
+    </section>
   );
 }
