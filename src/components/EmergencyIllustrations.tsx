@@ -434,6 +434,16 @@ const MAP: Record<IllusKey, (p: SVGProps<SVGSVGElement>) => ReactElement> = {
   naloxone: Naloxone,
   checkBreath: CheckBreath,
   talkdown: Talkdown,
+  shake: Shake,
+  coolRoom: CoolRoom,
+  hydrate: Hydrate,
+  noSubstance: NoSubstance,
+  stopwatch: Stopwatch,
+  blanket: Blanket,
+  quietRoom: QuietRoom,
+  clearMouth: ClearMouth,
+  dontHold: DontHold,
+  dontStop: DontStop,
 };
 
 export const ILLUSTRATION_LABEL: Record<IllusKey, string> = {
@@ -450,6 +460,16 @@ export const ILLUSTRATION_LABEL: Record<IllusKey, string> = {
   naloxone: "Naloxon-Spray",
   checkBreath: "Atmung prüfen",
   talkdown: "Talkdown",
+  shake: "Ansprechen & rütteln",
+  coolRoom: "Kühler Ort",
+  hydrate: "Schluckweise Wasser",
+  noSubstance: "Nichts nachlegen",
+  stopwatch: "Zeit messen",
+  blanket: "Wärmen & erden",
+  quietRoom: "Ruhige Umgebung",
+  clearMouth: "Mund ausräumen",
+  dontHold: "Nicht festhalten",
+  dontStop: "Nicht aufhören",
 };
 
 export function StepIllustration({ name, className }: { name: IllusKey; className?: string }) {
