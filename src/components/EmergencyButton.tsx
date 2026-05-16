@@ -327,20 +327,54 @@ export function EmergencyButton() {
             </div>
 
             <ol className="space-y-2">
-              {guide.steps.map((step, i) => (
-                <li key={i} className="flex gap-3 rounded-xl bg-muted/20 p-3">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-destructive/20 text-sm font-bold text-destructive">
-                    {i + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium leading-snug">{step.do}</p>
-                    {step.detail && (
-                      <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">{step.detail}</p>
+              {guide.steps.map((step, i) => {
+                const isOpen = expanded === i;
+                const clickable = !!step.illus;
+                return (
+                  <li
+                    key={i}
+                    className={`rounded-xl bg-muted/20 p-3 ${
+                      clickable ? "cursor-pointer hover:bg-muted/30 transition" : ""
+                    }`}
+                    onClick={() => clickable && setExpanded(isOpen ? null : i)}
+                  >
+                    <div className="flex gap-3">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-destructive/20 text-sm font-bold text-destructive">
+                        {i + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium leading-snug">{step.do}</p>
+                        {step.detail && (
+                          <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">{step.detail}</p>
+                        )}
+                      </div>
+                      {step.illus && (
+                        <div
+                          className="shrink-0 grid h-12 w-16 place-items-center rounded-lg bg-background/60 ring-1 ring-border text-foreground"
+                          aria-hidden
+                        >
+                          <StepIllustration name={step.illus} className="h-10 w-14" />
+                        </div>
+                      )}
+                    </div>
+                    {isOpen && step.illus && (
+                      <div className="mt-3 rounded-xl bg-background/70 ring-1 ring-border p-4 flex flex-col items-center gap-2">
+                        <StepIllustration
+                          name={step.illus}
+                          className="h-28 w-full max-w-[260px] text-destructive"
+                        />
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {ILLUSTRATION_LABEL[step.illus]}
+                        </p>
+                      </div>
                     )}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ol>
+            <p className="text-[11px] text-muted-foreground">
+              Tipp: Schritt mit Illustration antippen, um sie groß zu sehen.
+            </p>
 
             {guide.followup && (
               <Link
