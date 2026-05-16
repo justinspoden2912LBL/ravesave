@@ -87,6 +87,7 @@ function ChatPage() {
     [profileSummary],
   );
   const { messages, sendMessage, status, stop, error, setMessages } = useChat({ transport });
+  const isLoading = status === "submitted" || status === "streaming";
 
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
