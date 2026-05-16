@@ -65,6 +65,7 @@ function Home() {
               onClick={() => { dismissOnboarding(); setShowPrompt(false); }}
               className="rounded-full p-2 text-muted-foreground hover:text-foreground"
               title="Später"
+              aria-label="Hinweis schließen"
             >
               <X className="h-4 w-4" />
             </button>
