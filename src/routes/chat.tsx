@@ -1,9 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2, UserCircle2 } from "lucide-react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2,
+  UserCircle2, History, Plus, Download, Trash2, Save, Check, Pencil,
+} from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
+import {
+  isPersistEnabled, setPersistEnabled,
+  listSessions, loadSession, saveSession, deleteSession, renameSession,
+  newSessionId, exportSessionJson, exportSessionMarkdown, exportAllJson,
+} from "@/lib/chatHistory";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
