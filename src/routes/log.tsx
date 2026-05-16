@@ -6,7 +6,7 @@ import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
-  head: () => ({ meta: [{ title: "Protokoll — trace" }] }),
+  head: () => ({ meta: [{ title: "Protokoll — Rave Safe, have Fun" }] }),
 });
 
 function LogPage() {

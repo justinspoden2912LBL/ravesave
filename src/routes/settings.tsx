@@ -16,7 +16,7 @@ import {
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
-  head: () => ({ meta: [{ title: "Einstellungen — trace" }] }),
+  head: () => ({ meta: [{ title: "Einstellungen — Rave Safe, have Fun" }] }),
 });
 
 function SettingsPage() {

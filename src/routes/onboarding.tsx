@@ -37,7 +37,7 @@ import { SUBSTANCES } from "@/lib/substances";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
-  head: () => ({ meta: [{ title: "Dein Profil — trace" }] }),
+  head: () => ({ meta: [{ title: "Dein Profil — Rave Safe, have Fun" }] }),
 });
 
 const FREQS: { v: Frequency; label: string }[] = [

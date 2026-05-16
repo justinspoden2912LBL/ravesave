@@ -5,7 +5,7 @@ import { loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/stats")({
   component: StatsPage,
-  head: () => ({ meta: [{ title: "Statistik — trace" }] }),
+  head: () => ({ meta: [{ title: "Statistik — Rave Safe, have Fun" }] }),
 });
 
 function StatsPage() {

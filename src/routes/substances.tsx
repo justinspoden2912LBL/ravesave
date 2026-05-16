@@ -14,7 +14,7 @@ import {
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
-  head: () => ({ meta: [{ title: "Substanzen — trace" }] }),
+  head: () => ({ meta: [{ title: "Substanzen — Rave Safe, have Fun" }] }),
 });
 
 function SubstancesPage() {
