@@ -1,0 +1,228 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Trash2, Plus, Clock, AlertTriangle } from "lucide-react";
+import { SUBSTANCES, assessPair, RISK_META } from "@/lib/substances";
+import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
+
+export const Route = createFileRoute("/log")({
+  component: LogPage,
+  head: () => ({ meta: [{ title: "Protokoll — trace" }] }),
+});
+
+function LogPage() {
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [substanceId, setSubstanceId] = useState(SUBSTANCES[0].id);
+  const [dose, setDose] = useState("");
+  const [unit, setUnit] = useState("mg");
+  const [route, setRoute] = useState("oral");
+  const [notes, setNotes] = useState("");
+  const [mood, setMood] = useState(3);
+  const [when, setWhen] = useState(() => new Date().toISOString().slice(0, 16));
+
+  useEffect(() => {
+    setEntries(loadEntries());
+  }, []);
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!dose.trim()) return;
+    addEntry({
+      substanceId,
+      dose: dose.trim(),
+      unit,
+      route,
+      timestamp: new Date(when).getTime(),
+      notes: notes.trim() || undefined,
+      mood,
+    });
+    setEntries(loadEntries());
+    setDose("");
+    setNotes("");
+  }
+
+  function remove(id: string) {
+    deleteEntry(id);
+    setEntries(loadEntries());
+  }
+
+  // Last 12h — flag risky combos
+  const recent = useMemo(() => {
+    const cutoff = Date.now() - 12 * 3600 * 1000;
+    return entries.filter((e) => e.timestamp >= cutoff);
+  }, [entries]);
+
+  const recentRisks = useMemo(() => {
+    const out: { a: LogEntry; b: LogEntry; risk: ReturnType<typeof assessPair> }[] = [];
+    for (let i = 0; i < recent.length; i++) {
+      for (let j = i + 1; j < recent.length; j++) {
+        if (recent[i].substanceId === recent[j].substanceId) continue;
+        const r = assessPair(recent[i].substanceId, recent[j].substanceId);
+        if (r.level === "danger" || r.level === "unsafe") {
+          out.push({ a: recent[i], b: recent[j], risk: r });
+        }
+      }
+    }
+    return out;
+  }, [recent]);
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 lg:grid-cols-[400px_1fr]">
+      {/* Form */}
+      <aside className="lg:sticky lg:top-24 lg:self-start">
+        <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Plus className="h-5 w-5 text-aurora" style={{ color: "oklch(0.78 0.22 320)" }} />
+            Neuer Eintrag
+          </h2>
+
+          <Field label="Substanz">
+            <select
+              value={substanceId}
+              onChange={(e) => setSubstanceId(e.target.value)}
+              className="w-full rounded-lg bg-input px-3 py-2 text-sm"
+            >
+              {SUBSTANCES.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Dosis">
+              <input
+                inputMode="decimal"
+                value={dose}
+                onChange={(e) => setDose(e.target.value)}
+                placeholder="z.B. 100"
+                className="w-full rounded-lg bg-input px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="Einheit">
+              <select value={unit} onChange={(e) => setUnit(e.target.value)} className="w-full rounded-lg bg-input px-3 py-2 text-sm">
+                <option>mg</option><option>µg</option><option>g</option><option>ml</option><option>Stück</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Applikation">
+            <select value={route} onChange={(e) => setRoute(e.target.value)} className="w-full rounded-lg bg-input px-3 py-2 text-sm">
+              <option>oral</option><option>insufflated</option><option>inhaliert</option><option>vaporisiert</option>
+              <option>sublingual</option><option>i.v.</option><option>i.m.</option><option>rektal</option><option>transdermal</option>
+            </select>
+          </Field>
+
+          <Field label="Zeitpunkt">
+            <input
+              type="datetime-local"
+              value={when}
+              onChange={(e) => setWhen(e.target.value)}
+              className="w-full rounded-lg bg-input px-3 py-2 text-sm"
+            />
+          </Field>
+
+          <Field label={`Stimmung: ${["⛈","🌧","🌤","☀️","✨"][mood - 1]}`}>
+            <input
+              type="range" min={1} max={5} value={mood}
+              onChange={(e) => setMood(+e.target.value)}
+              className="w-full accent-primary"
+            />
+          </Field>
+
+          <Field label="Notizen">
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              placeholder="Set, Setting, Wirkungseintritt..."
+              className="w-full rounded-lg bg-input px-3 py-2 text-sm resize-none"
+            />
+          </Field>
+
+          <button
+            type="submit"
+            className="w-full rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow"
+          >
+            Speichern
+          </button>
+        </form>
+      </aside>
+
+      {/* Timeline */}
+      <section className="space-y-4">
+        {recentRisks.length > 0 && (
+          <div className="rounded-2xl border border-risk-danger/40 bg-risk-danger/10 p-5">
+            <div className="flex items-center gap-2 text-risk-danger font-semibold">
+              <AlertTriangle className="h-5 w-5" /> Aktive Risiko-Kombinationen (12h)
+            </div>
+            <ul className="mt-3 space-y-2 text-sm">
+              {recentRisks.map((r, i) => {
+                const sa = SUBSTANCES.find((s) => s.id === r.a.substanceId)!;
+                const sb = SUBSTANCES.find((s) => s.id === r.b.substanceId)!;
+                return (
+                  <li key={i} className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full glass px-2 py-0.5 text-xs">{sa.name}</span>
+                    <span>+</span>
+                    <span className="rounded-full glass px-2 py-0.5 text-xs">{sb.name}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs border ${RISK_META[r.risk.level].bg}`}>
+                      {RISK_META[r.risk.level].label}
+                    </span>
+                    <span className="text-muted-foreground">— {r.risk.reason}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        <h2 className="text-xl font-bold">Verlauf ({entries.length})</h2>
+        {entries.length === 0 ? (
+          <div className="rounded-2xl glass p-10 text-center text-muted-foreground">
+            Noch keine Einträge. Lege links deinen ersten an.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {entries.map((e) => {
+              const s = SUBSTANCES.find((x) => x.id === e.substanceId);
+              const d = new Date(e.timestamp);
+              return (
+                <li key={e.id} className="group rounded-2xl glass p-4 flex items-start gap-4">
+                  <div className="h-10 w-10 shrink-0 rounded-full bg-aurora animate-aurora glow" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-baseline gap-x-3">
+                      <span className="font-semibold">{s?.name ?? e.substanceId}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {e.dose} {e.unit} · {e.route}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      {d.toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}
+                      <span className="ml-2">{["⛈","🌧","🌤","☀️","✨"][(e.mood ?? 3) - 1]}</span>
+                    </div>
+                    {e.notes && <p className="mt-2 text-sm whitespace-pre-wrap">{e.notes}</p>}
+                  </div>
+                  <button
+                    onClick={() => remove(e.id)}
+                    className="opacity-0 group-hover:opacity-100 transition rounded-full p-2 hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+                    aria-label="Löschen"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="block text-xs font-medium text-muted-foreground mb-1">{label}</span>
+      {children}
+    </label>
+  );
+}
