@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2 } from "lucide-react";
+import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2, UserCircle2 } from "lucide-react";
+import { loadProfile, summarizeProfile } from "@/lib/profile";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -63,7 +64,20 @@ async function extractText(file: File): Promise<string> {
 }
 
 function ChatPage() {
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
+  const [profileSummary, setProfileSummary] = useState<string>("");
+  useEffect(() => {
+    const p = loadProfile();
+    setProfileSummary(p ? summarizeProfile(p) : "");
+  }, []);
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        body: () => ({ profile: profileSummary || undefined }),
+      }),
+    [profileSummary],
+  );
   const { messages, sendMessage, status, stop, error } = useChat({ transport });
 
   const [input, setInput] = useState("");
@@ -181,6 +195,17 @@ function ChatPage() {
           Stelle Fragen zu Substanzen, lade Dokumente hoch (txt, md, pdf, docx, pages…) oder sprich direkt mit der KI.
           Alles bleibt zwischen dir und dem KI-Endpunkt — kein Verlauf wird gespeichert.
         </p>
+        <div className="mt-2">
+          {profileSummary ? (
+            <Link to="/settings" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs text-secondary">
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil aktiv — KI kennt deinen Kontext
+            </Link>
+          ) : (
+            <Link to="/onboarding" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs">
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil einrichten für bessere Antworten
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Messages */}

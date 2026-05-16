@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Activity, BookOpen, FlaskConical, GitMerge, Home, MessageCircle } from "lucide-react";
+import { Activity, BookOpen, FlaskConical, GitMerge, Home, MessageCircle, Settings as SettingsIcon } from "lucide-react";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
@@ -8,6 +8,7 @@ const links = [
   { to: "/substances", label: "Substanzen", icon: BookOpen },
   { to: "/chat", label: "KI-Chat", icon: MessageCircle },
   { to: "/stats", label: "Statistik", icon: FlaskConical },
+  { to: "/settings", label: "Profil", icon: SettingsIcon },
 ] as const;
 
 export function Nav() {

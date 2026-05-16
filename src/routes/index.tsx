@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, BookOpen, GitMerge, Shield, Sparkles } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Activity, BookOpen, GitMerge, Shield, Sparkles, UserCircle2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
+import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -13,8 +15,46 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const navigate = useNavigate();
+  const [showPrompt, setShowPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!loadProfile() && !isDismissed()) {
+      setShowPrompt(true);
+    }
+  }, []);
+
   return (
     <div className="mx-auto max-w-6xl px-4">
+      {showPrompt && (
+        <div className="mt-6 rounded-2xl glass p-5 flex flex-col md:flex-row md:items-center gap-4 border border-primary/30">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-2 text-xs text-secondary">
+              <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
+            </div>
+            <h3 className="mt-1 text-lg font-semibold">Richte dein Profil ein — 2 Minuten.</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal, jederzeit löschbar.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate({ to: "/onboarding" })}
+              className="rounded-full bg-aurora animate-aurora px-5 py-2.5 text-sm font-semibold text-primary-foreground glow"
+            >
+              Starten
+            </button>
+            <button
+              onClick={() => { dismissOnboarding(); setShowPrompt(false); }}
+              className="rounded-full p-2 text-muted-foreground hover:text-foreground"
+              title="Später"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl glass mt-8 p-8 md:p-14">
         <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-aurora animate-aurora opacity-40 blur-3xl animate-float" />
