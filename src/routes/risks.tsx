@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Search, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Search, ShieldAlert, Clock, OctagonAlert, Activity, ListChecks } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
   RISK_META,
+  HARM_REDUCTION,
   assessPair,
   explainRisk,
   type RiskLevel,
