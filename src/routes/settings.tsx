@@ -16,7 +16,16 @@ import {
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
-  head: () => ({ meta: [{ title: "Einstellungen — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Einstellungen — Rave Safe, have Fun" },
+      { name: "description", content: "Verwalte dein lokales Profil, Notfallpass, Detail-Level und Datenschutz-Optionen. Alle Daten bleiben auf deinem Gerät." },
+      { property: "og:title", content: "Einstellungen — Rave Safe, have Fun" },
+      { property: "og:description", content: "Profil, Notfallpass und Datenschutz lokal verwalten." },
+      { property: "og:url", content: "https://ravesave.lovable.app/settings" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/settings" }],
+  }),
 });
 
 function SettingsPage() {

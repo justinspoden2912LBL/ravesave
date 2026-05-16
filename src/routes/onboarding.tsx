@@ -37,7 +37,16 @@ import { SUBSTANCES } from "@/lib/substances";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
-  head: () => ({ meta: [{ title: "Dein Profil — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dein Profil — Rave Safe, have Fun" },
+      { name: "description", content: "Richte in 2 Minuten dein lokales Profil ein: Erfahrung, Beruf, Notfallpass — damit Dosis-Hinweise und KI-Antworten zu dir passen." },
+      { property: "og:title", content: "Dein Profil — Rave Safe, have Fun" },
+      { property: "og:description", content: "Lokales Profil für personalisierte Harm-Reduction-Hinweise." },
+      { property: "og:url", content: "https://ravesave.lovable.app/onboarding" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/onboarding" }],
+  }),
 });
 
 const FREQS: { v: Frequency; label: string }[] = [
