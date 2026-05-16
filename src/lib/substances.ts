@@ -1322,6 +1322,67 @@ const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
   [pairKey("eutylone", "mdma")]: { level: "unsafe", reason: "Verstärkte serotonerge + kardiale Last, Schlafmangel." },
   [pairKey("n-ethyl-hexedrone", "cocaine")]: { level: "unsafe", reason: "Massive kardiovaskuläre Belastung." },
   [pairKey("4-cmc", "mdma")]: { level: "unsafe", reason: "Additive Monoamin-Freisetzung." },
+
+  // ───── Verschreibungsmittel-spezifische Risiken ─────
+  // Lean / Purple Drank
+  [pairKey("codeine", "promethazine")]: {
+    level: "danger",
+    reason: "'Lean / Purple Drank' – Atemdepression, mehrere Promi-Todesfälle dokumentiert.",
+    mechanism: "Opioide Atemdepression + sedierendes Antihistaminikum + α1-Blockade — Schutzreflexe weg, Atmung gedrückt.",
+    expert: "µ-Agonismus (Codein → Morphin via CYP2D6) + H1/M1/α1-Antagonismus → ungeschützte Apnoe + Aspirationsrisiko + QT-Verlängerung. Bei CYP2D6-Ultra-Rapid-Metabolizern Morphin-Spiegel unvorhersehbar hoch.",
+  },
+  [pairKey("codeine", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression.", mechanism: "Alkohol senkt zusätzlich Atemreiz; bei CYP2D6-URM kann Codein-Anteil als Morphin extrem ausfallen." },
+  [pairKey("codeine", "alprazolam")]: { level: "danger", reason: "Opioid + Benzo – Atemstillstand-Risiko." },
+
+  // Tilidin
+  [pairKey("tilidin", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression, häufige Notaufnahme-Konstellation." },
+  [pairKey("tilidin", "alprazolam")]: { level: "danger", reason: "Opioid + Benzo – Atemdepression." },
+  [pairKey("tilidin", "pregabalin")]: { level: "danger", reason: "Opioid + Pregabalin verstärkt Atemdepression deutlich – MHRA/FDA Warnung." },
+  [pairKey("tilidin", "heroin")]: { level: "danger", reason: "Doppel-Opioid – µ-Sättigung, OD-Risiko." },
+  [pairKey("tilidin", "tramadol")]: { level: "danger", reason: "Doppel-Opioid + zusätzliche serotonerge Last durch Tramadol." },
+
+  // Tapentadol
+  [pairKey("tapentadol", "mdma")]: { level: "danger", reason: "Serotonerge Last + µ-Atemdepression.", expert: "NRI-Komponente + MDMA-induzierter Monoamin-Efflux → erhöhtes Serotonin-Syndrom-Risiko, µ-vermittelte Atemdepression bleibt bestehen." },
+  [pairKey("tapentadol", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression." },
+
+  // Methylphenidat
+  [pairKey("methylphenidate", "mdma")]: { level: "unsafe", reason: "Additive sympathomimetische Last – Herz, Hyperthermie.", mechanism: "MPH hemmt DAT/NET, MDMA flutet Monoamine. Zusammen: deutlich erhöhter RR, HF und Körpertemperatur." },
+  [pairKey("methylphenidate", "amphetamine")]: { level: "unsafe", reason: "Doppel-Stim – kardiovaskuläre Belastung, Psychose-Risiko." },
+  [pairKey("methylphenidate", "cocaine")]: { level: "unsafe", reason: "Doppel-DAT-Wirkung – Vasokonstriktion + Arrhythmie-Risiko." },
+  [pairKey("methylphenidate", "alcohol")]: { level: "caution", reason: "Sedierung wird maskiert – Risiko Alkoholvergiftung." },
+
+  // Lisdexamfetamin verhält sich nach Spaltung wie Amphetamin
+  [pairKey("lisdexamfetamine", "mdma")]: { level: "unsafe", reason: "Wie Amphetamin + MDMA – Hyperthermie, Herz-Last." },
+  [pairKey("lisdexamfetamine", "tramadol")]: { level: "unsafe", reason: "Sympathomimetik + serotonerge Last + Krampfschwelle ↓." },
+
+  // Modafinil – moderat
+  [pairKey("modafinil", "mdma")]: { level: "caution", reason: "Verstärkt MDMA-Last leicht; CYP3A4-Induktion durch Modafinil verkürzt MDMA-Wirkung unvorhersehbar." },
+
+  // Z-Substanzen – wie Benzos behandeln
+  [pairKey("zolpidem", "alcohol")]: { level: "danger", reason: "GABA-Synergie + komplexe Schlafverhaltensweisen (Sleep-Driving)." },
+  [pairKey("zolpidem", "heroin")]: { level: "danger", reason: "GABA + µ-Opioid – Atemstillstand." },
+  [pairKey("zolpidem", "tilidin")]: { level: "danger", reason: "Opioid + Z-Hypnotikum – Atemdepression." },
+  [pairKey("zolpidem", "alprazolam")]: { level: "danger", reason: "Z + Benzo – additive GABA-Sedierung." },
+  [pairKey("zopiclone", "alcohol")]: { level: "danger", reason: "GABA-Synergie – Atemdepression, Bewusstlosigkeit." },
+  [pairKey("zopiclone", "heroin")]: { level: "danger", reason: "GABA + µ-Opioid – Atemstillstand." },
+
+  // Promethazin (sedierend, Anticholinergie, QT)
+  [pairKey("promethazine", "alcohol")]: { level: "unsafe", reason: "Verstärkte Sedierung + anticholinerge Last + QT-Verlängerung." },
+  [pairKey("promethazine", "heroin")]: { level: "danger", reason: "Atemdepression + α1-Blockade → Hypotonie + Aspiration." },
+  [pairKey("promethazine", "tilidin")]: { level: "danger", reason: "Opioid + sedierendes Antihistaminikum – wie 'Lean'-Konstellation." },
+  [pairKey("promethazine", "methylphenidate")]: { level: "unsafe", reason: "QT-Verlängerung + sympathomimetische Last – Arrhythmie-Risiko." },
+
+  // DXM (NMDA + SRI + Sigma1)
+  [pairKey("dxm", "mdma")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko durch DXM-SRI + MDMA-Flut.", expert: "DXM hemmt SERT zusätzlich, Dextrorphan ist NMDA-Antagonist. Mit MDMA potenziell schwere serotonerge Toxizität + Hyperthermie." },
+  [pairKey("dxm", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom + Krampfschwelle massiv gesenkt." },
+  [pairKey("dxm", "alcohol")]: { level: "unsafe", reason: "Übelkeit, Bewusstlosigkeit, Aspirationsgefahr – DXM macht erbrechen." },
+  [pairKey("dxm", "ketamine")]: { level: "unsafe", reason: "Doppelter NMDA-Antagonismus – sehr unvorhersehbare Dissoziation." },
+
+  // Lorazepam – wie Alprazolam-Risiken
+  [pairKey("lorazepam", "alcohol")]: { level: "danger", reason: "Benzo + Alkohol – Atemdepression, Blackouts." },
+  [pairKey("lorazepam", "heroin")]: { level: "danger", reason: "Benzo + µ-Opioid – sehr häufige Todesursache." },
+  [pairKey("lorazepam", "tilidin")]: { level: "danger", reason: "Opioid + Benzo – Atemstillstand-Risiko." },
+  [pairKey("lorazepam", "alprazolam")]: { level: "unsafe", reason: "Doppel-Benzo – nur additive Sedierung und Abhängigkeit, kein Nutzen." },
 };
 
 export function assessPair(idA: string, idB: string): RiskInfo {
