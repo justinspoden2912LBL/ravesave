@@ -1,11 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Activity, BookOpen, FlaskConical, GitMerge, Home } from "lucide-react";
+import { Activity, BookOpen, FlaskConical, GitMerge, Home, MessageCircle } from "lucide-react";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
   { to: "/log", label: "Protokoll", icon: Activity },
   { to: "/mix", label: "Mix-Check", icon: GitMerge },
   { to: "/substances", label: "Substanzen", icon: BookOpen },
+  { to: "/chat", label: "KI-Chat", icon: MessageCircle },
   { to: "/stats", label: "Statistik", icon: FlaskConical },
 ] as const;
 
