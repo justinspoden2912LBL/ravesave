@@ -1590,3 +1590,47 @@ export const CATEGORY_LABEL: Record<SubstanceCategory, string> = {
   alcohol: "Alkohol",
   other: "Andere",
 };
+
+export type SuperCategory =
+  | "hallucinogen"
+  | "stimulant_group"
+  | "depressant_group"
+  | "opioid_group"
+  | "empathogen_group"
+  | "cannabinoid_group"
+  | "other_group";
+
+export const SUPER_CATEGORY_LABEL: Record<SuperCategory, string> = {
+  hallucinogen: "Halluzinogene",
+  stimulant_group: "Stimulanzien",
+  depressant_group: "Depressiva",
+  opioid_group: "Opioide",
+  empathogen_group: "Empathogene",
+  cannabinoid_group: "Cannabinoide",
+  other_group: "Andere",
+};
+
+export const CATEGORY_TO_SUPER: Record<SubstanceCategory, SuperCategory> = {
+  psychedelic: "hallucinogen",
+  dissociative: "hallucinogen",
+  stimulant: "stimulant_group",
+  cathinone: "stimulant_group",
+  depressant: "depressant_group",
+  benzodiazepine: "depressant_group",
+  alcohol: "depressant_group",
+  neuroleptic: "depressant_group",
+  opioid: "opioid_group",
+  empathogen: "empathogen_group",
+  cannabinoid: "cannabinoid_group",
+  other: "other_group",
+};
+
+export const SUPER_CATEGORY_ORDER: SuperCategory[] = [
+  "hallucinogen",
+  "empathogen_group",
+  "stimulant_group",
+  "depressant_group",
+  "opioid_group",
+  "cannabinoid_group",
+  "other_group",
+];
