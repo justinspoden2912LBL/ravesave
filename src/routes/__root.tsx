@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { Nav, Footer } from "../components/Nav";
+import { EmergencyButton } from "../components/EmergencyButton";
 
 function NotFoundComponent() {
   return (
@@ -120,6 +121,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <Footer />
+        <EmergencyButton />
       </div>
     </QueryClientProvider>
   );
