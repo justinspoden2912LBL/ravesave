@@ -1,5 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Activity, BookOpen, GitMerge, Shield, Sparkles, UserCircle2, X } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  ChevronDown,
+  GitMerge,
+  HeartPulse,
+  MessageCircle,
+  Shield,
+  ShieldAlert,
+  Sparkles,
+  UserCircle2,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
@@ -8,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "trace — Harm Reduction Tracker" },
+      { title: "Rave Safe, Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen." },
     ],
   }),
@@ -65,9 +78,12 @@ function Home() {
             <Shield className="h-3.5 w-3.5 text-secondary" />
             <span>100% lokal — keine Daten verlassen dein Gerät</span>
           </div>
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight">
-            Dein <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Bewusstsein</span><br />
-            verdient ein Logbuch.
+          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+            <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
+            <span className="text-foreground">, </span>
+            <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
+            <br />
+            <span className="text-foreground/80 text-2xl md:text-4xl font-medium">Wissen statt Bauchgefühl.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-muted-foreground text-lg">
             Protokolliere deinen Konsum, prüfe Mischkonsum-Risiken in Echtzeit
@@ -91,26 +107,51 @@ function Home() {
         </div>
       </section>
 
-      {/* Feature cards */}
-      <section className="grid gap-4 md:grid-cols-3 mt-8">
-        <FeatureCard
-          to="/log"
-          icon={Activity}
-          title="Protokoll"
-          desc="Zeitpunkt, Substanz, Dosis, Set & Setting. Mit Stimmungs-Tracking."
-        />
-        <FeatureCard
-          to="/mix"
-          icon={GitMerge}
-          title="Mischkonsum-Check"
-          desc="Ampelsystem für 2+ Substanzen — basierend auf TripSit & EMCDDA."
-        />
-        <FeatureCard
-          to="/substances"
-          icon={BookOpen}
-          title="Substanz-Wiki"
-          desc="Pharmakologie, Dosierung, Studienlinks. Klassische Drogen, Cathinone, Medikamente."
-        />
+      {/* Category hub — kompakt, klappt einzeln auf */}
+      <section className="mt-8 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
+            Was möchtest du tun?
+          </h2>
+          <span className="text-[11px] text-muted-foreground">Tippe zum Aufklappen</span>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <CategoryCard
+            icon={Activity}
+            title="Tracken"
+            subtitle="Konsum & Stimmung dokumentieren"
+            items={[
+              { to: "/log", icon: Activity, label: "Eintrag anlegen", desc: "Substanz, Dosis, Set & Setting." },
+              { to: "/stats", icon: Sparkles, label: "Statistik", desc: "Muster, Häufigkeiten, Trends." },
+            ]}
+          />
+          <CategoryCard
+            icon={ShieldAlert}
+            title="Risiko prüfen"
+            subtitle="Bevor du kombinierst"
+            items={[
+              { to: "/mix", icon: GitMerge, label: "Mischkonsum-Check", desc: "Ampel für 2+ Substanzen." },
+              { to: "/risks", icon: ShieldAlert, label: "Risiko-Übersicht", desc: "Alle Paarungen pro Substanz." },
+            ]}
+          />
+          <CategoryCard
+            icon={BookOpen}
+            title="Lernen"
+            subtitle="Pharmakologie verstehen"
+            items={[
+              { to: "/substances", icon: BookOpen, label: "Substanz-Wiki", desc: `${SUBSTANCES.length}+ Substanzen, gruppiert.` },
+              { to: "/chat", icon: MessageCircle, label: "KI-Chat", desc: "Fragen zur Studienlage stellen." },
+            ]}
+          />
+          <CategoryCard
+            icon={HeartPulse}
+            title="Notfall & Profil"
+            subtitle="Vorbereitet sein"
+            items={[
+              { to: "/settings", icon: UserCircle2, label: "Profil & Notfallpass", desc: "Erfahrung, Beruf, Notfallplan." },
+            ]}
+          />
+        </div>
       </section>
 
       {/* Principles */}
@@ -137,17 +178,64 @@ function Home() {
   );
 }
 
-function FeatureCard({ to, icon: Icon, title, desc }: any) {
+type CatItem = { to: string; icon: LucideIcon; label: string; desc: string };
+
+function CategoryCard({
+  icon: Icon,
+  title,
+  subtitle,
+  items,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+  items: CatItem[];
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <Link
-      to={to}
-      className="group relative overflow-hidden rounded-2xl glass p-6 transition-all hover:scale-[1.02] hover:glow"
+    <div
+      className={`rounded-2xl glass overflow-hidden transition-all ${
+        open ? "ring-1 ring-primary/40" : ""
+      }`}
     >
-      <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-aurora opacity-0 blur-2xl transition-opacity group-hover:opacity-40" />
-      <Icon className="h-6 w-6 text-aurora" style={{ color: "oklch(0.78 0.22 320)" }} />
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
-    </Link>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/20 transition"
+        aria-expanded={open}
+      >
+        <div className="h-10 w-10 shrink-0 rounded-xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold">{title}</div>
+          <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <ul className="px-3 pb-3 space-y-2 border-t border-border/40 pt-3">
+          {items.map((it) => (
+            <li key={it.to}>
+              <Link
+                to={it.to}
+                className="group flex items-start gap-3 rounded-xl bg-background/40 border border-border/40 px-3 py-2.5 hover:bg-muted/30 transition"
+              >
+                <it.icon className="h-4 w-4 mt-0.5 text-aurora shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-sm font-medium group-hover:text-foreground">{it.label}</div>
+                  <div className="text-[11px] text-muted-foreground">{it.desc}</div>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

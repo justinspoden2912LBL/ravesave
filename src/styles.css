@@ -132,6 +132,13 @@
   .glow {
     box-shadow: var(--shadow-glow);
   }
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
   .animate-aurora {
     background-size: 200% 200%;
     animation: aurora-shift 12s ease infinite;
