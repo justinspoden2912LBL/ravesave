@@ -1,14 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Search, ShieldAlert } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
   RISK_META,
   assessPair,
+  explainRisk,
   type RiskLevel,
   type SubstanceCategory,
 } from "@/lib/substances";
+import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/risks")({
   component: RisksPage,
