@@ -107,26 +107,51 @@ function Home() {
         </div>
       </section>
 
-      {/* Feature cards */}
-      <section className="grid gap-4 md:grid-cols-3 mt-8">
-        <FeatureCard
-          to="/log"
-          icon={Activity}
-          title="Protokoll"
-          desc="Zeitpunkt, Substanz, Dosis, Set & Setting. Mit Stimmungs-Tracking."
-        />
-        <FeatureCard
-          to="/mix"
-          icon={GitMerge}
-          title="Mischkonsum-Check"
-          desc="Ampelsystem für 2+ Substanzen — basierend auf TripSit & EMCDDA."
-        />
-        <FeatureCard
-          to="/substances"
-          icon={BookOpen}
-          title="Substanz-Wiki"
-          desc="Pharmakologie, Dosierung, Studienlinks. Klassische Drogen, Cathinone, Medikamente."
-        />
+      {/* Category hub — kompakt, klappt einzeln auf */}
+      <section className="mt-8 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
+            Was möchtest du tun?
+          </h2>
+          <span className="text-[11px] text-muted-foreground">Tippe zum Aufklappen</span>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <CategoryCard
+            icon={Activity}
+            title="Tracken"
+            subtitle="Konsum & Stimmung dokumentieren"
+            items={[
+              { to: "/log", icon: Activity, label: "Eintrag anlegen", desc: "Substanz, Dosis, Set & Setting." },
+              { to: "/stats", icon: Sparkles, label: "Statistik", desc: "Muster, Häufigkeiten, Trends." },
+            ]}
+          />
+          <CategoryCard
+            icon={ShieldAlert}
+            title="Risiko prüfen"
+            subtitle="Bevor du kombinierst"
+            items={[
+              { to: "/mix", icon: GitMerge, label: "Mischkonsum-Check", desc: "Ampel für 2+ Substanzen." },
+              { to: "/risks", icon: ShieldAlert, label: "Risiko-Übersicht", desc: "Alle Paarungen pro Substanz." },
+            ]}
+          />
+          <CategoryCard
+            icon={BookOpen}
+            title="Lernen"
+            subtitle="Pharmakologie verstehen"
+            items={[
+              { to: "/substances", icon: BookOpen, label: "Substanz-Wiki", desc: `${SUBSTANCES.length}+ Substanzen, gruppiert.` },
+              { to: "/chat", icon: MessageCircle, label: "KI-Chat", desc: "Fragen zur Studienlage stellen." },
+            ]}
+          />
+          <CategoryCard
+            icon={HeartPulse}
+            title="Notfall & Profil"
+            subtitle="Vorbereitet sein"
+            items={[
+              { to: "/settings", icon: UserCircle2, label: "Profil & Notfallpass", desc: "Erfahrung, Beruf, Notfallplan." },
+            ]}
+          />
+        </div>
       </section>
 
       {/* Principles */}
