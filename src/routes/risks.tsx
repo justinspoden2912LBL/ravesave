@@ -219,23 +219,14 @@ function RisksPage() {
                     <HarmReductionPanel level={lvl} substanceId={selected.id} />
                     <ul className="grid gap-2 md:grid-cols-2 mt-4">
                       {items.map(({ other, risk }) => (
-                        <li
+                        <PairingCard
                           key={other.id}
-                          className="rounded-xl bg-background/40 backdrop-blur-sm p-3 border border-border/50"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <button
-                              onClick={() => setSelectedId(other.id)}
-                              className="font-medium text-sm hover:underline text-left"
-                            >
-                              + {other.name}
-                            </button>
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                              {CATEGORY_LABEL[other.category]}
-                            </span>
-                          </div>
-                          <RiskExplain risk={risk} detail={detail} />
-                        </li>
+                          self={selected}
+                          other={other}
+                          risk={risk}
+                          detail={detail}
+                          onSelectOther={() => setSelectedId(other.id)}
+                        />
                       ))}
                     </ul>
                   </div>
