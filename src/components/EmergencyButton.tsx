@@ -163,10 +163,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     intro: "Meistens psychisch, nicht akut lebensgefährlich — solange Atmung und Bewusstsein stabil sind.",
     steps: [
       { do: "Ruhigen, vertrauten Ort aufsuchen", detail: "Weg von Crowd, Stroboskop, lauter Musik." },
-      { do: "Atem führen: 4 Sek ein, 6 Sek aus", detail: "Gemeinsam atmen, sanft Hand auf den Bauch." },
-      { do: "Sätze wie 'Das geht vorbei. Du bist sicher. Ich bleibe da.'", detail: "Talkdown — nicht diskutieren, nicht widersprechen." },
+      { do: "Atem führen: 4 Sek ein, 6 Sek aus", detail: "Gemeinsam atmen, sanft Hand auf den Bauch.", illus: "breath" },
+      { do: "Sätze wie 'Das geht vorbei. Du bist sicher. Ich bleibe da.'", detail: "Talkdown — nicht diskutieren, nicht widersprechen.", illus: "talkdown" },
       { do: "Wasser, evtl. Süßes, warme Decke", detail: "Erdung über den Körper." },
-      { do: "Bei Atemnot, Krampf, Bewusstlosigkeit → 112", detail: "Auch bei Suizidgedanken sofort Hilfe holen." },
+      { do: "Bei Atemnot, Krampf, Bewusstlosigkeit → 112", detail: "Auch bei Suizidgedanken sofort Hilfe holen.", illus: "phone112" },
     ],
     followup: { label: "Drogenknigge & Awareness", to: "/knigge" },
   },
@@ -175,6 +175,7 @@ const GUIDES: Record<SymptomId, Guide> = {
 export function EmergencyButton() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<SymptomId | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   function reset() {
     setActive(null);
