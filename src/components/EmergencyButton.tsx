@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Siren,
@@ -12,6 +12,10 @@ import {
   Frown,
   Activity,
   ArrowLeft,
+  IdCard,
+  Pencil,
+  Save,
+  Trash2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -22,6 +26,15 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  emptyEmergencyInfo,
+  emergencyInfoSchema,
+  hasAnyEmergencyInfo,
+  loadEmergencyInfo,
+  saveEmergencyInfo,
+  clearEmergencyInfo,
+  type EmergencyInfo,
+} from "@/lib/emergencyInfo";
 
 const SCENARIOS: { label: string; to: string; hint: string }[] = [
   { label: "Opioid-Überdosis (Atemstillstand)", to: "/substances", hint: "Naloxon, Atemspende" },
@@ -199,6 +212,9 @@ export function EmergencyButton() {
           <Phone className="h-6 w-6" /> 112 anrufen
         </a>
 
+        {/* Medical ID — immer sichtbar, damit Ersthelfer:innen Infos finden */}
+        <MedicalCard />
+
         {!guide && (
           <>
             <section className="space-y-2">
@@ -334,5 +350,179 @@ export function EmergencyButton() {
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function MedicalCard() {
+  const [info, setInfo] = useState<EmergencyInfo>(emptyEmergencyInfo());
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<EmergencyInfo>(emptyEmergencyInfo());
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loaded = loadEmergencyInfo();
+    setInfo(loaded);
+    setDraft(loaded);
+    if (!hasAnyEmergencyInfo(loaded)) setEditing(true);
+  }, []);
+
+  function startEdit() {
+    setDraft(info);
+    setError(null);
+    setEditing(true);
+  }
+  function cancel() {
+    setDraft(info);
+    setError(null);
+    setEditing(false);
+  }
+  function save() {
+    const parsed = emergencyInfoSchema.safeParse(draft);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Eingabe ungültig");
+      return;
+    }
+    saveEmergencyInfo(parsed.data);
+    setInfo(parsed.data);
+    setEditing(false);
+    setError(null);
+  }
+  function reset() {
+    if (!confirm("Notfall-Infos wirklich löschen?")) return;
+    clearEmergencyInfo();
+    const empty = emptyEmergencyInfo();
+    setInfo(empty);
+    setDraft(empty);
+    setEditing(true);
+  }
+
+  const has = hasAnyEmergencyInfo(info);
+
+  return (
+    <section className="rounded-2xl bg-secondary/10 ring-1 ring-secondary/30 p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <IdCard className="h-4 w-4 text-secondary" /> Medizinische Notfall-Karte
+        </h3>
+        {!editing && (
+          <button
+            onClick={startEdit}
+            className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
+          >
+            <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
+          </button>
+        )}
+      </div>
+
+      {!editing && (
+        has ? (
+          <div className="space-y-2 text-sm">
+            <p className="text-xs text-muted-foreground">
+              Zeige diesen Bereich Ersthelfer:innen oder dem Rettungsdienst.
+            </p>
+            {(info.contactName || info.contactPhone) && (
+              <div className="rounded-lg bg-background/50 p-2.5">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">Notfallkontakt</div>
+                <div className="font-medium">
+                  {info.contactName}
+                  {info.contactRelation && <span className="text-muted-foreground"> · {info.contactRelation}</span>}
+                </div>
+                {info.contactPhone && (
+                  <a href={`tel:${info.contactPhone.replace(/[^\d+]/g, "")}`} className="text-secondary underline">
+                    {info.contactPhone}
+                  </a>
+                )}
+              </div>
+            )}
+            <dl className="grid grid-cols-1 gap-1.5 text-sm">
+              {info.bloodType && <Row label="Blutgruppe" value={info.bloodType} />}
+              {info.allergies && <Row label="Allergien" value={info.allergies} highlight />}
+              {info.conditions && <Row label="Vorerkrankungen" value={info.conditions} highlight />}
+              {info.medications && <Row label="Aktuelle Medikamente" value={info.medications} highlight />}
+              {info.notes && <Row label="Sonstiges" value={info.notes} />}
+            </dl>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Noch nichts hinterlegt. Trag Allergien, Vorerkrankungen und einen Notfallkontakt ein — alles bleibt lokal in deinem Browser.
+          </p>
+        )
+      )}
+
+      {editing && (
+        <div className="space-y-2.5 text-sm">
+          <div className="grid grid-cols-2 gap-2">
+            <Field label="Name Kontakt" value={draft.contactName ?? ""} max={80} onChange={(v) => setDraft({ ...draft, contactName: v })} />
+            <Field label="Beziehung" value={draft.contactRelation ?? ""} max={40} placeholder="z. B. Partnerin" onChange={(v) => setDraft({ ...draft, contactRelation: v })} />
+          </div>
+          <Field label="Telefon Kontakt" value={draft.contactPhone ?? ""} max={40} placeholder="+49 …" onChange={(v) => setDraft({ ...draft, contactPhone: v })} />
+          <Field label="Blutgruppe" value={draft.bloodType ?? ""} max={8} placeholder="0+, A−, …" onChange={(v) => setDraft({ ...draft, bloodType: v })} />
+          <Area label="Allergien" value={draft.allergies ?? ""} max={500} placeholder="z. B. Penicillin, Erdnüsse" onChange={(v) => setDraft({ ...draft, allergies: v })} />
+          <Area label="Vorerkrankungen" value={draft.conditions ?? ""} max={500} placeholder="z. B. Epilepsie, Asthma, Herzfehler" onChange={(v) => setDraft({ ...draft, conditions: v })} />
+          <Area label="Aktuelle Medikamente" value={draft.medications ?? ""} max={500} placeholder="z. B. SSRI Sertralin 50 mg" onChange={(v) => setDraft({ ...draft, medications: v })} />
+          <Area label="Sonstiges" value={draft.notes ?? ""} max={500} placeholder="Organspende-Ausweis, Sprache, …" onChange={(v) => setDraft({ ...draft, notes: v })} />
+
+          {error && <p className="text-xs text-destructive">{error}</p>}
+
+          <div className="flex flex-wrap gap-2 pt-1">
+            <button onClick={save} className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:brightness-110">
+              <Save className="h-3.5 w-3.5" /> Speichern
+            </button>
+            <button onClick={cancel} className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/40">
+              Abbrechen
+            </button>
+            {has && (
+              <button onClick={reset} className="ml-auto inline-flex items-center gap-1 rounded-full bg-destructive/15 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/25">
+                <Trash2 className="h-3.5 w-3.5" /> Löschen
+              </button>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Daten bleiben ausschließlich lokal in diesem Browser. Kein Server, kein Konto.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-lg p-2.5 ${highlight ? "bg-destructive/10 ring-1 ring-destructive/20" : "bg-background/50"}`}>
+      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className={`whitespace-pre-wrap ${highlight ? "font-medium text-foreground" : ""}`}>{value}</div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, max, placeholder }: { label: string; value: string; onChange: (v: string) => void; max: number; placeholder?: string }) {
+  return (
+    <label className="block space-y-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <input
+        type="text"
+        value={value}
+        maxLength={max}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg bg-background/60 px-2.5 py-1.5 text-sm ring-1 ring-border focus:ring-secondary outline-none"
+      />
+    </label>
+  );
+}
+
+function Area({ label, value, onChange, max, placeholder }: { label: string; value: string; onChange: (v: string) => void; max: number; placeholder?: string }) {
+  return (
+    <label className="block space-y-1">
+      <span className="text-xs text-muted-foreground">{label} <span className="text-[10px]">({value.length}/{max})</span></span>
+      <textarea
+        value={value}
+        maxLength={max}
+        placeholder={placeholder}
+        rows={2}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full resize-y rounded-lg bg-background/60 px-2.5 py-1.5 text-sm ring-1 ring-border focus:ring-secondary outline-none"
+      />
+    </label>
   );
 }
