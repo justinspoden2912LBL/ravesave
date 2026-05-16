@@ -6,11 +6,23 @@ export type Frequency = "never" | "tried_once" | "rare" | "monthly" | "weekly" |
 export type RouteForm = "oral" | "nasal" | "inhaled" | "smoked" | "rectal" | "iv" | "im" | "sublingual" | "transdermal";
 export type Motivation = "fun" | "curiosity" | "coping" | "selfmed" | "performance" | "connection" | "escape" | "research";
 
+/** Selbsteinschätzung Pharmakologie-/Safer-Use-Wissen. */
+export type ExpertiseLevel = "none" | "casual" | "experienced" | "expert";
+/** Beruflicher Hintergrund — beeinflusst Detailtiefe und Fachsprache. */
+export type Profession =
+  | "none"
+  | "medical"        // Arzt/Ärztin, Pflege, Rettungsdienst
+  | "pharmacy"       // Apotheker:in, PTA
+  | "psychology"     // Psychotherapie, Psychiatrie
+  | "harm_reduction" // Drogenhilfe, Streetwork, Checkit-Projekte
+  | "research"       // Pharmakologie / Toxikologie
+  | "other";
+
 export interface SubstanceExperience {
   substance: string;
   frequency: Frequency;
   routes: RouteForm[];
-  lastUse?: string; // ISO date (optional)
+  lastUse?: string;
 }
 
 export interface UserProfile {
@@ -20,19 +32,19 @@ export interface UserProfile {
   nickname?: string;
   ageRange?: "u18" | "18-24" | "25-34" | "35-44" | "45+";
   bodyWeightKg?: number;
+  /** Wie tief sollen Erklärungen gehen? */
+  expertiseLevel?: ExpertiseLevel;
+  /** Beruflicher Kontext (optional, lokal). */
+  profession?: Profession;
   experiences: SubstanceExperience[];
   contexts: UsageContext[];
   motivations: Motivation[];
-  // Frequency / pattern
   typicalInterval?: "daily" | "weekly" | "monthly" | "occasional" | "rare";
-  // Health
-  medications: string; // free text
-  preexistingConditions: string; // free text (mental + physical)
+  medications: string;
+  preexistingConditions: string;
   pastAddiction: "none" | "past" | "current" | "unsure";
   inTreatment: boolean;
-  // Goals
-  saferUseGoals: string; // free text
-  // Consent
+  saferUseGoals: string;
   shareWithAI: boolean;
 }
 
