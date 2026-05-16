@@ -22,12 +22,16 @@ import {
   saveProfile,
   dismissOnboarding,
   loadProfile,
+  PROFESSION_LABEL,
+  EXPERTISE_LABEL,
   type UserProfile,
   type SubstanceExperience,
   type Frequency,
   type RouteForm,
   type UsageContext,
   type Motivation,
+  type Profession,
+  type ExpertiseLevel,
 } from "@/lib/profile";
 import { SUBSTANCES } from "@/lib/substances";
 
