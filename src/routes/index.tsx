@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "Rave Safe, Fun — Harm Reduction Companion" },
+      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen." },
     ],
   }),
