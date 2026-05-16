@@ -29,7 +29,7 @@ export function Nav() {
         <Link to="/" className="flex items-center gap-2 shrink-0">
           <div className="h-8 w-8 rounded-full bg-aurora animate-aurora glow" />
           <span className="text-base sm:text-lg font-bold tracking-tight whitespace-nowrap">
-            Rave Safe<span className="text-aurora">,</span> Fun
+            Rave Safe<span className="text-aurora">,</span> have Fun
           </span>
         </Link>
 
