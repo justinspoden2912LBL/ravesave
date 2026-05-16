@@ -277,3 +277,62 @@ function FilterChip({
     </button>
   );
 }
+
+const DETAIL_LABEL: Record<DetailLevel, string> = {
+  lay: "Einfach",
+  intermediate: "Mechanismus",
+  expert: "Fachebene",
+};
+
+function DetailToggle({
+  value,
+  onChange,
+  profileDetail,
+}: {
+  value: DetailLevel;
+  onChange: (v: DetailLevel) => void;
+  profileDetail: DetailLevel;
+}) {
+  const levels: DetailLevel[] = ["lay", "intermediate", "expert"];
+  return (
+    <div className="flex items-center gap-0.5 rounded-full glass p-0.5 text-xs">
+      {levels.map((l) => (
+        <button
+          key={l}
+          onClick={() => onChange(l)}
+          title={l === profileDetail ? "Aus deinem Profil" : undefined}
+          className={`px-2.5 py-1 rounded-full transition ${
+            value === l ? "bg-aurora animate-aurora text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {DETAIL_LABEL[l]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function RiskExplain({
+  risk,
+  detail,
+}: {
+  risk: import("@/lib/substances").RiskInfo;
+  detail: DetailLevel;
+}) {
+  const ex = explainRisk(risk, detail);
+  return (
+    <>
+      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{ex.headline}</p>
+      {ex.detail && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground/80 leading-relaxed border-l-2 border-border pl-2">
+          <span className="font-semibold text-foreground/70">Mechanismus:</span> {ex.detail}
+        </p>
+      )}
+      {ex.expert && ex.expert !== ex.detail && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground/80 leading-relaxed border-l-2 border-secondary/60 pl-2">
+          <span className="font-semibold text-secondary">Fachebene:</span> {ex.expert}
+        </p>
+      )}
+    </>
+  );
+}
