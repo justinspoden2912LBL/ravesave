@@ -921,6 +921,156 @@ export const SUBSTANCES: Substance[] = [
     evidence: [{ label: "Haschimi 2022 – ADB-BUTINACA Marktanalyse", url: "https://pubmed.ncbi.nlm.nih.gov/35385893/" }],
     warnings: ["Tachykardie, Psychose, Krampfanfälle", "Nicht mit Cannabis vergleichbar"],
   },
+
+  // ───── Verschreibungspflichtige Medikamente mit Missbrauchspotenzial ─────
+  {
+    id: "tilidin",
+    name: "Tilidin",
+    aliases: ["Valoron", "Tilidin/Naloxon"],
+    category: "opioid",
+    shortDescription: "Prodrug-Opioid (Valoron N enthält Naloxon als Abuse-Deterrent).",
+    mechanism: "Prodrug → Nortilidin (µ-Agonist). Bei oraler Einnahme von Tilidin/Naloxon wird Naloxon hepatisch weitgehend metabolisiert; bei i.v.-Missbrauch blockiert es den µ-Rezeptor.",
+    onset: "10–30 min (oral)",
+    duration: "4–6 h",
+    doses: [{ route: "oral", light: "50 mg", common: "100 mg", strong: "150–200 mg", notes: "Therapeutisch 50–100 mg alle 4 h" }],
+    evidence: [
+      { label: "Fachinfo Valoron N", url: "https://www.gelbe-liste.de/produkte/Valoron-N-50mg-4mg_513051" },
+      { label: "BfArM – Tilidin Missbrauchspotenzial", url: "https://www.bfarm.de/" },
+    ],
+    warnings: ["Hohes Missbrauchs- und Abhängigkeitspotenzial trotz Naloxon-Anteil", "Krampfschwelle ↓ in hohen Dosen", "Kreuztoleranz zu anderen µ-Opioiden", "Entzug klassisch opioid (Schwitzen, RLS, Diarrhö)"],
+  },
+  {
+    id: "codeine",
+    name: "Codein",
+    aliases: ["Codipront", "Lean (mit Promethazin)"],
+    category: "opioid",
+    shortDescription: "Schwaches Opioid, häufig in Hustensäften — Hauptbestandteil von 'Lean/Purple Drank'.",
+    mechanism: "Prodrug, CYP2D6 demethyliert ~10% zu Morphin. Bei CYP2D6-Ultra-Rapid-Metabolizern stark erhöhte Wirkung/Toxizität.",
+    onset: "30–60 min",
+    duration: "4–6 h",
+    doses: [{ route: "oral", light: "20–40 mg", common: "60–120 mg", strong: "150–300 mg", notes: "Therapeutisch 30–60 mg" }],
+    evidence: [{ label: "EMA – Codein bei Kindern (CYP2D6)", url: "https://www.ema.europa.eu/en/medicines/human/referrals/codeine-containing-medicinal-products" }],
+    warnings: ["CYP2D6-Polymorphismus → unvorhersehbare Wirkung", "Mit Promethazin ('Lean') deutlich erhöhte Atemdepressions-Gefahr", "Obstipation, Histamin-Freisetzung"],
+  },
+  {
+    id: "tapentadol",
+    name: "Tapentadol",
+    aliases: ["Palexia", "Nucynta"],
+    category: "opioid",
+    shortDescription: "Atypisches Opioid: µ-Agonist + Noradrenalin-Reuptake-Hemmer.",
+    mechanism: "µ-Agonist (schwächer als Morphin) + NRI. Kein aktiver Metabolit, kein CYP2D6-Effekt.",
+    onset: "30 min",
+    duration: "4–6 h (Retard: 12 h)",
+    doses: [{ route: "oral", light: "50 mg", common: "75–100 mg", strong: "150–200 mg" }],
+    evidence: [{ label: "Tzschentke 2007 – Tapentadol Pharmakologie", url: "https://pubmed.ncbi.nlm.nih.gov/17431135/" }],
+    warnings: ["Krampfschwelle ↓", "MAOI kontraindiziert", "Wachsendes Missbrauchsprofil"],
+  },
+  {
+    id: "methylphenidate",
+    name: "Methylphenidat",
+    aliases: ["Ritalin", "Concerta", "Medikinet"],
+    category: "stimulant",
+    shortDescription: "ADHS-Medikament, Stim mit hohem Missbrauchspotenzial (insb. nasal/i.v.).",
+    mechanism: "Dopamin- und Noradrenalin-Reuptake-Hemmer (DAT/NET). Keine Freisetzung wie Amphetamine.",
+    onset: "20–60 min (oral); 2–5 min (nasal)",
+    duration: "3–5 h (IR); 8–12 h (Retard)",
+    doses: [{ route: "oral", light: "5–10 mg", common: "10–30 mg", strong: "30–60 mg", notes: "Therapeutisch titriert" }],
+    evidence: [{ label: "Volkow 2002 – MPH Dopamin-Bindung (PET)", url: "https://pubmed.ncbi.nlm.nih.gov/11823252/" }],
+    warnings: ["Retardpräparate niemals zerstoßen — Dose-Dumping mit kardialem Risiko", "Vasokonstriktion, RR/HF ↑", "Toleranz, Schlafentzug, Psychose-Risiko bei Dauergebrauch"],
+  },
+  {
+    id: "lisdexamfetamine",
+    name: "Lisdexamfetamin",
+    aliases: ["Elvanse", "Vyvanse"],
+    category: "stimulant",
+    shortDescription: "Amphetamin-Prodrug (L-Lysin-Konjugat), nur oral aktiv — Abuse-Deterrent-Design.",
+    mechanism: "Wird im Blut durch Erythrozyten-Hydrolyse zu D-Amphetamin gespalten. Geschwindigkeit der Spaltung limitiert Peaks.",
+    onset: "60–120 min",
+    duration: "10–13 h",
+    doses: [{ route: "oral", light: "20–30 mg", common: "40–60 mg", strong: "70 mg" }],
+    evidence: [{ label: "Pennick 2010 – Lisdexamfetamin Pharmakokinetik", url: "https://pubmed.ncbi.nlm.nih.gov/20881878/" }],
+    warnings: ["Nasal/IV bringt keinen schnelleren Peak (Prodrug-Spaltung passiert im Blut)", "Klassisches Amphetamin-Risiko bei Überdosis"],
+  },
+  {
+    id: "modafinil",
+    name: "Modafinil",
+    aliases: ["Vigil", "Provigil"],
+    category: "stimulant",
+    shortDescription: "Wachhaltendes Mittel (Narkolepsie), geringes aber relevantes Missbrauchspotenzial.",
+    mechanism: "Schwacher DAT-Hemmer + Wirkung auf Orexin/Histamin-Systeme. Geringe euphorisierende Wirkung.",
+    onset: "30–60 min",
+    duration: "10–15 h",
+    doses: [{ route: "oral", light: "50–100 mg", common: "100–200 mg", strong: "200–400 mg" }],
+    evidence: [{ label: "Volkow 2009 – Modafinil DAT-Bindung", url: "https://pubmed.ncbi.nlm.nih.gov/19293415/" }],
+    warnings: ["Reduziert Wirksamkeit hormoneller Kontrazeptiva (CYP3A4-Induktion)", "Kopfschmerz, Angst, Schlaflosigkeit", "Stevens-Johnson-Syndrom (selten)"],
+  },
+  {
+    id: "zolpidem",
+    name: "Zolpidem",
+    aliases: ["Stilnox", "Bikalm"],
+    category: "depressant",
+    shortDescription: "Z-Substanz, GABAerges Hypnotikum mit ausgeprägtem Missbrauchspotenzial.",
+    mechanism: "Selektiver Agonist an α1-Untereinheit des GABA_A-Rezeptors.",
+    onset: "15–30 min",
+    duration: "4–6 h",
+    doses: [{ route: "oral", light: "5 mg", common: "10 mg", strong: "20 mg", notes: "Therapeutisch max. 10 mg" }],
+    evidence: [{ label: "Sanger 2004 – Z-Drugs Pharmakologie", url: "https://pubmed.ncbi.nlm.nih.gov/15102352/" }],
+    warnings: ["Komplexe Schlafverhaltensweisen (Schlafwandeln, Sleep-Driving, Sleep-Eating)", "Anterograde Amnesie", "Schnelle Toleranz- und Abhängigkeitsentwicklung", "Atemdepression mit Opioiden/Alkohol"],
+  },
+  {
+    id: "zopiclone",
+    name: "Zopiclon",
+    aliases: ["Ximovan", "Imovane"],
+    category: "depressant",
+    shortDescription: "Z-Substanz, ähnlich Zolpidem, etwas breiteres Rezeptor-Profil.",
+    mechanism: "Cyclopyrrolon, Agonist mehrerer GABA_A-Untereinheiten (α1/α2/α3/α5).",
+    onset: "20–30 min",
+    duration: "6–8 h",
+    doses: [{ route: "oral", light: "3.75 mg", common: "7.5 mg", strong: "15 mg" }],
+    evidence: [{ label: "Hajak 2003 – Zopiclon Review", url: "https://pubmed.ncbi.nlm.nih.gov/12865017/" }],
+    warnings: ["Bitterer Metallgeschmack typisch", "Toleranz/Abhängigkeit nach 2–4 Wochen täglich dokumentiert", "Hangover, Sturzgefahr bei Älteren"],
+  },
+  {
+    id: "promethazine",
+    name: "Promethazin",
+    aliases: ["Atosil", "Phenergan"],
+    category: "depressant",
+    shortDescription: "Sedierendes Antihistaminikum, Schlüsselzutat in 'Lean/Purple Drank' (mit Codein).",
+    mechanism: "H1-Antagonist + starke Anticholinergie + α1-Blockade + D2-Antagonismus.",
+    onset: "20–60 min",
+    duration: "6–12 h",
+    doses: [{ route: "oral", light: "12.5–25 mg", common: "25–50 mg", strong: "75–100 mg" }],
+    evidence: [{ label: "FDA Black Box – Promethazin bei Kindern <2", url: "https://www.fda.gov/" }],
+    warnings: ["QT-Verlängerung in hohen Dosen", "Atemdepression in Kombi mit Opioiden ('Lean')", "Anticholinerges Delir bei Überdosis", "EPS-Risiko bei Daueranwendung"],
+  },
+  {
+    id: "dxm",
+    name: "Dextromethorphan",
+    aliases: ["DXM", "Wick MediNait", "Robitussin"],
+    category: "dissociative",
+    shortDescription: "Hustenstiller mit dissoziativer Wirkung in höheren Dosen (Plateau-Konsum).",
+    mechanism: "NMDA-Antagonist (über Metabolit Dextrorphan) + SRI + Sigma-1-Agonist.",
+    onset: "30–90 min",
+    duration: "3–6 h (Plateau-abhängig)",
+    doses: [
+      { route: "oral", threshold: "30 mg", light: "100–200 mg (1. Plateau)", common: "200–400 mg (2.–3. Plateau)", strong: "400–700 mg (4. Plateau)", notes: "CYP2D6-Polymorphismus → starke interindividuelle Unterschiede" },
+    ],
+    evidence: [{ label: "Bem 1992 – DXM Toxicology Review", url: "https://pubmed.ncbi.nlm.nih.gov/1356381/" }],
+    warnings: ["Niemals Kombi-Präparate mit Paracetamol für Dosis-Konsum — Lebertoxizität", "Serotonin-Syndrom mit SSRIs/MAOIs/MDMA", "Brompheniramin/CPM in 'Robotrip'-Säften zusätzlich gefährlich"],
+  },
+  {
+    id: "lorazepam",
+    name: "Lorazepam",
+    aliases: ["Tavor", "Ativan"],
+    category: "benzodiazepine",
+    shortDescription: "Mittellang wirksames Benzo, klinisch häufig bei Angst/Status epilepticus.",
+    mechanism: "GABA_A-PAM (BZD-Bindungsstelle, alle α-Untereinheiten außer α4/α6).",
+    onset: "20–40 min (oral); 5 min (sublingual)",
+    duration: "6–8 h",
+    doses: [{ route: "oral", light: "0.5 mg", common: "1–2 mg", strong: "2.5–5 mg" }],
+    evidence: [{ label: "Greenblatt 1991 – Lorazepam Pharmakokinetik", url: "https://pubmed.ncbi.nlm.nih.gov/1672037/" }],
+    warnings: ["Keine CYP-Interaktionen (Glucuronidierung) — sicherer bei Leberschaden, aber kein 'mildes' Benzo", "Hohe Abhängigkeitsgeschwindigkeit", "Entzug: Krampfanfall-Risiko, langsam ausschleichen"],
+  },
 ];
 
 // ───────── Interaction matrix ─────────
@@ -1172,6 +1322,67 @@ const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
   [pairKey("eutylone", "mdma")]: { level: "unsafe", reason: "Verstärkte serotonerge + kardiale Last, Schlafmangel." },
   [pairKey("n-ethyl-hexedrone", "cocaine")]: { level: "unsafe", reason: "Massive kardiovaskuläre Belastung." },
   [pairKey("4-cmc", "mdma")]: { level: "unsafe", reason: "Additive Monoamin-Freisetzung." },
+
+  // ───── Verschreibungsmittel-spezifische Risiken ─────
+  // Lean / Purple Drank
+  [pairKey("codeine", "promethazine")]: {
+    level: "danger",
+    reason: "'Lean / Purple Drank' – Atemdepression, mehrere Promi-Todesfälle dokumentiert.",
+    mechanism: "Opioide Atemdepression + sedierendes Antihistaminikum + α1-Blockade — Schutzreflexe weg, Atmung gedrückt.",
+    expert: "µ-Agonismus (Codein → Morphin via CYP2D6) + H1/M1/α1-Antagonismus → ungeschützte Apnoe + Aspirationsrisiko + QT-Verlängerung. Bei CYP2D6-Ultra-Rapid-Metabolizern Morphin-Spiegel unvorhersehbar hoch.",
+  },
+  [pairKey("codeine", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression.", mechanism: "Alkohol senkt zusätzlich Atemreiz; bei CYP2D6-URM kann Codein-Anteil als Morphin extrem ausfallen." },
+  [pairKey("codeine", "alprazolam")]: { level: "danger", reason: "Opioid + Benzo – Atemstillstand-Risiko." },
+
+  // Tilidin
+  [pairKey("tilidin", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression, häufige Notaufnahme-Konstellation." },
+  [pairKey("tilidin", "alprazolam")]: { level: "danger", reason: "Opioid + Benzo – Atemdepression." },
+  [pairKey("tilidin", "pregabalin")]: { level: "danger", reason: "Opioid + Pregabalin verstärkt Atemdepression deutlich – MHRA/FDA Warnung." },
+  [pairKey("tilidin", "heroin")]: { level: "danger", reason: "Doppel-Opioid – µ-Sättigung, OD-Risiko." },
+  [pairKey("tilidin", "tramadol")]: { level: "danger", reason: "Doppel-Opioid + zusätzliche serotonerge Last durch Tramadol." },
+
+  // Tapentadol
+  [pairKey("tapentadol", "mdma")]: { level: "danger", reason: "Serotonerge Last + µ-Atemdepression.", expert: "NRI-Komponente + MDMA-induzierter Monoamin-Efflux → erhöhtes Serotonin-Syndrom-Risiko, µ-vermittelte Atemdepression bleibt bestehen." },
+  [pairKey("tapentadol", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression." },
+
+  // Methylphenidat
+  [pairKey("methylphenidate", "mdma")]: { level: "unsafe", reason: "Additive sympathomimetische Last – Herz, Hyperthermie.", mechanism: "MPH hemmt DAT/NET, MDMA flutet Monoamine. Zusammen: deutlich erhöhter RR, HF und Körpertemperatur." },
+  [pairKey("methylphenidate", "amphetamine")]: { level: "unsafe", reason: "Doppel-Stim – kardiovaskuläre Belastung, Psychose-Risiko." },
+  [pairKey("methylphenidate", "cocaine")]: { level: "unsafe", reason: "Doppel-DAT-Wirkung – Vasokonstriktion + Arrhythmie-Risiko." },
+  [pairKey("methylphenidate", "alcohol")]: { level: "caution", reason: "Sedierung wird maskiert – Risiko Alkoholvergiftung." },
+
+  // Lisdexamfetamin verhält sich nach Spaltung wie Amphetamin
+  [pairKey("lisdexamfetamine", "mdma")]: { level: "unsafe", reason: "Wie Amphetamin + MDMA – Hyperthermie, Herz-Last." },
+  [pairKey("lisdexamfetamine", "tramadol")]: { level: "unsafe", reason: "Sympathomimetik + serotonerge Last + Krampfschwelle ↓." },
+
+  // Modafinil – moderat
+  [pairKey("modafinil", "mdma")]: { level: "caution", reason: "Verstärkt MDMA-Last leicht; CYP3A4-Induktion durch Modafinil verkürzt MDMA-Wirkung unvorhersehbar." },
+
+  // Z-Substanzen – wie Benzos behandeln
+  [pairKey("zolpidem", "alcohol")]: { level: "danger", reason: "GABA-Synergie + komplexe Schlafverhaltensweisen (Sleep-Driving)." },
+  [pairKey("zolpidem", "heroin")]: { level: "danger", reason: "GABA + µ-Opioid – Atemstillstand." },
+  [pairKey("zolpidem", "tilidin")]: { level: "danger", reason: "Opioid + Z-Hypnotikum – Atemdepression." },
+  [pairKey("zolpidem", "alprazolam")]: { level: "danger", reason: "Z + Benzo – additive GABA-Sedierung." },
+  [pairKey("zopiclone", "alcohol")]: { level: "danger", reason: "GABA-Synergie – Atemdepression, Bewusstlosigkeit." },
+  [pairKey("zopiclone", "heroin")]: { level: "danger", reason: "GABA + µ-Opioid – Atemstillstand." },
+
+  // Promethazin (sedierend, Anticholinergie, QT)
+  [pairKey("promethazine", "alcohol")]: { level: "unsafe", reason: "Verstärkte Sedierung + anticholinerge Last + QT-Verlängerung." },
+  [pairKey("promethazine", "heroin")]: { level: "danger", reason: "Atemdepression + α1-Blockade → Hypotonie + Aspiration." },
+  [pairKey("promethazine", "tilidin")]: { level: "danger", reason: "Opioid + sedierendes Antihistaminikum – wie 'Lean'-Konstellation." },
+  [pairKey("promethazine", "methylphenidate")]: { level: "unsafe", reason: "QT-Verlängerung + sympathomimetische Last – Arrhythmie-Risiko." },
+
+  // DXM (NMDA + SRI + Sigma1)
+  [pairKey("dxm", "mdma")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko durch DXM-SRI + MDMA-Flut.", expert: "DXM hemmt SERT zusätzlich, Dextrorphan ist NMDA-Antagonist. Mit MDMA potenziell schwere serotonerge Toxizität + Hyperthermie." },
+  [pairKey("dxm", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom + Krampfschwelle massiv gesenkt." },
+  [pairKey("dxm", "alcohol")]: { level: "unsafe", reason: "Übelkeit, Bewusstlosigkeit, Aspirationsgefahr – DXM macht erbrechen." },
+  [pairKey("dxm", "ketamine")]: { level: "unsafe", reason: "Doppelter NMDA-Antagonismus – sehr unvorhersehbare Dissoziation." },
+
+  // Lorazepam – wie Alprazolam-Risiken
+  [pairKey("lorazepam", "alcohol")]: { level: "danger", reason: "Benzo + Alkohol – Atemdepression, Blackouts." },
+  [pairKey("lorazepam", "heroin")]: { level: "danger", reason: "Benzo + µ-Opioid – sehr häufige Todesursache." },
+  [pairKey("lorazepam", "tilidin")]: { level: "danger", reason: "Opioid + Benzo – Atemstillstand-Risiko." },
+  [pairKey("lorazepam", "alprazolam")]: { level: "unsafe", reason: "Doppel-Benzo – nur additive Sedierung und Abhängigkeit, kein Nutzen." },
 };
 
 export function assessPair(idA: string, idB: string): RiskInfo {
