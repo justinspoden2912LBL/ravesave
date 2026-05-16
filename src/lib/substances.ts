@@ -1728,6 +1728,66 @@ const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
   [pairKey("lorazepam", "heroin")]: { level: "danger", reason: "Benzo + µ-Opioid – sehr häufige Todesursache." },
   [pairKey("lorazepam", "tilidin")]: { level: "danger", reason: "Opioid + Benzo – Atemstillstand-Risiko." },
   [pairKey("lorazepam", "alprazolam")]: { level: "unsafe", reason: "Doppel-Benzo – nur additive Sedierung und Abhängigkeit, kein Nutzen." },
+
+  // ───── Neu hinzugefügte Substanzen ─────
+  // MDA / Methylon / 6-APB – serotonerge Last
+  [pairKey("mda", "mdma")]: { level: "unsafe", reason: "Doppelte serotonerge + dopaminerge Flut – Hyperthermie-/Neurotox-Risiko." },
+  [pairKey("mda", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko (Tramadol = SNRI)." },
+  [pairKey("methylone", "mdma")]: { level: "unsafe", reason: "Additive Monoamin-Freisetzung, Schlafmangel, Herz-Last." },
+  [pairKey("6-apb", "mdma")]: { level: "unsafe", reason: "Sehr lange Wirkdauer + 5-HT2B-Last – Hyperthermie, Herzklappen-Risiko." },
+  [pairKey("6-apb", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko." },
+
+  // Salvia – atypisch, aber Sturz-/Aspirationsgefahr
+  [pairKey("salvia", "alcohol")]: { level: "unsafe", reason: "Realitätsverlust + Sturz/Aspirationsgefahr." },
+
+  // Ibogain – kardiotox, lange QT
+  [pairKey("ibogaine", "mdma")]: { level: "danger", reason: "QT-Verlängerung + serotonerge Last – Torsade-de-pointes-Risiko." },
+  [pairKey("ibogaine", "methadone")]: { level: "danger", reason: "Beide verlängern QT massiv – mehrere Todesfälle dokumentiert." },
+  [pairKey("ibogaine", "cocaine")]: { level: "danger", reason: "Vasokonstriktion + QT-Verlängerung – Herztod-Risiko." },
+
+  // Lachgas – B12, Hypoxie
+  [pairKey("nitrous", "ketamine")]: { level: "unsafe", reason: "Doppelte NMDA-Antagonisten – Bewusstlosigkeit, Sturzgefahr." },
+  [pairKey("nitrous", "alcohol")]: { level: "unsafe", reason: "Hypoxie + Aspiration – Sitter Pflicht." },
+
+  // PCP – Aggression + Sedativa
+  [pairKey("pcp", "alcohol")]: { level: "danger", reason: "Aggressivität + Sedierung – Verletzungs- und Aspirationsgefahr." },
+  [pairKey("pcp", "alprazolam")]: { level: "unsafe", reason: "Doppelsedierung, Realitätsverlust + Atemdepression." },
+
+  // Morphin / Methadon / Buprenorphin
+  [pairKey("morphine", "alcohol")]: { level: "danger", reason: "Opioid + Alkohol – Atemdepression." },
+  [pairKey("morphine", "alprazolam")]: { level: "danger", reason: "Opioid + Benzo – häufigste OD-Konstellation." },
+  [pairKey("methadone", "alcohol")]: { level: "danger", reason: "Sehr lange Methadon-HWZ + Alkohol – Atemstillstand auch Tage nach Einnahme möglich." },
+  [pairKey("methadone", "alprazolam")]: { level: "danger", reason: "Substitutions-Todesursache Nr. 1 – Benzo + Methadon." },
+  [pairKey("methadone", "cocaine")]: { level: "danger", reason: "Beide verlängern QT – Torsade-de-pointes-Risiko." },
+  [pairKey("buprenorphine", "heroin")]: { level: "danger", reason: "Buprenorphin verdrängt Heroin am µ-Rezeptor → präzipitierter Entzug." },
+  [pairKey("buprenorphine", "methadone")]: { level: "danger", reason: "Präzipitierter Entzug – Buprenorphin verdrängt Methadon." },
+  [pairKey("buprenorphine", "alprazolam")]: { level: "unsafe", reason: "Trotz Ceiling-Effekt Atemdepression mit Benzos dokumentiert." },
+
+  // Kratom
+  [pairKey("kratom", "alcohol")]: { level: "unsafe", reason: "Opioid-artige + Alkohol-Sedierung – Atemdepression möglich." },
+  [pairKey("kratom", "tramadol")]: { level: "danger", reason: "Doppel-Opioid + serotonerge Last – Krampfrisiko, Serotonin-Syndrom." },
+  [pairKey("kratom", "heroin")]: { level: "danger", reason: "Additive µ-Last – Atemdepression." },
+
+  // Phenibut / Gabapentin
+  [pairKey("phenibut", "alcohol")]: { level: "danger", reason: "GABA-B + GABA-A – tiefe Sedierung, Atemdepression." },
+  [pairKey("phenibut", "alprazolam")]: { level: "danger", reason: "GABA-B + Benzo – Bewusstlosigkeit, Atemstillstand." },
+  [pairKey("phenibut", "heroin")]: { level: "danger", reason: "Atemdepression – mehrere Todesfälle dokumentiert." },
+  [pairKey("gabapentin", "heroin")]: { level: "danger", reason: "Opioid + Gabapentinoid – Atemdepression (MHRA-Warnung)." },
+  [pairKey("gabapentin", "alcohol")]: { level: "unsafe", reason: "Verstärkte Sedierung, Ataxie." },
+
+  // Nikotin – kardiale Last
+  [pairKey("nicotine", "cocaine")]: { level: "caution", reason: "Doppelte Vasokonstriktion – Koronarspasmus-Risiko." },
+
+  // HHC / THCP – wie THC behandeln, aber THCP deutlich potenter
+  [pairKey("thcp", "alcohol")]: { level: "caution", reason: "Sehr potent – Greenout-Risiko." },
+
+  // Mirtazapin – kappt MDMA / serotonerge Wechselwirkung
+  [pairKey("mirtazapine", "mdma")]: { level: "unsafe", reason: "Reduziert MDMA-Wirkung subjektiv, Hitze/Herz-Last bleibt – riskante Asymmetrie." },
+  [pairKey("mirtazapine", "tramadol")]: { level: "unsafe", reason: "Serotonerge Last + Krampfschwelle ↓." },
+
+  // Nitazene-Erweiterungen
+  [pairKey("isotonitazene", "alprazolam")]: { level: "danger", reason: "Nitazen + Benzo – Atemstillstand-Risiko, in Strassen-Proben dokumentiert." },
+  [pairKey("metonitazene", "alprazolam")]: { level: "danger", reason: "Nitazen + Benzo – Atemstillstand-Risiko." },
 };
 
 export function assessPair(idA: string, idB: string): RiskInfo {
