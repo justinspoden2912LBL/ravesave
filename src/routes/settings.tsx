@@ -1,7 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles } from "lucide-react";
-import { clearProfile, loadProfile, saveProfile, summarizeProfile, type UserProfile } from "@/lib/profile";
+import { Trash2, Edit3, Sparkles, GraduationCap } from "lucide-react";
+import {
+  clearProfile,
+  loadProfile,
+  saveProfile,
+  summarizeProfile,
+  getDetailLevel,
+  PROFESSION_LABEL,
+  EXPERTISE_LABEL,
+  type UserProfile,
+  type ExpertiseLevel,
+  type Profession,
+} from "@/lib/profile";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
