@@ -897,7 +897,7 @@ export const SUBSTANCES: Substance[] = [
     name: "MDMB-4en-PINACA",
     aliases: ["Spice (Gen 5)"],
     category: "cannabinoid",
-    shortDescription: "Hochpotenter synthetischer Cannabinoid-Vollagonist, dominiert „Spice"-Märkte.",
+    shortDescription: "Hochpotenter synthetischer Cannabinoid-Vollagonist, dominiert Spice-Märkte.",
     mechanism: "CB1-Vollagonist (im Gegensatz zu THC = Partialagonist).",
     onset: "1–5 min (geraucht)",
     duration: "1–3 h",
