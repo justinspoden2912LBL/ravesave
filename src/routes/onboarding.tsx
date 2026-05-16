@@ -470,10 +470,13 @@ function Onboarding() {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  const id = React.useId();
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium">{label}</label>
-      {children}
+      <label htmlFor={id} className="block text-sm font-medium">{label}</label>
+      {React.isValidElement(children)
+        ? React.cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+        : children}
     </div>
   );
 }
