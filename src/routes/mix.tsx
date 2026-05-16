@@ -156,3 +156,38 @@ function MixPage() {
     </div>
   );
 }
+
+const DETAIL_LABEL: Record<DetailLevel, string> = {
+  lay: "Einfach",
+  intermediate: "Mechanismus",
+  expert: "Fachebene",
+};
+
+function DetailToggle({
+  value,
+  onChange,
+  profileDetail,
+}: {
+  value: DetailLevel;
+  onChange: (v: DetailLevel) => void;
+  profileDetail: DetailLevel;
+}) {
+  const levels: DetailLevel[] = ["lay", "intermediate", "expert"];
+  return (
+    <div className="flex items-center gap-1 rounded-full glass p-0.5 text-xs">
+      {levels.map((l) => (
+        <button
+          key={l}
+          onClick={() => onChange(l)}
+          title={l === profileDetail ? "Aus deinem Profil" : undefined}
+          className={`px-2.5 py-1 rounded-full transition ${
+            value === l ? "bg-aurora animate-aurora text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {DETAIL_LABEL[l]}
+          {l === profileDetail && <span className="ml-1 opacity-60">·</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
