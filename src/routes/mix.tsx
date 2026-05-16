@@ -1,7 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
-import { SUBSTANCES, assessPair, overallRisk, RISK_META, CATEGORY_LABEL, explainRisk } from "@/lib/substances";
+import { ChevronRight, X } from "lucide-react";
+import {
+  SUBSTANCES,
+  assessPair,
+  overallRisk,
+  RISK_META,
+  CATEGORY_LABEL,
+  CATEGORY_TO_SUPER,
+  SUPER_CATEGORY_LABEL,
+  SUPER_CATEGORY_ORDER,
+  explainRisk,
+  type Substance,
+  type SubstanceCategory,
+  type SuperCategory,
+} from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/mix")({
