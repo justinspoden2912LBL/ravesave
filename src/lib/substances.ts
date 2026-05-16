@@ -592,7 +592,7 @@ export const SUBSTANCES: Substance[] = [
     name: "5-MeO-DMT",
     aliases: ["Bufo", "Toad"],
     category: "psychedelic",
-    shortDescription: "Sehr potentes, kurzes Tryptamin mit „White-Out"-Charakter.",
+    shortDescription: "Sehr potentes, kurzes Tryptamin mit White-Out-Charakter.",
     mechanism: "Starker 5-HT1A/5-HT2A Agonist.",
     onset: "10–60 s (inhaliert)",
     duration: "10–30 min (inhaliert), 1–2 h (oral mit MAOI)",
