@@ -522,6 +522,8 @@ function PairingCard({
             </div>
           )}
 
+          <PairPharmaVisual self={self} other={other} />
+
           <div className="grid gap-2 sm:grid-cols-2">
             {[self, other].map((s) => (
               <SubstanceBrief key={s.id} s={s} />
