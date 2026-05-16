@@ -13,6 +13,7 @@ import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -36,6 +37,11 @@ const LogRoute = LogRouteImport.update({
   path: '/log',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/stats': typeof StatsRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/stats': typeof StatsRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/stats': typeof StatsRoute
@@ -74,12 +83,20 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/mix' | '/stats' | '/substances' | '/api/chat'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/log'
+    | '/mix'
+    | '/stats'
+    | '/substances'
+    | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/mix' | '/stats' | '/substances' | '/api/chat'
+  to: '/' | '/chat' | '/log' | '/mix' | '/stats' | '/substances' | '/api/chat'
   id:
     | '__root__'
     | '/'
+    | '/chat'
     | '/log'
     | '/mix'
     | '/stats'
@@ -89,6 +106,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatRoute: typeof ChatRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
   StatsRoute: typeof StatsRoute
@@ -126,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -145,6 +170,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatRoute: ChatRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
   StatsRoute: StatsRoute,
