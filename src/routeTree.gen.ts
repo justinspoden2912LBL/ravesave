@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SubstancesRoute = SubstancesRouteImport.update({
+  id: '/substances',
+  path: '/substances',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MixRoute = MixRouteImport.update({
   id: '/mix',
   path: '/mix',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/substances': typeof SubstancesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/substances': typeof SubstancesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/substances': typeof SubstancesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/mix'
+  fullPaths: '/' | '/log' | '/mix' | '/substances'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/mix'
-  id: '__root__' | '/' | '/log' | '/mix'
+  to: '/' | '/log' | '/mix' | '/substances'
+  id: '__root__' | '/' | '/log' | '/mix' | '/substances'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
+  SubstancesRoute: typeof SubstancesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/substances': {
+      id: '/substances'
+      path: '/substances'
+      fullPath: '/substances'
+      preLoaderRoute: typeof SubstancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mix': {
       id: '/mix'
       path: '/mix'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
+  SubstancesRoute: SubstancesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
