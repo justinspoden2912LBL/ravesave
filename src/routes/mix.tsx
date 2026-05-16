@@ -83,11 +83,15 @@ function MixPage() {
       {/* Pair breakdown */}
       {pairs.length > 0 && (
         <div className="rounded-2xl glass p-5">
-          <h2 className="font-semibold mb-3">Alle Paare</h2>
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h2 className="font-semibold">Alle Paare</h2>
+            <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+          </div>
           <ul className="space-y-2">
             {pairs.map(({ a, b, risk }) => {
               const sa = SUBSTANCES.find((s) => s.id === a)!;
               const sb = SUBSTANCES.find((s) => s.id === b)!;
+              const ex = explainRisk(risk, detail);
               return (
                 <li key={a + b} className={`rounded-xl border p-3 ${RISK_META[risk.level].bg}`}>
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -96,7 +100,17 @@ function MixPage() {
                       {RISK_META[risk.level].label}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{risk.reason}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{ex.headline}</p>
+                  {ex.detail && (
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-relaxed border-l-2 border-border pl-2">
+                      <span className="font-semibold text-foreground/70">Mechanismus:</span> {ex.detail}
+                    </p>
+                  )}
+                  {ex.expert && ex.expert !== ex.detail && (
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-relaxed border-l-2 border-secondary/60 pl-2">
+                      <span className="font-semibold text-secondary">Fachebene:</span> {ex.expert}
+                    </p>
+                  )}
                 </li>
               );
             })}
