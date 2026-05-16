@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, BookOpen, GitMerge, Shield, Sparkles } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Activity, BookOpen, GitMerge, Shield, Sparkles, UserCircle2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
+import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
 
 export const Route = createFileRoute("/")({
   component: Home,
