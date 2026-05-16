@@ -12,6 +12,13 @@ export const Route = createFileRoute("/mix")({
 function MixPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
+  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
+  const [detail, setDetail] = useState<DetailLevel>("lay");
+  useEffect(() => {
+    const d = getDetailLevel(loadProfile());
+    setProfileDetail(d);
+    setDetail(d);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
