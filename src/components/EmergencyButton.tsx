@@ -162,10 +162,10 @@ const GUIDES: Record<SymptomId, Guide> = {
     call112: false,
     intro: "Meistens psychisch, nicht akut lebensgefährlich — solange Atmung und Bewusstsein stabil sind.",
     steps: [
-      { do: "Ruhigen, vertrauten Ort aufsuchen", detail: "Weg von Crowd, Stroboskop, lauter Musik." },
+      { do: "Ruhigen, vertrauten Ort aufsuchen", detail: "Weg von Crowd, Stroboskop, lauter Musik.", illus: "quietRoom" },
       { do: "Atem führen: 4 Sek ein, 6 Sek aus", detail: "Gemeinsam atmen, sanft Hand auf den Bauch.", illus: "breath" },
       { do: "Sätze wie 'Das geht vorbei. Du bist sicher. Ich bleibe da.'", detail: "Talkdown — nicht diskutieren, nicht widersprechen.", illus: "talkdown" },
-      { do: "Wasser, evtl. Süßes, warme Decke", detail: "Erdung über den Körper." },
+      { do: "Wasser, evtl. Süßes, warme Decke", detail: "Erdung über den Körper.", illus: "blanket" },
       { do: "Bei Atemnot, Krampf, Bewusstlosigkeit → 112", detail: "Auch bei Suizidgedanken sofort Hilfe holen.", illus: "phone112" },
     ],
     followup: { label: "Drogenknigge & Awareness", to: "/knigge" },
