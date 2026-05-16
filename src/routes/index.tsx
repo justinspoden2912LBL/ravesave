@@ -1,5 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Activity, BookOpen, GitMerge, Shield, Sparkles, UserCircle2, X } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  ChevronDown,
+  GitMerge,
+  HeartPulse,
+  MessageCircle,
+  Shield,
+  ShieldAlert,
+  Sparkles,
+  UserCircle2,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
@@ -8,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "trace — Harm Reduction Tracker" },
+      { title: "Rave Safe, Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen." },
     ],
   }),
