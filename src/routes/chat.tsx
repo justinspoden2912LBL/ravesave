@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2 } from "lucide-react";
+import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2, UserCircle2 } from "lucide-react";
+import { loadProfile, summarizeProfile } from "@/lib/profile";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
