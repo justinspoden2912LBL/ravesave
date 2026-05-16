@@ -1,9 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2, UserCircle2 } from "lucide-react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2,
+  UserCircle2, History, Plus, Download, Trash2, Save, Check, Pencil,
+} from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
+import {
+  isPersistEnabled, setPersistEnabled,
+  listSessions, loadSession, saveSession, deleteSession, renameSession,
+  newSessionId, exportSessionJson, exportSessionMarkdown, exportAllJson,
+} from "@/lib/chatHistory";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -78,7 +86,8 @@ function ChatPage() {
       }),
     [profileSummary],
   );
-  const { messages, sendMessage, status, stop, error } = useChat({ transport });
+  const { messages, sendMessage, status, stop, error, setMessages } = useChat({ transport });
+  const isLoading = status === "submitted" || status === "streaming";
 
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -90,7 +99,72 @@ function ChatPage() {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const spokenIdsRef = useRef<Set<string>>(new Set());
 
-  const isLoading = status === "submitted" || status === "streaming";
+  // ----- Local persistence -----
+  const [persist, setPersist] = useState(false);
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+  const [sessions, setSessions] = useState<ReturnType<typeof listSessions>>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [renameId, setRenameId] = useState<string | null>(null);
+  const [renameVal, setRenameVal] = useState("");
+
+  const refreshSessions = useCallback(() => setSessions(listSessions()), []);
+
+  useEffect(() => {
+    setPersist(isPersistEnabled());
+    refreshSessions();
+  }, [refreshSessions]);
+
+  // Auto-save current chat whenever messages change (if enabled and non-empty)
+  useEffect(() => {
+    if (!persist || messages.length === 0) return;
+    saveSession(sessionId, messages as UIMessage[]);
+    refreshSessions();
+  }, [messages, persist, sessionId, refreshSessions]);
+
+  function togglePersist(v: boolean) {
+    setPersistEnabled(v);
+    setPersist(v);
+    if (v && messages.length > 0) {
+      saveSession(sessionId, messages as UIMessage[]);
+      refreshSessions();
+    }
+  }
+
+  function newChat() {
+    setSessionId(newSessionId());
+    setMessages([]);
+    setInput("");
+    setAttachments([]);
+    spokenIdsRef.current = new Set();
+  }
+
+  function openSession(id: string) {
+    const s = loadSession(id);
+    if (!s) return;
+    setSessionId(s.id);
+    setMessages(s.messages);
+    setShowHistory(false);
+    spokenIdsRef.current = new Set();
+  }
+
+  function removeSession(id: string) {
+    if (!confirm("Diesen Chat wirklich löschen?")) return;
+    deleteSession(id);
+    refreshSessions();
+    if (id === sessionId) newChat();
+  }
+
+  function startRename(id: string, current: string) {
+    setRenameId(id);
+    setRenameVal(current);
+  }
+  function commitRename() {
+    if (renameId) {
+      renameSession(renameId, renameVal);
+      refreshSessions();
+    }
+    setRenameId(null);
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -187,26 +261,179 @@ function ChatPage() {
     setAttachments([]);
   }
 
+  const currentSession = sessions.find((s) => s.id === sessionId);
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col h-[calc(100vh-8rem)]">
+    <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col h-[calc(100vh-8rem)] relative">
       <header className="mb-4">
-        <h1 className="text-3xl font-bold tracking-tight">KI-Chat</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Stelle Fragen zu Substanzen, lade Dokumente hoch (txt, md, pdf, docx, pages…) oder sprich direkt mit der KI.
-          Alles bleibt zwischen dir und dem KI-Endpunkt — kein Verlauf wird gespeichert.
-        </p>
-        <div className="mt-2">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold tracking-tight">KI-Chat</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Stelle Fragen, lade Dokumente hoch oder sprich direkt mit der KI.
+              {persist
+                ? " Verlauf wird lokal in deinem Browser gespeichert."
+                : " Verlauf wird nicht gespeichert."}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <button onClick={newChat} title="Neuer Chat" className="rounded-full glass p-2 hover:bg-muted/30">
+              <Plus className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => { refreshSessions(); setShowHistory(true); }}
+              title="Verlauf"
+              className="rounded-full glass p-2 hover:bg-muted/30 relative"
+            >
+              <History className="h-4 w-4" />
+              {sessions.length > 0 && (
+                <span className="absolute -top-1 -right-1 rounded-full bg-aurora animate-aurora text-[10px] text-primary-foreground h-4 min-w-4 px-1 flex items-center justify-center">
+                  {sessions.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           {profileSummary ? (
             <Link to="/settings" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs text-secondary">
-              <UserCircle2 className="h-3.5 w-3.5" /> Profil aktiv — KI kennt deinen Kontext
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil aktiv
             </Link>
           ) : (
             <Link to="/onboarding" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs">
-              <UserCircle2 className="h-3.5 w-3.5" /> Profil einrichten für bessere Antworten
+              <UserCircle2 className="h-3.5 w-3.5" /> Profil einrichten
             </Link>
+          )}
+
+          <label className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs cursor-pointer">
+            <input
+              type="checkbox"
+              checked={persist}
+              onChange={(e) => togglePersist(e.target.checked)}
+              className="h-3 w-3 accent-primary"
+            />
+            <Save className="h-3 w-3" /> Verlauf lokal speichern
+          </label>
+
+          {persist && currentSession && (
+            <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs text-muted-foreground">
+              <Check className="h-3 w-3 text-secondary" />
+              {currentSession.title}
+            </span>
+          )}
+
+          {persist && messages.length > 0 && (
+            <>
+              <button
+                onClick={() => { const s = loadSession(sessionId); if (s) exportSessionMarkdown(s); }}
+                className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs hover:bg-muted/30"
+              >
+                <Download className="h-3 w-3" /> .md
+              </button>
+              <button
+                onClick={() => { const s = loadSession(sessionId); if (s) exportSessionJson(s); }}
+                className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-xs hover:bg-muted/30"
+              >
+                <Download className="h-3 w-3" /> .json
+              </button>
+            </>
           )}
         </div>
       </header>
+
+      {showHistory && (
+        <div className="absolute inset-0 z-30 flex">
+          <div className="flex-1 bg-background/60 backdrop-blur-sm" onClick={() => setShowHistory(false)} />
+          <aside className="w-full max-w-sm h-full glass border-l flex flex-col">
+            <div className="p-4 flex items-center justify-between border-b">
+              <h3 className="font-semibold">Chat-Verlauf</h3>
+              <button onClick={() => setShowHistory(false)} className="rounded-full p-1.5 hover:bg-muted/30">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              {sessions.length === 0 ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  {persist
+                    ? "Noch keine gespeicherten Chats."
+                    : "Speichern ist deaktiviert. Aktiviere „Verlauf lokal speichern\" um Chats zu behalten."}
+                </div>
+              ) : (
+                <ul className="space-y-1">
+                  {sessions.map((s) => (
+                    <li
+                      key={s.id}
+                      className={`rounded-xl p-2 group ${
+                        s.id === sessionId ? "bg-primary/10 ring-1 ring-primary/40" : "hover:bg-muted/20"
+                      }`}
+                    >
+                      {renameId === s.id ? (
+                        <div className="flex gap-1">
+                          <input
+                            autoFocus
+                            value={renameVal}
+                            onChange={(e) => setRenameVal(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") commitRename();
+                              if (e.key === "Escape") setRenameId(null);
+                            }}
+                            className="flex-1 rounded-md bg-background/40 px-2 py-1 text-sm outline-none ring-1 ring-border focus:ring-primary"
+                          />
+                          <button onClick={commitRename} className="rounded-md p-1 hover:bg-muted/30">
+                            <Check className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => openSession(s.id)} className="flex-1 text-left min-w-0">
+                            <div className="text-sm font-medium truncate">{s.title}</div>
+                            <div className="text-[10px] text-muted-foreground">
+                              {new Date(s.updatedAt).toLocaleString("de-DE")}
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => startRename(s.id, s.title)}
+                            title="Umbenennen"
+                            className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => { const sess = loadSession(s.id); if (sess) exportSessionMarkdown(sess); }}
+                            title="Export .md"
+                            className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => removeSession(s.id)}
+                            title="Löschen"
+                            className="opacity-0 group-hover:opacity-100 rounded-md p-1 text-destructive hover:bg-destructive/20"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {sessions.length > 0 && (
+              <div className="border-t p-3">
+                <button
+                  onClick={exportAllJson}
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-full glass px-3 py-2 text-xs hover:bg-muted/30"
+                >
+                  <Download className="h-3.5 w-3.5" /> Alle exportieren (.json)
+                </button>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
+
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl glass p-4 space-y-4">
