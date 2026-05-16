@@ -16,6 +16,8 @@ import {
   Pencil,
   Save,
   Trash2,
+  Maximize2,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -358,6 +360,7 @@ function MedicalCard() {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<EmergencyInfo>(emptyEmergencyInfo());
   const [error, setError] = useState<string | null>(null);
+  const [showcase, setShowcase] = useState(false);
 
   useEffect(() => {
     const loaded = loadEmergencyInfo();
@@ -365,6 +368,20 @@ function MedicalCard() {
     setDraft(loaded);
     if (!hasAnyEmergencyInfo(loaded)) setEditing(true);
   }, []);
+
+  // Bildschirm im Showcase wach halten + Helligkeit-Hinweis via Esc-Schließen
+  useEffect(() => {
+    if (!showcase) return;
+    let sentinel: WakeLockSentinel | null = null;
+    const nav = navigator as Navigator & { wakeLock?: { request: (type: "screen") => Promise<WakeLockSentinel> } };
+    nav.wakeLock?.request("screen").then((s) => (sentinel = s)).catch(() => {});
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setShowcase(false); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      sentinel?.release().catch(() => {});
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [showcase]);
 
   function startEdit() {
     setDraft(info);
@@ -405,14 +422,26 @@ function MedicalCard() {
           <IdCard className="h-4 w-4 text-secondary" /> Medizinische Notfall-Karte
         </h3>
         {!editing && (
-          <button
-            onClick={startEdit}
-            className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
-          >
-            <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
-          </button>
+          <div className="flex items-center gap-1.5">
+            {has && (
+              <button
+                onClick={() => setShowcase(true)}
+                className="inline-flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1 text-xs font-semibold text-destructive-foreground hover:brightness-110"
+              >
+                <Maximize2 className="h-3 w-3" /> Jetzt zeigen
+              </button>
+            )}
+            <button
+              onClick={startEdit}
+              className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
+            >
+              <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
+            </button>
+          </div>
         )}
       </div>
+
+      {showcase && <FullscreenMedicalCard info={info} onClose={() => setShowcase(false)} />}
 
       {!editing && (
         has ? (
