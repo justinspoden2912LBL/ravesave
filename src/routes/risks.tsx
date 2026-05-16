@@ -30,6 +30,13 @@ function RisksPage() {
   const [query, setQuery] = useState("");
   const [catFilter, setCatFilter] = useState<SubstanceCategory | "all">("all");
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
+  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
+  const [detail, setDetail] = useState<DetailLevel>("lay");
+  useEffect(() => {
+    const d = getDetailLevel(loadProfile());
+    setProfileDetail(d);
+    setDetail(d);
+  }, []);
 
   const selected = SUBSTANCES.find((s) => s.id === selectedId);
 
