@@ -104,7 +104,7 @@ const GUIDES: Record<SymptomId, Guide> = {
       { do: "Auf den Rücken legen, Kopf überstrecken, Kinn anheben", detail: "Atemweg frei machen.", illus: "airway" },
       { do: "Falls Naloxon (Nyxoid/Narcan) verfügbar: 1 Sprühstoß pro Nasenloch", detail: "Bei Opioid-Verdacht. Alle 2–3 min wiederholen, bis Atmung kommt.", illus: "naloxone" },
       { do: "Keine eigenständige Atmung? Beatmen: 2 Atemstöße, dann 30 Herzdruckmassagen", detail: "Tempo 100–120/min, 5–6 cm tief, Mitte Brustkorb.", illus: "cpr" },
-      { do: "Nicht aufhören, bis Rettung übernimmt", detail: "Auch wenn es ewig wirkt." },
+      { do: "Nicht aufhören, bis Rettung übernimmt", detail: "Auch wenn es ewig wirkt.", illus: "dontStop" },
     ],
     followup: { label: "Mehr zu Opioiden & Naloxon", to: "/substances" },
   },
