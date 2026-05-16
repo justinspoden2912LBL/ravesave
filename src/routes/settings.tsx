@@ -40,6 +40,19 @@ function SettingsPage() {
     <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Einstellungen</h1>
 
+  function updateField<K extends keyof UserProfile>(k: K, v: UserProfile[K]) {
+    if (!p) return;
+    const next = { ...p, [k]: v };
+    saveProfile(next);
+    setP(next);
+  }
+
+  const detail = p ? getDetailLevel(p) : "lay";
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
+      <h1 className="text-3xl font-bold tracking-tight">Einstellungen</h1>
+
       <section className="rounded-3xl glass p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Dein Profil</h2>
