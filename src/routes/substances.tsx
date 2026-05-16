@@ -18,7 +18,26 @@ import { CypBadges } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
-  head: () => ({ meta: [{ title: "Substanzen — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Substanzen — Pharmakologie & Dosis | Rave Safe, have Fun" },
+      { name: "description", content: "Evidenzbasiertes Substanz-Wiki: Rezeptorprofile, Dosis-Orientierung, Wirkdauer und Risikoflags für über 100 psychoaktive Substanzen." },
+      { property: "og:title", content: "Substanzen — Pharmakologie & Dosis" },
+      { property: "og:description", content: "Über 100 Substanzen mit Rezeptorprofil, Dosis und Risikoflags." },
+      { property: "og:url", content: "https://ravesave.lovable.app/substances" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/substances" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "MedicalWebPage",
+        name: "Substanzen — Pharmakologie & Dosis",
+        about: "Harm Reduction, Pharmakologie psychoaktiver Substanzen",
+        url: "https://ravesave.lovable.app/substances",
+      }),
+    }],
+  }),
 });
 
 function SubstancesPage() {

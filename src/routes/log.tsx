@@ -6,7 +6,16 @@ import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
-  head: () => ({ meta: [{ title: "Protokoll — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Protokoll — Rave Safe, have Fun" },
+      { name: "description", content: "Dokumentiere Substanz, Dosis, Applikationsweg, Stimmung und Set & Setting. Alle Einträge bleiben lokal in deinem Browser." },
+      { property: "og:title", content: "Protokoll — Rave Safe, have Fun" },
+      { property: "og:description", content: "Konsum dokumentieren — Dosis, Route, Stimmung. Lokal gespeichert." },
+      { property: "og:url", content: "https://ravesave.lovable.app/log" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/log" }],
+  }),
 });
 
 function LogPage() {

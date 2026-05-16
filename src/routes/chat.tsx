@@ -17,7 +17,16 @@ import {
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
-  head: () => ({ meta: [{ title: "KI-Chat — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "KI-Chat — Rave Safe, have Fun" },
+      { name: "description", content: "Stelle Fragen zu Substanzen, Wechselwirkungen und Studienlage. Antworten basieren auf Harm-Reduction-Quellen — alles lokal in deinem Browser." },
+      { property: "og:title", content: "KI-Chat — Rave Safe, have Fun" },
+      { property: "og:description", content: "Frag den KI-Chat zu Pharmakologie, Mischkonsum und Harm Reduction." },
+      { property: "og:url", content: "https://ravesave.lovable.app/chat" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/chat" }],
+  }),
 });
 
 interface Attachment {
