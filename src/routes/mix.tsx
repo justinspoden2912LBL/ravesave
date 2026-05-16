@@ -97,6 +97,9 @@ function MixPage() {
         )}
       </div>
 
+      {/* Pharmakologisches Profil — visuell */}
+      {selected.length >= 1 && <PharmaProfileBlock ids={selected} />}
+
       {/* Pair breakdown */}
       {pairs.length > 0 && (
         <div className="rounded-2xl glass p-5">
