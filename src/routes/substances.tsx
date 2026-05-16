@@ -1,7 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ExternalLink, Search } from "lucide-react";
-import { SUBSTANCES, CATEGORY_LABEL, type SubstanceCategory } from "@/lib/substances";
+import { ChevronRight, ExternalLink, Search } from "lucide-react";
+import {
+  SUBSTANCES,
+  CATEGORY_LABEL,
+  CATEGORY_TO_SUPER,
+  SUPER_CATEGORY_LABEL,
+  SUPER_CATEGORY_ORDER,
+  type SubstanceCategory,
+  type SuperCategory,
+  type Substance,
+} from "@/lib/substances";
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
@@ -10,30 +19,44 @@ export const Route = createFileRoute("/substances")({
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
-  const [cat, setCat] = useState<SubstanceCategory | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
+  const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
 
-  const list = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    return SUBSTANCES.filter((s) => {
-      if (cat !== "all" && s.category !== cat) return false;
-      if (!q) return true;
-      return s.name.toLowerCase().includes(q) || s.aliases.some((a) => a.toLowerCase().includes(q));
-    });
-  }, [query, cat]);
+  const q = query.toLowerCase().trim();
+  const searching = q.length > 0;
 
-  const cats = Array.from(new Set(SUBSTANCES.map((s) => s.category)));
+  const matches = useMemo(
+    () =>
+      SUBSTANCES.filter(
+        (s) =>
+          !q ||
+          s.name.toLowerCase().includes(q) ||
+          s.aliases.some((a) => a.toLowerCase().includes(q)),
+      ),
+    [q],
+  );
+
+  const tree = useMemo(() => {
+    const t: Partial<Record<SuperCategory, Partial<Record<SubstanceCategory, Substance[]>>>> = {};
+    for (const s of matches) {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      const supBucket = (t[sup] ??= {});
+      (supBucket[s.category] ??= []).push(s);
+    }
+    return t;
+  }, [matches]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
         <p className="text-muted-foreground mt-1">
-          Pharmakologie, Dosis-Orientierung und Studienlinks. Tippe für Details an.
+          Erst Oberkategorie wählen — dann Klasse — dann Substanz. Kompakt bis ausführlich.
         </p>
       </header>
 
-      <div className="rounded-2xl glass p-4 space-y-3">
+      <div className="rounded-2xl glass p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -43,112 +66,168 @@ function SubstancesPage() {
             className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
-          <CatBtn active={cat === "all"} onClick={() => setCat("all")}>Alle</CatBtn>
-          {cats.map((c) => (
-            <CatBtn key={c} active={cat === c} onClick={() => setCat(c)}>
-              {CATEGORY_LABEL[c]}
-            </CatBtn>
-          ))}
-        </div>
       </div>
 
-      <ul className="grid gap-3 md:grid-cols-2">
-        {list.map((s) => {
-          const open = openId === s.id;
+      <div className="space-y-2">
+        {SUPER_CATEGORY_ORDER.map((sup) => {
+          const cats = tree[sup];
+          if (!cats) return null;
+          const count = Object.values(cats).reduce((n, arr) => n + (arr?.length ?? 0), 0);
+          const isOpen = searching || !!openSuper[sup];
           return (
-            <li
-              key={s.id}
-              className={`rounded-2xl glass p-5 transition-all ${open ? "ring-1 ring-primary/50" : ""}`}
-            >
-              <button onClick={() => setOpenId(open ? null : s.id)} className="w-full text-left">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold">{s.name}</h3>
-                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">
-                      {CATEGORY_LABEL[s.category]}
-                      {s.aliases.length > 0 && <> · {s.aliases.join(", ")}</>}
-                    </div>
-                  </div>
-                  <div className="h-10 w-10 shrink-0 rounded-full bg-aurora animate-aurora opacity-80" />
+            <div key={sup} className="rounded-2xl glass overflow-hidden">
+              <button
+                onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+                className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left hover:bg-muted/30 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                  <span className="font-semibold">{SUPER_CATEGORY_LABEL[sup]}</span>
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">{s.shortDescription}</p>
+                <span className="text-[11px] tabular-nums text-muted-foreground rounded-full bg-muted/50 px-2 py-0.5">
+                  {count}
+                </span>
               </button>
 
-              {open && (
-                <div className="mt-4 space-y-4 border-t border-border pt-4 text-sm">
-                  <Row label="Mechanismus">{s.mechanism}</Row>
-                  <Row label="Wirkungseintritt">{s.onset}</Row>
-                  <Row label="Dauer">{s.duration}</Row>
+              {isOpen && (
+                <div className="px-3 pb-3 space-y-2">
+                  {(Object.entries(cats) as [SubstanceCategory, Substance[]][]).map(([cat, list]) => {
+                    const catOpen = searching || !!openCat[cat];
+                    return (
+                      <div key={cat} className="rounded-xl border border-border/50 bg-background/30">
+                        <button
+                          onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                          className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left hover:bg-muted/30 transition"
+                        >
+                          <div className="flex items-center gap-2">
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform ${catOpen ? "rotate-90" : ""}`} />
+                            <span className="text-sm font-medium">{CATEGORY_LABEL[cat]}</span>
+                          </div>
+                          <span className="text-[10px] tabular-nums text-muted-foreground">{list.length}</span>
+                        </button>
+                        {catOpen && (
+                          <ul className="px-2 pb-2 space-y-1.5">
+                            {list.map((s) => {
+                              const open = openId === s.id;
+                              return (
+                                <li
+                                  key={s.id}
+                                  className={`rounded-lg bg-background/60 border ${open ? "border-primary/50" : "border-border/40"}`}
+                                >
+                                  <button
+                                    onClick={() => setOpenId(open ? null : s.id)}
+                                    className="w-full text-left px-3 py-2"
+                                  >
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="min-w-0">
+                                        <div className="font-medium text-sm truncate">{s.name}</div>
+                                        {s.aliases.length > 0 && (
+                                          <div className="text-[10px] text-muted-foreground truncate">
+                                            {s.aliases.join(", ")}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <ChevronRight className={`h-4 w-4 mt-0.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`} />
+                                    </div>
+                                    {!open && (
+                                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                                        {s.shortDescription}
+                                      </p>
+                                    )}
+                                  </button>
 
-                  <div>
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Dosis-Bereiche</div>
-                    {s.doses.map((d, i) => (
-                      <div key={i} className="rounded-xl glass p-3 mb-2">
-                        <div className="font-medium text-xs mb-2">{d.route}</div>
-                        <div className="grid grid-cols-5 gap-1 text-[11px]">
-                          <Dose label="Schwelle" v={d.threshold} />
-                          <Dose label="Leicht" v={d.light} />
-                          <Dose label="Üblich" v={d.common} />
-                          <Dose label="Stark" v={d.strong} />
-                          <Dose label="Heavy" v={d.heavy} />
-                        </div>
-                        {d.notes && <p className="text-xs text-muted-foreground mt-2">{d.notes}</p>}
+                                  {open && (
+                                    <div className="px-3 pb-3 space-y-3 border-t border-border/40 pt-3 text-sm">
+                                      <p className="text-muted-foreground">{s.shortDescription}</p>
+                                      <Row label="Mechanismus">{s.mechanism}</Row>
+                                      <Row label="Eintritt">{s.onset}</Row>
+                                      <Row label="Dauer">{s.duration}</Row>
+
+                                      <div>
+                                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                          Dosis-Bereiche
+                                        </div>
+                                        {s.doses.map((d, i) => (
+                                          <div key={i} className="rounded-xl glass p-3 mb-2">
+                                            <div className="font-medium text-xs mb-2">{d.route}</div>
+                                            <div className="grid grid-cols-5 gap-1 text-[11px]">
+                                              <Dose label="Schwelle" v={d.threshold} />
+                                              <Dose label="Leicht" v={d.light} />
+                                              <Dose label="Üblich" v={d.common} />
+                                              <Dose label="Stark" v={d.strong} />
+                                              <Dose label="Heavy" v={d.heavy} />
+                                            </div>
+                                            {d.notes && (
+                                              <p className="text-xs text-muted-foreground mt-2">{d.notes}</p>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {s.warnings.length > 0 && (
+                                        <div>
+                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                            Warnungen
+                                          </div>
+                                          <ul className="list-disc pl-4 space-y-1">
+                                            {s.warnings.map((w, i) => (
+                                              <li key={i}>{w}</li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+
+                                      {s.evidence.length > 0 && (
+                                        <div>
+                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                            Quellen / Evidenz
+                                          </div>
+                                          <ul className="space-y-1">
+                                            {s.evidence.map((e, i) => (
+                                              <li key={i}>
+                                                <a
+                                                  href={e.url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center gap-1 text-secondary hover:underline"
+                                                >
+                                                  {e.label} <ExternalLink className="h-3 w-3" />
+                                                </a>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
                       </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Warnungen</div>
-                    <ul className="list-disc pl-4 space-y-1">
-                      {s.warnings.map((w, i) => <li key={i}>{w}</li>)}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Quellen / Evidenz</div>
-                    <ul className="space-y-1">
-                      {s.evidence.map((e, i) => (
-                        <li key={i}>
-                          <a
-                            href={e.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-secondary hover:underline"
-                          >
-                            {e.label} <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    );
+                  })}
                 </div>
               )}
-            </li>
+            </div>
           );
         })}
-      </ul>
-    </div>
-  );
-}
 
-function CatBtn({ active, onClick, children }: any) {
-  return (
-    <button
-      onClick={onClick}
-      className={`rounded-full px-3 py-1 text-xs transition ${
-        active ? "bg-aurora animate-aurora text-primary-foreground" : "glass hover:bg-muted/40"
-      }`}
-    >
-      {children}
-    </button>
+        {matches.length === 0 && (
+          <div className="rounded-2xl glass p-8 text-center text-sm text-muted-foreground">
+            Keine Treffer für „{query}".
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3">
-      <span className="w-32 shrink-0 text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="w-24 shrink-0 text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
       <span className="flex-1">{children}</span>
     </div>
   );

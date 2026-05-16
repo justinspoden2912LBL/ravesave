@@ -1,7 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
-import { SUBSTANCES, assessPair, overallRisk, RISK_META, CATEGORY_LABEL, explainRisk } from "@/lib/substances";
+import { ChevronRight, X } from "lucide-react";
+import {
+  SUBSTANCES,
+  assessPair,
+  overallRisk,
+  RISK_META,
+  CATEGORY_LABEL,
+  CATEGORY_TO_SUPER,
+  SUPER_CATEGORY_LABEL,
+  SUPER_CATEGORY_ORDER,
+  explainRisk,
+  type Substance,
+  type SubstanceCategory,
+  type SuperCategory,
+} from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/mix")({
@@ -118,7 +131,7 @@ function MixPage() {
         </div>
       )}
 
-      {/* Picker */}
+      {/* Picker — grouped by super category */}
       <div className="rounded-2xl glass p-5">
         <input
           value={query}
@@ -126,20 +139,11 @@ function MixPage() {
           placeholder="Substanz suchen..."
           className="w-full rounded-lg bg-input px-3 py-2 text-sm mb-4"
         />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-[420px] overflow-auto pr-1">
-          {filtered.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setSelected([...selected, s.id])}
-              className="text-left rounded-xl glass px-3 py-2 hover:bg-muted/40 transition"
-            >
-              <div className="font-medium text-sm">{s.name}</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
-                {CATEGORY_LABEL[s.category]}
-              </div>
-            </button>
-          ))}
-        </div>
+        <GroupedPicker
+          items={filtered}
+          onPick={(id) => setSelected([...selected, id])}
+          searching={query.trim().length > 0}
+        />
       </div>
 
       {/* Legend */}
@@ -153,6 +157,93 @@ function MixPage() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function GroupedPicker({
+  items,
+  onPick,
+  searching,
+}: {
+  items: Substance[];
+  onPick: (id: string) => void;
+  searching: boolean;
+}) {
+  const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
+  const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
+
+  const tree = useMemo(() => {
+    const t: Partial<Record<SuperCategory, Partial<Record<SubstanceCategory, Substance[]>>>> = {};
+    for (const s of items) {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      const supBucket = (t[sup] ??= {});
+      (supBucket[s.category] ??= []).push(s);
+    }
+    return t;
+  }, [items]);
+
+  return (
+    <div className="space-y-1.5 max-h-[480px] overflow-auto pr-1">
+      {SUPER_CATEGORY_ORDER.map((sup) => {
+        const cats = tree[sup];
+        if (!cats) return null;
+        const count = Object.values(cats).reduce((n, arr) => n + (arr?.length ?? 0), 0);
+        const isOpen = searching || !!openSuper[sup];
+        return (
+          <div key={sup} className="rounded-xl border border-border/40 overflow-hidden">
+            <button
+              onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-muted/30 transition"
+            >
+              <div className="flex items-center gap-2">
+                <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                <span className="text-sm font-semibold">{SUPER_CATEGORY_LABEL[sup]}</span>
+              </div>
+              <span className="text-[10px] tabular-nums text-muted-foreground rounded-full bg-muted/50 px-2 py-0.5">
+                {count}
+              </span>
+            </button>
+            {isOpen && (
+              <div className="px-2 pb-2 space-y-1.5">
+                {(Object.entries(cats) as [SubstanceCategory, Substance[]][]).map(([cat, list]) => {
+                  const catOpen = searching || !!openCat[cat];
+                  return (
+                    <div key={cat} className="rounded-lg bg-background/30">
+                      <button
+                        onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                        className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 hover:bg-muted/30 transition"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <ChevronRight className={`h-3.5 w-3.5 transition-transform ${catOpen ? "rotate-90" : ""}`} />
+                          <span className="text-xs font-medium">{CATEGORY_LABEL[cat]}</span>
+                        </div>
+                        <span className="text-[10px] tabular-nums text-muted-foreground">{list.length}</span>
+                      </button>
+                      {catOpen && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 p-2 pt-1">
+                          {list.map((s) => (
+                            <button
+                              key={s.id}
+                              onClick={() => onPick(s.id)}
+                              className="text-left rounded-lg bg-background/60 border border-border/40 px-2.5 py-1.5 hover:bg-muted/40 transition"
+                            >
+                              <div className="text-xs font-medium truncate">{s.name}</div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {items.length === 0 && (
+        <div className="text-sm text-muted-foreground text-center py-6">Keine Substanzen.</div>
+      )}
     </div>
   );
 }
