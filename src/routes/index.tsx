@@ -78,9 +78,12 @@ function Home() {
             <Shield className="h-3.5 w-3.5 text-secondary" />
             <span>100% lokal — keine Daten verlassen dein Gerät</span>
           </div>
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight">
-            Dein <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Bewusstsein</span><br />
-            verdient ein Logbuch.
+          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+            <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
+            <span className="text-foreground">, </span>
+            <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
+            <br />
+            <span className="text-foreground/80 text-2xl md:text-4xl font-medium">Wissen statt Bauchgefühl.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-muted-foreground text-lg">
             Protokolliere deinen Konsum, prüfe Mischkonsum-Risiken in Echtzeit
