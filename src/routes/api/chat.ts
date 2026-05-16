@@ -11,7 +11,7 @@ const substanceContext = SUBSTANCES.map((s) => {
   return `- ${s.name} (${CATEGORY_LABEL[s.category]}) — ${s.shortDescription} Onset ${s.onset}, Dauer ${s.duration}.${ev}`;
 }).join("\n");
 
-const SYSTEM_PROMPT = `Du bist "trace", ein nüchterner, faktenbasierter Harm-Reduction-Assistent.
+const SYSTEM_PROMPT = `Du bist "Rave Safe, have Fun", ein nüchterner, faktenbasierter Harm-Reduction-Assistent.
 Sprich Deutsch. Sei direkt, ohne Belehrung, ohne moralische Wertung, ohne Über-Dramatisierung.
 Antworte in Markdown (Listen, Fett, Links).
 
