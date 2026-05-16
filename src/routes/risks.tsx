@@ -641,3 +641,35 @@ function SubstanceBrief({ s }: { s: import("@/lib/substances").Substance }) {
     </div>
   );
 }
+
+function PairPharmaVisual({
+  self,
+  other,
+}: {
+  self: import("@/lib/substances").Substance;
+  other: import("@/lib/substances").Substance;
+}) {
+  const pa = profileFor(self.id);
+  const pb = profileFor(other.id);
+  if (!pa && !pb) return null;
+  const loads = aggregateFlags([self.id, other.id]);
+  const cyp = aggregateCyp([self.id, other.id]);
+  const layers = [
+    pa ? { id: self.id, name: self.name, targets: pa.targets } : null,
+    pb ? { id: other.id, name: other.name, targets: pb.targets } : null,
+  ].filter((l): l is { id: string; name: string; targets: NonNullable<ReturnType<typeof profileFor>>["targets"] } => !!l);
+  return (
+    <div className="rounded-lg bg-background/50 p-2.5 border border-border/40 space-y-2.5">
+      <div className="text-[10px] uppercase tracking-wider font-semibold text-foreground/70">
+        Pharmakologische Überlagerung
+      </div>
+      <div className="grid gap-3 sm:grid-cols-[auto_1fr] items-start">
+        {layers.length > 0 && <ReceptorOverlap layers={layers} size={130} />}
+        <div className="space-y-2 min-w-0">
+          <RiskLoadBars loads={loads} />
+          <CypConflicts conflicts={cyp} />
+        </div>
+      </div>
+    </div>
+  );
+}
