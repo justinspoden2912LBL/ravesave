@@ -232,9 +232,7 @@ function RisksPage() {
                               {CATEGORY_LABEL[other.category]}
                             </span>
                           </div>
-                          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                            {risk.reason}
-                          </p>
+                          <RiskExplain risk={risk} detail={detail} />
                         </li>
                       ))}
                     </ul>
