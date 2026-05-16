@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Siren,
@@ -12,6 +12,10 @@ import {
   Frown,
   Activity,
   ArrowLeft,
+  IdCard,
+  Pencil,
+  Save,
+  Trash2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -22,6 +26,15 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  emptyEmergencyInfo,
+  emergencyInfoSchema,
+  hasAnyEmergencyInfo,
+  loadEmergencyInfo,
+  saveEmergencyInfo,
+  clearEmergencyInfo,
+  type EmergencyInfo,
+} from "@/lib/emergencyInfo";
 
 const SCENARIOS: { label: string; to: string; hint: string }[] = [
   { label: "Opioid-Überdosis (Atemstillstand)", to: "/substances", hint: "Naloxon, Atemspende" },
@@ -198,6 +211,9 @@ export function EmergencyButton() {
         >
           <Phone className="h-6 w-6" /> 112 anrufen
         </a>
+
+        {/* Medical ID — immer sichtbar, damit Ersthelfer:innen Infos finden */}
+        <MedicalCard />
 
         {!guide && (
           <>
