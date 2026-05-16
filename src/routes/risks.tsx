@@ -1,14 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Search, ShieldAlert } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
   RISK_META,
   assessPair,
+  explainRisk,
   type RiskLevel,
   type SubstanceCategory,
 } from "@/lib/substances";
+import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/risks")({
   component: RisksPage,
@@ -28,6 +30,13 @@ function RisksPage() {
   const [query, setQuery] = useState("");
   const [catFilter, setCatFilter] = useState<SubstanceCategory | "all">("all");
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
+  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
+  const [detail, setDetail] = useState<DetailLevel>("lay");
+  useEffect(() => {
+    const d = getDetailLevel(loadProfile());
+    setProfileDetail(d);
+    setDetail(d);
+  }, []);
 
   const selected = SUBSTANCES.find((s) => s.id === selectedId);
 
@@ -141,12 +150,15 @@ function RisksPage() {
                     <h2 className="text-2xl font-bold mt-0.5">{selected.name}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{selected.shortDescription}</p>
                   </div>
-                  <Link
-                    to="/mix"
-                    className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
-                  >
-                    → Mehrfach-Mix prüfen
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+                    <Link
+                      to="/mix"
+                      className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
+                    >
+                      → Mehrfach-Mix
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Risiko-Counts */}
@@ -220,9 +232,7 @@ function RisksPage() {
                               {CATEGORY_LABEL[other.category]}
                             </span>
                           </div>
-                          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                            {risk.reason}
-                          </p>
+                          <RiskExplain risk={risk} detail={detail} />
                         </li>
                       ))}
                     </ul>
@@ -265,5 +275,64 @@ function FilterChip({
     >
       {children}
     </button>
+  );
+}
+
+const DETAIL_LABEL: Record<DetailLevel, string> = {
+  lay: "Einfach",
+  intermediate: "Mechanismus",
+  expert: "Fachebene",
+};
+
+function DetailToggle({
+  value,
+  onChange,
+  profileDetail,
+}: {
+  value: DetailLevel;
+  onChange: (v: DetailLevel) => void;
+  profileDetail: DetailLevel;
+}) {
+  const levels: DetailLevel[] = ["lay", "intermediate", "expert"];
+  return (
+    <div className="flex items-center gap-0.5 rounded-full glass p-0.5 text-xs">
+      {levels.map((l) => (
+        <button
+          key={l}
+          onClick={() => onChange(l)}
+          title={l === profileDetail ? "Aus deinem Profil" : undefined}
+          className={`px-2.5 py-1 rounded-full transition ${
+            value === l ? "bg-aurora animate-aurora text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {DETAIL_LABEL[l]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function RiskExplain({
+  risk,
+  detail,
+}: {
+  risk: import("@/lib/substances").RiskInfo;
+  detail: DetailLevel;
+}) {
+  const ex = explainRisk(risk, detail);
+  return (
+    <>
+      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{ex.headline}</p>
+      {ex.detail && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground/80 leading-relaxed border-l-2 border-border pl-2">
+          <span className="font-semibold text-foreground/70">Mechanismus:</span> {ex.detail}
+        </p>
+      )}
+      {ex.expert && ex.expert !== ex.detail && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground/80 leading-relaxed border-l-2 border-secondary/60 pl-2">
+          <span className="font-semibold text-secondary">Fachebene:</span> {ex.expert}
+        </p>
+      )}
+    </>
   );
 }

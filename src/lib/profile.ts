@@ -6,11 +6,23 @@ export type Frequency = "never" | "tried_once" | "rare" | "monthly" | "weekly" |
 export type RouteForm = "oral" | "nasal" | "inhaled" | "smoked" | "rectal" | "iv" | "im" | "sublingual" | "transdermal";
 export type Motivation = "fun" | "curiosity" | "coping" | "selfmed" | "performance" | "connection" | "escape" | "research";
 
+/** Selbsteinschätzung Pharmakologie-/Safer-Use-Wissen. */
+export type ExpertiseLevel = "none" | "casual" | "experienced" | "expert";
+/** Beruflicher Hintergrund — beeinflusst Detailtiefe und Fachsprache. */
+export type Profession =
+  | "none"
+  | "medical"        // Arzt/Ärztin, Pflege, Rettungsdienst
+  | "pharmacy"       // Apotheker:in, PTA
+  | "psychology"     // Psychotherapie, Psychiatrie
+  | "harm_reduction" // Drogenhilfe, Streetwork, Checkit-Projekte
+  | "research"       // Pharmakologie / Toxikologie
+  | "other";
+
 export interface SubstanceExperience {
   substance: string;
   frequency: Frequency;
   routes: RouteForm[];
-  lastUse?: string; // ISO date (optional)
+  lastUse?: string;
 }
 
 export interface UserProfile {
@@ -20,19 +32,19 @@ export interface UserProfile {
   nickname?: string;
   ageRange?: "u18" | "18-24" | "25-34" | "35-44" | "45+";
   bodyWeightKg?: number;
+  /** Wie tief sollen Erklärungen gehen? */
+  expertiseLevel?: ExpertiseLevel;
+  /** Beruflicher Kontext (optional, lokal). */
+  profession?: Profession;
   experiences: SubstanceExperience[];
   contexts: UsageContext[];
   motivations: Motivation[];
-  // Frequency / pattern
   typicalInterval?: "daily" | "weekly" | "monthly" | "occasional" | "rare";
-  // Health
-  medications: string; // free text
-  preexistingConditions: string; // free text (mental + physical)
+  medications: string;
+  preexistingConditions: string;
   pastAddiction: "none" | "past" | "current" | "unsure";
   inTreatment: boolean;
-  // Goals
-  saferUseGoals: string; // free text
-  // Consent
+  saferUseGoals: string;
   shareWithAI: boolean;
 }
 
@@ -71,6 +83,8 @@ export function emptyProfile(): UserProfile {
     version: 1,
     createdAt: now,
     updatedAt: now,
+    expertiseLevel: "casual",
+    profession: "none",
     experiences: [],
     contexts: [],
     motivations: [],
@@ -82,6 +96,41 @@ export function emptyProfile(): UserProfile {
     shareWithAI: true,
   };
 }
+
+/** Detailtiefe für Erklärungen — abgeleitet aus Beruf + Selbsteinschätzung. */
+export type DetailLevel = "lay" | "intermediate" | "expert";
+
+export function getDetailLevel(p: UserProfile | null | undefined): DetailLevel {
+  if (!p) return "lay";
+  if (p.profession === "medical" || p.profession === "pharmacy" || p.profession === "research") {
+    return "expert";
+  }
+  if (p.profession === "psychology" || p.profession === "harm_reduction") {
+    return p.expertiseLevel === "expert" ? "expert" : "intermediate";
+  }
+  switch (p.expertiseLevel) {
+    case "expert": return "expert";
+    case "experienced": return "intermediate";
+    default: return "lay";
+  }
+}
+
+export const PROFESSION_LABEL: Record<Profession, string> = {
+  none: "keine Angabe",
+  medical: "Medizin (Arzt/Pflege/Rettung)",
+  pharmacy: "Pharmazie / Apotheke",
+  psychology: "Psychologie / Psychotherapie",
+  harm_reduction: "Drogenhilfe / Streetwork",
+  research: "Forschung (Pharma/Tox)",
+  other: "anderer Fachbereich",
+};
+
+export const EXPERTISE_LABEL: Record<ExpertiseLevel, string> = {
+  none: "keine Vorkenntnisse",
+  casual: "Grundwissen / Freizeit",
+  experienced: "erfahren, kenne Wirkmechanismen grob",
+  expert: "Fachwissen / pharmakologisch versiert",
+};
 
 const FREQ_LABEL: Record<Frequency, string> = {
   never: "nie",
@@ -139,9 +188,21 @@ export function summarizeProfile(p: UserProfile): string {
   );
   if (p.saferUseGoals.trim()) lines.push(`Eigene Safer-Use-Ziele: ${p.saferUseGoals.trim()}`);
 
+  const detail = getDetailLevel(p);
+  if (p.profession && p.profession !== "none") lines.push(`Beruflicher Hintergrund: ${PROFESSION_LABEL[p.profession]}`);
+  if (p.expertiseLevel) lines.push(`Selbsteinschätzung Wissen: ${EXPERTISE_LABEL[p.expertiseLevel]}`);
+  lines.push(`Gewünschte Detailtiefe: ${detail}`);
+
+  const styleInstruction = {
+    lay: "Antworte in einfacher Alltagssprache, vermeide Fachbegriffe oder erkläre sie kurz in Klammern. Kein Pharmakologie-Jargon.",
+    intermediate: "Verwende gängige pharmakologische Begriffe (Rezeptor-Klassen, Halbwertszeit, Tachyphylaxie) ohne sie jedes Mal zu definieren. Erkläre Mechanismen knapp.",
+    expert: "Schreibe auf Fachniveau (medizinische Fachkraft): konkrete Rezeptor-Subtypen, CYP-Enzyme, Halbwertszeiten, klinische Kontraindikationen, relevante Studien. Keine Vereinfachung, keine moralisierenden Disclaimer wenn nicht nötig.",
+  }[detail];
+
   lines.push(
     "",
     "Beziehe diese Angaben sachlich ein: passe Dosis-Hinweise an Erfahrung & Gewicht an, weise auf relevante Wechselwirkungen mit genannten Medikamenten hin, vermeide Belehrung, kein Moralisieren.",
+    styleInstruction,
   );
   return lines.join("\n");
 }

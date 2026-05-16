@@ -929,7 +929,26 @@ export type RiskLevel = "safe" | "caution" | "unsafe" | "danger" | "synergy" | "
 
 export interface RiskInfo {
   level: RiskLevel;
+  /** Kurze Laien-Erklärung. */
   reason: string;
+  /** Optional: physiologischer Mechanismus in 1–2 Sätzen (intermediate). */
+  mechanism?: string;
+  /** Optional: Fachebene — Rezeptoren/Enzyme/Kontraindikationen (expert). */
+  expert?: string;
+}
+
+/** Formatiert das Risiko entsprechend dem Detail-Level des Users. */
+export function explainRisk(
+  info: RiskInfo,
+  level: "lay" | "intermediate" | "expert" = "lay",
+): { headline: string; detail?: string; expert?: string } {
+  if (level === "lay" || (!info.mechanism && !info.expert)) {
+    return { headline: info.reason };
+  }
+  if (level === "intermediate") {
+    return { headline: info.reason, detail: info.mechanism };
+  }
+  return { headline: info.reason, detail: info.mechanism, expert: info.expert ?? info.mechanism };
 }
 
 const CAT = (id: string) => SUBSTANCES.find((s) => s.id === id)!.category;
@@ -941,48 +960,113 @@ function pairKey(a: string, b: string) {
 // Category-level baseline + specific overrides.
 const CATEGORY_MATRIX: Record<string, RiskInfo> = {
   // depressant combos
-  "depressant|depressant": { level: "danger", reason: "Verstärkte Atemdepression. Hohes Überdosisrisiko." },
-  "alcohol|depressant": { level: "danger", reason: "GABA-Synergie – Atemstillstand möglich." },
-  "alcohol|opioid": { level: "danger", reason: "Massive Atemdepression. Häufigste tödliche Kombination." },
-  "alcohol|benzodiazepine": { level: "danger", reason: "Synergistische Sedierung, Blackouts, Atemstillstand." },
-  "opioid|benzodiazepine": { level: "danger", reason: "Atemdepression – dokumentiert häufig tödlich." },
-  "opioid|depressant": { level: "danger", reason: "Additive Atemdepression." },
-  "opioid|opioid": { level: "danger", reason: "Überdosisrisiko, ohne Toleranzkenntnis lebensgefährlich." },
+  "depressant|depressant": {
+    level: "danger",
+    reason: "Verstärkte Atemdepression. Hohes Überdosisrisiko.",
+    mechanism: "Zwei Dämpfer wirken auf dasselbe System (GABA/Glutamat) und addieren ihre atemhemmende Wirkung — die Atmung kann unbemerkt aussetzen.",
+    expert: "Additive positive allosterische Modulation am GABA_A-Rezeptor + ggf. NMDA-Antagonismus → supralineare Suppression des prä-Bötzinger-Komplexes. LD-Schwellen sinken deutlich; klinisch häufige Ursache für hypoxische Hirnschäden.",
+  },
+  "alcohol|depressant": {
+    level: "danger",
+    reason: "GABA-Synergie – Atemstillstand möglich.",
+    mechanism: "Alkohol und andere Dämpfer verstärken denselben hemmenden Botenstoff (GABA). Die Atmung wird stärker gedämpft als die Summe der Einzelwirkungen.",
+    expert: "Ethanol moduliert GABA_A allosterisch und NMDA antagonistisch; in Kombination mit weiteren CNS-Depressiva entsteht synergistische Atemdepression. Aspirations- und Hypothermie-Risiko erhöht.",
+  },
+  "alcohol|opioid": {
+    level: "danger",
+    reason: "Massive Atemdepression. Häufigste tödliche Kombination.",
+    mechanism: "Opioide drosseln die Atemfrequenz, Alkohol drückt zusätzlich auf das Atemzentrum. Schon übliche Mengen können tödlich sein.",
+    expert: "µ-Opioid-Agonismus reduziert CO₂-Antwort der Chemorezeptoren; Ethanol senkt diese zusätzlich über GABA_A-Potenzierung. Synergie nicht additiv. Häufigste Todesursache in Opioid-Mortalitätsstatistiken (CDC, EMCDDA). Naloxon bereithalten.",
+  },
+  "alcohol|benzodiazepine": {
+    level: "danger",
+    reason: "Synergistische Sedierung, Blackouts, Atemstillstand.",
+    mechanism: "Beide verstärken denselben hemmenden Rezeptor — die Wirkung multipliziert sich, statt sich nur zu addieren.",
+    expert: "Ethanol + BZD beide am GABA_A; BZDs erhöhen Öffnungsfrequenz, Ethanol potenziert allosterisch. Klinisch: anterograde Amnesie, Ataxie, Atemdepression. Flumazenil reversiert nur BZD-Anteil, riskant bei Mischintox.",
+  },
+  "opioid|benzodiazepine": {
+    level: "danger",
+    reason: "Atemdepression – dokumentiert häufig tödlich.",
+    mechanism: "Opioide nehmen den Atemreiz weg, Benzos schalten die Schutzreflexe ab — keine Warnsymptome vor dem Atemstillstand.",
+    expert: "FDA Black Box Warning (2016): Co-Präskription erhöht OD-Mortalität ~10×. Mechanistisch µ-vermittelte CO₂-Hyporesponsivität + GABAerge Suppression supraspinaler Atemzentren. Kontraindiziert außer in palliativen Settings.",
+  },
+  "opioid|depressant": { level: "danger", reason: "Additive Atemdepression.", mechanism: "Doppelte Dämpfung der Atmung — Atemzentrum bekommt von zwei Seiten weniger Input." },
+  "opioid|opioid": {
+    level: "danger",
+    reason: "Überdosisrisiko, ohne Toleranzkenntnis lebensgefährlich.",
+    mechanism: "Toleranz ist substanz- und rezeptor-spezifisch — die Toleranz gegen eines schützt nicht voll gegen ein anderes.",
+    expert: "Inkomplette Kreuztoleranz zwischen µ-Voll- und Partial-Agonisten (z.B. Methadon ↔ Heroin). Unterschiedliche intrinsic activity → unvorhersehbare Wirkung trotz Konvertierungstabellen. Long-acting + short-acting Mix besonders riskant.",
+  },
   "benzodiazepine|depressant": { level: "danger", reason: "Atemdepression, Bewusstlosigkeit." },
-  "benzodiazepine|benzodiazepine": { level: "unsafe", reason: "Additive Sedierung ohne klinischen Nutzen." },
+  "benzodiazepine|benzodiazepine": { level: "unsafe", reason: "Additive Sedierung ohne klinischen Nutzen.", mechanism: "Mehrere Benzos zugleich erhöhen nur Risiko und Halbwertszeit, nicht den erwünschten Effekt." },
 
   // dissociative + depressant
-  "dissociative|opioid": { level: "danger", reason: "Atemdepression, schwer einschätzbar." },
-  "dissociative|benzodiazepine": { level: "unsafe", reason: "Atemdepression möglich." },
-  "dissociative|alcohol": { level: "unsafe", reason: "Erbrechen + Bewusstlosigkeit – Aspirationsgefahr." },
+  "dissociative|opioid": {
+    level: "danger",
+    reason: "Atemdepression, schwer einschätzbar.",
+    mechanism: "Dissoziativa nehmen die Wahrnehmung für die eigene Atmung weg — du merkst nicht, dass das Opioid zu viel war.",
+    expert: "NMDA-Antagonismus reduziert kortikale Wahrnehmung von Dyspnoe; µ-Agonismus suprimiert Atemantrieb. Klinisch oft Aspiration durch Ketamin-induzierten Würgereflex-Verlust + Opioid-Sedierung.",
+  },
+  "dissociative|benzodiazepine": { level: "unsafe", reason: "Atemdepression möglich.", mechanism: "GABAerge Sedierung + NMDA-Blockade → Bewusstsein und Atemreflexe sinken zusammen." },
+  "dissociative|alcohol": { level: "unsafe", reason: "Erbrechen + Bewusstlosigkeit – Aspirationsgefahr.", mechanism: "Ketamin/PCP induzieren häufig Erbrechen, Alkohol legt Schutzreflexe lahm — Erbrochenes kann in die Lunge gelangen." },
   "dissociative|depressant": { level: "unsafe", reason: "Sedierung verstärkt." },
 
   // stimulant combos
-  "stimulant|stimulant": { level: "unsafe", reason: "Additive kardiovaskuläre Belastung, Hyperthermie, Psychose." },
-  "stimulant|cathinone": { level: "unsafe", reason: "Kardiotox-Additivität, Re-Dose-Schleifen." },
+  "stimulant|stimulant": {
+    level: "unsafe",
+    reason: "Additive kardiovaskuläre Belastung, Hyperthermie, Psychose.",
+    mechanism: "Zwei Stimulanzien feuern dasselbe Stresssystem an: Herz schlägt schneller, Körpertemperatur steigt, Risiko für Panik/Psychose wächst.",
+    expert: "Additive Freisetzung/Re-Uptake-Hemmung von Dopamin und Noradrenalin → sympathomimetische Krise: Tachyarrhythmien, hypertensive Spitzen, Vasokonstriktion (Koronarspasmus möglich), zentrale Hyperthermie via 5-HT2A/dopaminerge Dysregulation.",
+  },
+  "stimulant|cathinone": { level: "unsafe", reason: "Kardiotox-Additivität, Re-Dose-Schleifen.", mechanism: "Cathinone haben kurze Halbwertszeit → Re-Dose-Druck addiert sich zur Stim-Last." },
   "cathinone|cathinone": { level: "unsafe", reason: "Vasokonstriktion und Hyperthermie addieren sich." },
-  "stimulant|empathogen": { level: "unsafe", reason: "Erhöhter Blutdruck, Hyperthermie." },
+  "stimulant|empathogen": {
+    level: "unsafe",
+    reason: "Erhöhter Blutdruck, Hyperthermie.",
+    mechanism: "MDMA wirkt schon stark auf Herz und Temperatur — ein zusätzlicher Stim verdoppelt diese Last.",
+    expert: "MDMA-induzierte Serotonin-/NA-Freisetzung + zusätzliche DA/NA-Freisetzung → synergistische sympathomimetische Toxizität; CYP2D6-Hemmung durch MDMA verlangsamt zudem den Abbau einiger Stimulanzien.",
+  },
   "cathinone|empathogen": { level: "unsafe", reason: "Serotonerge und kardiale Belastung addieren sich." },
-  "empathogen|empathogen": { level: "unsafe", reason: "Serotonin-Last steigt – Hyperthermie/Tox." },
+  "empathogen|empathogen": {
+    level: "unsafe",
+    reason: "Serotonin-Last steigt – Hyperthermie/Tox.",
+    mechanism: "Beide schwemmen Serotonin frei — Risiko für Serotonin-Syndrom (Zittern, Hitze, Verwirrung) steigt deutlich.",
+    expert: "Additive SERT-Substrat-Wirkung → 5-HT-Flut + Erschöpfung der Vesikelspeicher. Risiko serotonerger Toxizität nach Sternbach/Hunter-Kriterien, besonders bei CYP2D6-Slow-Metabolizern.",
+  },
 
   // stimulant + depressant masking
-  "stimulant|alcohol": { level: "caution", reason: "Sedierung wird maskiert – Risiko Alkoholvergiftung." },
-  "stimulant|opioid": { level: "unsafe", reason: "Speedball – nach Abklingen Stim hohe Atemdepressions-Gefahr." },
+  "stimulant|alcohol": {
+    level: "caution",
+    reason: "Sedierung wird maskiert – Risiko Alkoholvergiftung.",
+    mechanism: "Stims überdecken das 'Ich bin betrunken'-Gefühl. Du trinkst weiter, obwohl der Körper schon überfordert ist.",
+    expert: "Sympathische Aktivierung kompensiert subjektiv die Ethanol-bedingte Sedierung, ohne BAC oder hepatische Toxizität zu beeinflussen. Nach Abklingen des Stim plötzliche Demaskierung der Intoxikation.",
+  },
+  "stimulant|opioid": {
+    level: "unsafe",
+    reason: "Speedball – nach Abklingen Stim hohe Atemdepressions-Gefahr.",
+    mechanism: "Stim hält wach, Opioid drosselt Atmung. Wenn der Stim zuerst nachlässt, kippt die Balance — viele OD-Fälle so erklärbar.",
+    expert: "Klassischer 'Speedball': Cocain HWZ ~30–90 min, Heroin/Fentanyl-Atemdepression hält länger an. Nach Wegfall der sympathischen Gegenregulation kommt es zur ungeschützten µ-vermittelten Apnoe. Hauptursache der Speedball-Mortalität (Belushi, Farley, Hoffman).",
+  },
   "cathinone|opioid": { level: "unsafe", reason: "Speedball-Effekt, plötzliche Atemdepression möglich." },
   "stimulant|depressant": { level: "caution", reason: "Effekte maskieren sich gegenseitig." },
 
   // psychedelics
-  "psychedelic|psychedelic": { level: "caution", reason: "Wirkung schwer vorhersagbar, intensivere Erfahrung." },
-  "psychedelic|stimulant": { level: "caution", reason: "Ängstliche/psychotische Reaktionen häufiger." },
+  "psychedelic|psychedelic": { level: "caution", reason: "Wirkung schwer vorhersagbar, intensivere Erfahrung.", mechanism: "Mehrere 5-HT2A-Agonisten gleichzeitig → unvorhersehbare Synergie, oft länger und intensiver als erwartet." },
+  "psychedelic|stimulant": { level: "caution", reason: "Ängstliche/psychotische Reaktionen häufiger.", mechanism: "Stim-bedingte Übererregung + 5-HT2A-Aktivität → Schwelle für Angst/Paranoia sinkt." },
   "psychedelic|cathinone": { level: "caution", reason: "Erhöhte Angst-/Psychose-Wahrscheinlichkeit." },
-  "psychedelic|empathogen": { level: "synergy", reason: "'Candy-Flip' – beliebt aber serotonerge Last erhöht." },
+  "psychedelic|empathogen": {
+    level: "synergy",
+    reason: "'Candy-Flip' – beliebt aber serotonerge Last erhöht.",
+    mechanism: "Bekannte Kombi mit angenehmem Profil, aber MDMA + 5-HT2A-Agonist erhöht Hitze/Herz-Risiko und neurotoxisches Potenzial.",
+    expert: "MDMA-getriebener 5-HT-Efflux + 5-HT2A-Postsynapse-Aktivierung → potenziell höhere 5-HT2A-Downstream-Signalisierung (PLC/IP3). In Tiermodellen Hinweise auf erhöhte 5-HT-Neurotoxizität bei Co-Administration.",
+  },
   "psychedelic|dissociative": { level: "caution", reason: "Sehr unvorhersehbare Trips." },
-  "psychedelic|cannabinoid": { level: "caution", reason: "Kann Trip stark verstärken / kippen lassen." },
+  "psychedelic|cannabinoid": { level: "caution", reason: "Kann Trip stark verstärken / kippen lassen.", mechanism: "CB1-Aktivierung verstärkt die Wahrnehmungsveränderungen — angenehme Trips können kippen." },
 
   // empathogen + dissociative / opioid
   "empathogen|dissociative": { level: "caution", reason: "Stark verstärkende Effekte." },
-  "empathogen|opioid": { level: "unsafe", reason: "Serotonin + Atemdepression." },
-  "empathogen|alcohol": { level: "caution", reason: "Dehydrierung, Lebertoxizität." },
+  "empathogen|opioid": { level: "unsafe", reason: "Serotonin + Atemdepression.", mechanism: "MDMA macht wach und drückt den Blutdruck hoch — wenn das Opioid die Atmung dämpft, fällt diese Schutzwirkung weg." },
+  "empathogen|alcohol": { level: "caution", reason: "Dehydrierung, Lebertoxizität.", mechanism: "MDMA + Alkohol = doppelte Belastung für Leber und Wasserhaushalt." },
 
   // cannabis as wildcard
   "cannabinoid|opioid": { level: "caution", reason: "Sedierung verstärkt." },
@@ -991,27 +1075,61 @@ const CATEGORY_MATRIX: Record<string, RiskInfo> = {
   "cannabinoid|stimulant": { level: "caution", reason: "Tachykardie, Angst." },
 
   // neuroleptics
-  "neuroleptic|psychedelic": { level: "caution", reason: "Beendet meist den Trip – aber selbst kreislaufbelastend." },
-  "neuroleptic|stimulant": { level: "unsafe", reason: "QT-Verlängerung, kardiale Belastung." },
+  "neuroleptic|psychedelic": { level: "caution", reason: "Beendet meist den Trip – aber selbst kreislaufbelastend.", mechanism: "5-HT2A-Antagonisten kappen die psychedelische Wirkung; Antipsychotika belasten aber selbst Herz und Kreislauf." },
+  "neuroleptic|stimulant": { level: "unsafe", reason: "QT-Verlängerung, kardiale Belastung.", expert: "Viele Antipsychotika (z.B. Haloperidol, Quetiapin) verlängern QTc; in Kombination mit sympathomimetischer Stim-Last → Torsade-de-pointes-Risiko." },
   "neuroleptic|cathinone": { level: "unsafe", reason: "Kardiale Belastung, antagonistische Effekte." },
-  "neuroleptic|opioid": { level: "danger", reason: "Atemdepression, Hypotonie." },
+  "neuroleptic|opioid": { level: "danger", reason: "Atemdepression, Hypotonie.", expert: "α1-Blockade + µ-Agonismus → schwere orthostatische Hypotonie; H1/M1-Sedierung addiert sich zur opioiden Atemdepression." },
   "neuroleptic|alcohol": { level: "danger", reason: "Atemdepression, schwere Hypotonie." },
   "neuroleptic|benzodiazepine": { level: "unsafe", reason: "Verstärkte Sedierung." },
   "neuroleptic|depressant": { level: "unsafe", reason: "Sedierung addiert sich." },
-  "neuroleptic|empathogen": { level: "caution", reason: "Reduziert MDMA-Wirkung; aber Kreislaufrisiko." },
+  "neuroleptic|empathogen": { level: "caution", reason: "Reduziert MDMA-Wirkung; aber Kreislaufrisiko.", expert: "5-HT2A-Blockade hebt einen Teil der MDMA-Wirkung auf, ohne periphere sympathomimetische Effekte (HF, BD, Hyperthermie) zu mindern → riskante Asymmetrie." },
   "neuroleptic|dissociative": { level: "caution", reason: "Sedierung verstärkt." },
-  "neuroleptic|neuroleptic": { level: "unsafe", reason: "EPS-Risiko, QT-Verlängerung." },
+  "neuroleptic|neuroleptic": { level: "unsafe", reason: "EPS-Risiko, QT-Verlängerung.", expert: "Additive D2-Blockade → erhöhtes EPS- und MNS-Risiko; kumulative QTc-Verlängerung." },
 };
 
 // Specific id-pair overrides where category logic is too coarse.
 const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
-  [pairKey("mdma", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko (Tramadol ist auch SNRI)." },
-  [pairKey("mdma", "alcohol")]: { level: "caution", reason: "Dehydrierung + Leber- und Herzbelastung." },
-  [pairKey("cocaine", "alcohol")]: { level: "unsafe", reason: "Bildet Cocaethylen – hepato- und kardiotoxisch." },
-  [pairKey("ghb", "alcohol")]: { level: "danger", reason: "Atemdepression, Bewusstlosigkeit, Aspirationsgefahr." },
-  [pairKey("fentanyl", "alcohol")]: { level: "danger", reason: "Extrem hohes Atemstillstand-Risiko." },
-  [pairKey("lsd", "lithium")]: { level: "danger", reason: "Krampfanfälle dokumentiert." },
-  [pairKey("dmt", "mdma")]: { level: "caution", reason: "Serotonerge Last erhöht." },
+  [pairKey("mdma", "tramadol")]: {
+    level: "danger",
+    reason: "Serotonin-Syndrom-Risiko (Tramadol ist auch SNRI).",
+    mechanism: "Tramadol erhöht selbst Serotonin im Gehirn. Zusammen mit MDMA wird die Schwelle für ein Serotonin-Syndrom (Hitze, Zittern, Verwirrung) leicht überschritten.",
+    expert: "Tramadol = µ-Agonist + SNRI mit zusätzlicher 5-HT-Freisetzung. Kombiniert mit MDMA (SERT-Substrat) → exzessive 5-HT-Akkumulation. Tramadol senkt zudem die Krampfschwelle; CYP2D6-Hemmung durch MDMA erhöht Tramadol-Spiegel.",
+  },
+  [pairKey("mdma", "alcohol")]: {
+    level: "caution",
+    reason: "Dehydrierung + Leber- und Herzbelastung.",
+    mechanism: "MDMA macht durstig und wach, Alkohol entwässert — der Körper kommt in einen Hitzestress, der oft erst spät auffällt.",
+    expert: "Hepatische Belastung durch MDMA-Metaboliten (α-MeDA) + CYP2E1-Induktion durch Ethanol. Erhöhtes Hyperthermie- und Hyponatriämie-Risiko.",
+  },
+  [pairKey("cocaine", "alcohol")]: {
+    level: "unsafe",
+    reason: "Bildet Cocaethylen – hepato- und kardiotoxisch.",
+    mechanism: "Im Körper entsteht ein neuer Stoff (Cocaethylen), der länger wirkt und das Herz stärker belastet als Kokain allein.",
+    expert: "Hepatische Transesterifizierung via Carboxylesterase 1 → Cocaethylen. HWZ 3–4× länger als Cocain, höhere kardiale Affinität, dokumentiert ~18–25× höheres Risiko für plötzlichen Herztod vs. Cocain allein.",
+  },
+  [pairKey("ghb", "alcohol")]: {
+    level: "danger",
+    reason: "Atemdepression, Bewusstlosigkeit, Aspirationsgefahr.",
+    mechanism: "GHB hat eine sehr steile Dosis-Wirkungs-Kurve. Schon wenig Alkohol verschiebt die Kurve so, dass aus 'angenehm' schnell 'bewusstlos' wird.",
+    expert: "GHB-Pharmakokinetik nicht-linear (sättigbare β-Oxidation). Co-Administration mit Ethanol potenziert GABA_B-Agonismus und supprimiert Atem-Schutzreflexe. LD50 sinkt drastisch.",
+  },
+  [pairKey("fentanyl", "alcohol")]: {
+    level: "danger",
+    reason: "Extrem hohes Atemstillstand-Risiko.",
+    mechanism: "Fentanyl ist 50–100× stärker als Morphin. Mit Alkohol kann schon eine kleinste Menge tödlich sein.",
+    expert: "Hohe intrinsische µ-Aktivität + Ethanol-GABAerge Suppression → therapeutischer Index praktisch eliminiert. Naloxon-Dosis oft mehrfach nötig (Lipophilie, Re-Distribution).",
+  },
+  [pairKey("lsd", "lithium")]: {
+    level: "danger",
+    reason: "Krampfanfälle dokumentiert.",
+    mechanism: "Lithium und LSD zusammen können einen epileptischen Anfall auslösen — auch bei Leuten, die noch nie einen hatten.",
+    expert: "Mechanismus nicht final geklärt; vermutet serotonerge + glutamaterge Dysregulation und Senkung der Krampfschwelle. Multiple Case Reports mit Grand-mal trotz therapeutischer Lithium-Spiegel.",
+  },
+  [pairKey("dmt", "mdma")]: {
+    level: "caution",
+    reason: "Serotonerge Last erhöht.",
+    mechanism: "Beide treiben Serotonin hoch — Risiko für Hitze und Herzbelastung steigt.",
+  },
 
   // 5-MeO-DMT – schon kleinste serotonerge Zusatzbelastung kann Serotonin-Syndrom auslösen.
   [pairKey("5-meo-dmt", "mdma")]: { level: "danger", reason: "Massive serotonerge Synergie – Serotonin-Syndrom-Risiko." },

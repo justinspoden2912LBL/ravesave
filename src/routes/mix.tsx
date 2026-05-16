@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-import { SUBSTANCES, assessPair, overallRisk, RISK_META, CATEGORY_LABEL } from "@/lib/substances";
+import { SUBSTANCES, assessPair, overallRisk, RISK_META, CATEGORY_LABEL, explainRisk } from "@/lib/substances";
+import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
@@ -11,6 +12,13 @@ export const Route = createFileRoute("/mix")({
 function MixPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
+  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
+  const [detail, setDetail] = useState<DetailLevel>("lay");
+  useEffect(() => {
+    const d = getDetailLevel(loadProfile());
+    setProfileDetail(d);
+    setDetail(d);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -75,11 +83,15 @@ function MixPage() {
       {/* Pair breakdown */}
       {pairs.length > 0 && (
         <div className="rounded-2xl glass p-5">
-          <h2 className="font-semibold mb-3">Alle Paare</h2>
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h2 className="font-semibold">Alle Paare</h2>
+            <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+          </div>
           <ul className="space-y-2">
             {pairs.map(({ a, b, risk }) => {
               const sa = SUBSTANCES.find((s) => s.id === a)!;
               const sb = SUBSTANCES.find((s) => s.id === b)!;
+              const ex = explainRisk(risk, detail);
               return (
                 <li key={a + b} className={`rounded-xl border p-3 ${RISK_META[risk.level].bg}`}>
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -88,7 +100,17 @@ function MixPage() {
                       {RISK_META[risk.level].label}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{risk.reason}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{ex.headline}</p>
+                  {ex.detail && (
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-relaxed border-l-2 border-border pl-2">
+                      <span className="font-semibold text-foreground/70">Mechanismus:</span> {ex.detail}
+                    </p>
+                  )}
+                  {ex.expert && ex.expert !== ex.detail && (
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-relaxed border-l-2 border-secondary/60 pl-2">
+                      <span className="font-semibold text-secondary">Fachebene:</span> {ex.expert}
+                    </p>
+                  )}
                 </li>
               );
             })}
@@ -131,6 +153,41 @@ function MixPage() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+const DETAIL_LABEL: Record<DetailLevel, string> = {
+  lay: "Einfach",
+  intermediate: "Mechanismus",
+  expert: "Fachebene",
+};
+
+function DetailToggle({
+  value,
+  onChange,
+  profileDetail,
+}: {
+  value: DetailLevel;
+  onChange: (v: DetailLevel) => void;
+  profileDetail: DetailLevel;
+}) {
+  const levels: DetailLevel[] = ["lay", "intermediate", "expert"];
+  return (
+    <div className="flex items-center gap-1 rounded-full glass p-0.5 text-xs">
+      {levels.map((l) => (
+        <button
+          key={l}
+          onClick={() => onChange(l)}
+          title={l === profileDetail ? "Aus deinem Profil" : undefined}
+          className={`px-2.5 py-1 rounded-full transition ${
+            value === l ? "bg-aurora animate-aurora text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {DETAIL_LABEL[l]}
+          {l === profileDetail && <span className="ml-1 opacity-60">·</span>}
+        </button>
+      ))}
     </div>
   );
 }

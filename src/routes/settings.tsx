@@ -1,7 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles } from "lucide-react";
-import { clearProfile, loadProfile, saveProfile, summarizeProfile, type UserProfile } from "@/lib/profile";
+import { Trash2, Edit3, Sparkles, GraduationCap } from "lucide-react";
+import {
+  clearProfile,
+  loadProfile,
+  saveProfile,
+  summarizeProfile,
+  getDetailLevel,
+  PROFESSION_LABEL,
+  EXPERTISE_LABEL,
+  type UserProfile,
+  type ExpertiseLevel,
+  type Profession,
+} from "@/lib/profile";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -25,6 +36,15 @@ function SettingsPage() {
     setP(next);
   }
 
+  function updateField<K extends keyof UserProfile>(k: K, v: UserProfile[K]) {
+    if (!p) return;
+    const next = { ...p, [k]: v };
+    saveProfile(next);
+    setP(next);
+  }
+
+  const detail = p ? getDetailLevel(p) : "lay";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Einstellungen</h1>
@@ -44,6 +64,50 @@ function SettingsPage() {
           </div>
         ) : (
           <>
+            <div className="rounded-xl bg-muted/10 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <GraduationCap className="h-4 w-4 text-secondary" /> Detailtiefe & Fachsprache
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Bestimmt, wie ausführlich Mischkonsum-Risiken erklärt werden — und auf welchem Niveau die KI antwortet.
+                Aktuell: <strong className="text-foreground">{detail}</strong>.
+              </p>
+
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Selbsteinschätzung</div>
+                <div className="grid gap-1.5">
+                  {(Object.keys(EXPERTISE_LABEL) as ExpertiseLevel[]).map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => updateField("expertiseLevel", lvl)}
+                      className={`text-left rounded-lg px-3 py-2 text-xs ring-1 transition ${
+                        p.expertiseLevel === lvl ? "ring-primary bg-primary/10" : "ring-border hover:ring-foreground/30"
+                      }`}
+                    >
+                      {EXPERTISE_LABEL[lvl]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Beruflicher Hintergrund</div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(Object.keys(PROFESSION_LABEL) as Profession[]).map((pr) => (
+                    <button
+                      key={pr}
+                      onClick={() => updateField("profession", pr)}
+                      className={`text-left rounded-lg px-3 py-2 text-xs ring-1 transition ${
+                        p.profession === pr ? "ring-primary bg-primary/10" : "ring-border hover:ring-foreground/30"
+                      }`}
+                    >
+                      {PROFESSION_LABEL[pr]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <label className="flex items-start gap-3 rounded-xl bg-muted/10 p-4 text-sm">
               <input
                 type="checkbox"

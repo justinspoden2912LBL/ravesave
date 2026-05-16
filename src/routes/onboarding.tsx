@@ -22,12 +22,16 @@ import {
   saveProfile,
   dismissOnboarding,
   loadProfile,
+  PROFESSION_LABEL,
+  EXPERTISE_LABEL,
   type UserProfile,
   type SubstanceExperience,
   type Frequency,
   type RouteForm,
   type UsageContext,
   type Motivation,
+  type Profession,
+  type ExpertiseLevel,
 } from "@/lib/profile";
 import { SUBSTANCES } from "@/lib/substances";
 
@@ -196,6 +200,41 @@ function Onboarding() {
                 className="w-32 rounded-xl bg-background/40 px-4 py-2.5 outline-none ring-1 ring-border focus:ring-primary"
               />
             </Field>
+
+            <Field label="Wie tief sollen Erklärungen sein? — bestimmt Sprache & Fachtiefe in der ganzen App.">
+              <div className="space-y-1.5">
+                {(Object.keys(EXPERTISE_LABEL) as ExpertiseLevel[]).map((lvl) => (
+                  <button
+                    key={lvl}
+                    type="button"
+                    onClick={() => update("expertiseLevel", lvl)}
+                    className={`w-full text-left rounded-xl px-3 py-2 text-sm ring-1 transition ${
+                      p.expertiseLevel === lvl ? "ring-primary bg-primary/10" : "ring-border hover:ring-foreground/30"
+                    }`}
+                  >
+                    {EXPERTISE_LABEL[lvl]}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Beruflicher Hintergrund (optional) — Fachberufe schalten den Expert-Modus frei.">
+              <div className="grid grid-cols-2 gap-1.5">
+                {(Object.keys(PROFESSION_LABEL) as Profession[]).map((pr) => (
+                  <button
+                    key={pr}
+                    type="button"
+                    onClick={() => update("profession", pr)}
+                    className={`text-left rounded-xl px-3 py-2 text-xs ring-1 transition ${
+                      p.profession === pr ? "ring-primary bg-primary/10" : "ring-border hover:ring-foreground/30"
+                    }`}
+                  >
+                    {PROFESSION_LABEL[pr]}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
             <NavRow onBack={() => setStep(0)} onNext={() => setStep(2)} />
           </div>
         )}
