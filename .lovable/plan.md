@@ -1,60 +1,40 @@
-# Globaler Notfall-Button
-
 ## Ziel
+Mehr Schritte im Notfall-Dialog visuell unterstützen, indem die `IllusKey`-Bibliothek um häufige Erste-Hilfe-Symbole erweitert wird und die noch unbebilderten Schritte in den Guides ein passendes `illus` bekommen.
 
-Auf **jeder** Seite jederzeit erreichbar: ein roter „Notfall"-Button, der mit einem Tap die wichtigsten Lebensretter-Infos zeigt — 112-Anruf, stabile Seitenlage in 4 Schritten, Hotlines, und Notfall-Suchen für die häufigsten Szenarien.
+## Neue Illustrationen in `src/components/EmergencyIllustrations.tsx`
+Im bestehenden Stil (2px Stroke, `currentColor`, viewBox 120×80). `IllusKey`-Union, `MAP` und `ILLUSTRATION_LABEL` werden je um folgende Einträge erweitert:
 
-## Umsetzung
+| Key | Symbol | Label (de) |
+|---|---|---|
+| `shake` | Hand an Schulter, Bewegungslinien | „Ansprechen & rütteln" |
+| `coolRoom` | Tür/Pfeil aus heißem in kühlen Raum, Sonne→Schnee | „Kühler Ort" |
+| `hydrate` | Glas mit Wasser + Tropfen | „Schluckweise Wasser" |
+| `noSubstance` | Pillen/Glas durchgestrichen | „Nichts nachlegen" |
+| `stopwatch` | Stoppuhr mit Zeigern | „Zeit messen" |
+| `blanket` | Person sitzend mit Decke | „Wärmen & erden" |
+| `quietRoom` | Person + Notenzeichen durchgestrichen | „Ruhige Umgebung" |
+| `clearMouth` | Kopf seitlich, Finger zum Mund (Auswischen) | „Mund ausräumen" |
+| `dontHold` | Hände um Körper, durchgestrichen | „Nicht festhalten" |
+| `dontStop` | CPR-Hand + Endlos-Pfeil | „Nicht aufhören" |
 
-### 1. Neue Komponente `src/components/EmergencyButton.tsx`
+## Zuweisung in `GUIDES` (`src/components/EmergencyButton.tsx`)
+Bislang ohne `illus` — Vorschlag:
 
-- **Floating Action Button**: fixed unten rechts (`bottom-4 right-4`), `z-50`, über allen Inhalten. Auf Mobile etwas größer Touch-Target (56 px).
-- Roter Pulsierungs-Akzent (`bg-destructive`, dezenter `animate-pulse`-Ring), Icon: Lucide `Siren` + Label „Notfall".
-- Öffnet einen **Dialog/Drawer** (shadcn `Dialog`, auf Mobile via `Drawer` aus dem bestehenden UI-Kit) mit folgenden Sektionen:
+- **no_breathing**: „Nicht aufhören…" → `dontStop`
+- **unconscious**:
+  - „Ansprechen, Schulter rütteln…" → `shake`
+  - „Bleib daneben, beobachte Atmung…" → `clearMouth`
+- **seizure**:
+  - „Person nicht festhalten" → `dontHold`
+  - „Zeit messen" → `stopwatch`
+- **overheating**:
+  - „Sofort raus aus der Hitze" → `coolRoom`
+  - „Schluckweise Wasser…" → `hydrate`
+  - „Nicht weiter tanzen…" → `noSubstance`
+- **chest_pain**: „Keine weitere Substanz…" → `noSubstance`
+- **panic**:
+  - „Ruhigen, vertrauten Ort…" → `quietRoom`
+  - „Wasser, evtl. Süßes, warme Decke" → `blanket`
 
-  **a) Sofort anrufen**
-  - Großer Button „112 anrufen" → `<a href="tel:112">`
-  - Hinweis: „Sag ehrlich, was konsumiert wurde — Rettungsdienst verfolgt nicht."
-  - Sekundäre Nummern: Giftnotruf-Liste DE/AT/CH als Klapp-Liste (Berlin 030 19240, München 089 19240, Wien +43 1 406 43 43, Zürich 145 …)
-
-  **b) Stabile Seitenlage — 4 Schritte**
-  - Kompakte nummerierte Liste mit Icon-Strichzeichnung pro Schritt (Arm anwinkeln → Hand an Wange → Bein anwinkeln → zur Seite drehen, Kopf überstrecken)
-  - Darunter: „Atmung kontrollieren — wenn weg → Herzdruckmassage 100–120/min"
-
-  **c) Szenario-Schnellzugriff**
-  - 4–6 Buttons, die direkt die passenden In-App-Routen öffnen bzw. eine vorbereitete Suche triggern:
-    - Überdosis Opioid → `/substances?focus=naloxon`
-    - Serotonin-Syndrom → `/risks?topic=serotonin`
-    - GHB/Alkohol-Mischung → `/mix?preset=ghb-alcohol`
-    - Bad Trip (Psychedelika) → `/substances?focus=bad-trip`
-    - Stimulanzien-Überhitzung → `/risks?topic=hyperthermie`
-  - Plus ein Freitext-„Suchen in der App"-Feld, das auf eine globale Suche / `/substances?q=…` mappt
-
-  **d) Hotlines & Hilfe (Footer im Dialog)**
-  - Sucht- und Drogen-Hotline DE: 01806 313031
-  - Telefonseelsorge: 0800 111 0 111
-  - Drogennotruf AT: 01 406 95 95
-  - Link auf `/knigge` und `/about`
-
-### 2. Einbau in `src/routes/__root.tsx`
-
-- `<EmergencyButton />` einmalig innerhalb der `RootComponent` direkt neben `<Footer />` rendern → erscheint dadurch automatisch auf jeder Route, inkl. 404/Error-Boundary.
-- Kein Re-Render-Overhead pro Route, kein Duplikat-Risiko.
-
-### 3. UX-Details
-
-- **Tastatur**: `Esc` schließt, Fokus-Trap im Dialog (kommt durch shadcn `Dialog` schon mit).
-- **Reduced motion**: `animate-pulse` über `motion-reduce:animate-none` ausblenden.
-- **Print**: Button per `print:hidden` ausblenden.
-- **A11y**: `aria-label="Notfall-Hilfe öffnen"`, `role="dialog"`, `aria-describedby` für die 112-Sektion.
-- **Persistenz**: keine — bewusst stateless, damit auch im Inkognito sofort verfügbar.
-
-### 4. Was nicht gemacht wird
-
-- Keine neuen Suchroutinen serverseitig — die „Suchbegriffe" sind kuratierte Deep-Links auf bestehende Seiten plus ein Input, das `/substances?q=` ansteuert (Filter dort existiert bereits bzw. ist trivial nachrüstbar — separat).
-- Kein Tracking, kein Backend-Call.
-
-## Geänderte / neue Dateien
-
-- **neu**: `src/components/EmergencyButton.tsx`
-- **editiert**: `src/routes/__root.tsx` (eine Zeile Render + Import)
+## Out of scope
+Keine Änderung an Dialog-Layout, Karten, Datenmodell oder Routing.
