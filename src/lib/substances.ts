@@ -1012,6 +1012,48 @@ const SPECIFIC_OVERRIDES: Record<string, RiskInfo> = {
   [pairKey("fentanyl", "alcohol")]: { level: "danger", reason: "Extrem hohes Atemstillstand-Risiko." },
   [pairKey("lsd", "lithium")]: { level: "danger", reason: "Krampfanfälle dokumentiert." },
   [pairKey("dmt", "mdma")]: { level: "caution", reason: "Serotonerge Last erhöht." },
+
+  // 5-MeO-DMT – schon kleinste serotonerge Zusatzbelastung kann Serotonin-Syndrom auslösen.
+  [pairKey("5-meo-dmt", "mdma")]: { level: "danger", reason: "Massive serotonerge Synergie – Serotonin-Syndrom-Risiko." },
+  [pairKey("5-meo-dmt", "tramadol")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko (Tramadol = SNRI)." },
+  [pairKey("5-meo-dmt", "o-dsmt")]: { level: "danger", reason: "Serotonin-Syndrom-Risiko." },
+  [pairKey("5-meo-mipt", "mdma")]: { level: "danger", reason: "Serotonerge Synergie – Serotonin-Syndrom möglich." },
+
+  // 3-HO-PCP: dissoziativ + opioid in einer Substanz → bei Mischung wie zwei Opioide rechnen.
+  [pairKey("3-ho-pcp", "alcohol")]: { level: "danger", reason: "Atemdepression durch µ-Anteil + GABA-Last." },
+  [pairKey("3-ho-pcp", "heroin")]: { level: "danger", reason: "Atemdepression additiv – wie Opioid + Opioid." },
+  [pairKey("3-ho-pcp", "fentanyl")]: { level: "danger", reason: "Atemdepression additiv – wie Opioid + Opioid." },
+
+  // Nitazene (Iso, Meto, Brorphine) – schon mit „üblichen" Mengen Alkohol tödlich.
+  [pairKey("isotonitazene", "alcohol")]: { level: "danger", reason: "Extremes Atemstillstand-Risiko. Naloxon bereithalten." },
+  [pairKey("metonitazene", "alcohol")]: { level: "danger", reason: "Extremes Atemstillstand-Risiko. Naloxon bereithalten." },
+  [pairKey("brorphine", "alcohol")]: { level: "danger", reason: "Extremes Atemstillstand-Risiko." },
+  [pairKey("isotonitazene", "bromazolam")]: { level: "danger", reason: "Häufige Streckmittel-Kombi – sehr viele Tote in Surveillance-Daten." },
+  [pairKey("metonitazene", "bromazolam")]: { level: "danger", reason: "Atemstillstand-Risiko, in Strassen-Proben dokumentiert." },
+
+  // Designer-Benzos + Opioide – häufigste Todesursache im aktuellen NPS-Markt.
+  [pairKey("clonazolam", "heroin")]: { level: "danger", reason: "Atemstillstand. Designer-Benzos verstärken Opioid-Wirkung massiv." },
+  [pairKey("flualprazolam", "heroin")]: { level: "danger", reason: "Atemstillstand. Sehr lange Halbwertszeit – kein Aufwachen." },
+  [pairKey("bromazolam", "fentanyl")]: { level: "danger", reason: "In Drogen-Proben oft gemeinsam – kumulative Atemdepression." },
+
+  // NBOMe – Vasokonstriktion + Stim potenziert Krampf- und Herz-Risiko.
+  [pairKey("25i-nbome", "cocaine")]: { level: "danger", reason: "Vasokonstriktion addiert sich – Infarkt/Krampfanfall-Risiko." },
+  [pairKey("25c-nbome", "cocaine")]: { level: "danger", reason: "Vasokonstriktion addiert sich – Infarkt/Krampfanfall-Risiko." },
+  [pairKey("25i-nbome", "amphetamine")]: { level: "unsafe", reason: "Vasokonstriktion + sympathomimetische Last." },
+
+  // DOx (DOM/DOC) – sehr lange Stim + Psychedelikum in einem.
+  [pairKey("dom", "mdma")]: { level: "unsafe", reason: "Lange serotonerge + sympathische Last – Hyperthermie-Risiko." },
+  [pairKey("doc", "mdma")]: { level: "unsafe", reason: "Lange serotonerge + sympathische Last – Hyperthermie-Risiko." },
+
+  // Synthetische Cannabinoide – kein Vergleich zu THC.
+  [pairKey("mdmb-4en-pinaca", "alcohol")]: { level: "unsafe", reason: "Übelkeit, Synkope, Krampfanfälle berichtet." },
+  [pairKey("adb-butinaca", "alcohol")]: { level: "unsafe", reason: "Übelkeit, Synkope, Krampfanfälle berichtet." },
+  [pairKey("mdmb-4en-pinaca", "amphetamine")]: { level: "unsafe", reason: "Tachykardie und Psychose-Risiko." },
+
+  // Cathinon-RCs mit Empathogenen / Stim – Eutylone wird oft als MDMA verkauft.
+  [pairKey("eutylone", "mdma")]: { level: "unsafe", reason: "Verstärkte serotonerge + kardiale Last, Schlafmangel." },
+  [pairKey("n-ethyl-hexedrone", "cocaine")]: { level: "unsafe", reason: "Massive kardiovaskuläre Belastung." },
+  [pairKey("4-cmc", "mdma")]: { level: "unsafe", reason: "Additive Monoamin-Freisetzung." },
 };
 
 export function assessPair(idA: string, idB: string): RiskInfo {
