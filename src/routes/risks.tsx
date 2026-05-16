@@ -504,6 +504,12 @@ function PairingCard({
             </div>
           )}
 
+          <div className="grid gap-2 sm:grid-cols-2">
+            {[self, other].map((s) => (
+              <SubstanceBrief key={s.id} s={s} />
+            ))}
+          </div>
+
           {(self.warnings.length > 0 || other.warnings.length > 0) && (
             <div className="grid gap-2 sm:grid-cols-2">
               {[self, other].map((s) =>
