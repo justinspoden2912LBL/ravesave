@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RisksRouteImport } from './routes/risks'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
@@ -32,6 +33,11 @@ const StatsRoute = StatsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RisksRoute = RisksRouteImport.update({
+  id: '/risks',
+  path: '/risks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/risks'
     | '/settings'
     | '/stats'
     | '/substances'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/risks'
     | '/settings'
     | '/stats'
     | '/substances'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/risks'
     | '/settings'
     | '/stats'
     | '/substances'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
   OnboardingRoute: typeof OnboardingRoute
+  RisksRoute: typeof RisksRoute
   SettingsRoute: typeof SettingsRoute
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risks': {
+      id: '/risks'
+      path: '/risks'
+      fullPath: '/risks'
+      preLoaderRoute: typeof RisksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   LogRoute: LogRoute,
   MixRoute: MixRoute,
   OnboardingRoute: OnboardingRoute,
+  RisksRoute: RisksRoute,
   SettingsRoute: SettingsRoute,
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
