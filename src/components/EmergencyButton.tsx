@@ -179,6 +179,7 @@ export function EmergencyButton() {
 
   function reset() {
     setActive(null);
+    setExpanded(null);
   }
   function closeAll() {
     setOpen(false);
