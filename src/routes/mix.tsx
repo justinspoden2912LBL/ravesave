@@ -16,6 +16,10 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
+import { aggregateFlags, aggregateCyp, profileFor } from "@/lib/pharmacology";
+import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
+import { ReceptorOverlap } from "@/components/viz/ReceptorMap";
+import { CypConflicts } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
