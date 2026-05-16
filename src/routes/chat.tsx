@@ -17,7 +17,16 @@ import {
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
-  head: () => ({ meta: [{ title: "KI-Chat — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "KI-Chat — Rave Safe, have Fun" },
+      { name: "description", content: "Stelle Fragen zu Substanzen, Wechselwirkungen und Studienlage. Antworten basieren auf Harm-Reduction-Quellen — alles lokal in deinem Browser." },
+      { property: "og:title", content: "KI-Chat — Rave Safe, have Fun" },
+      { property: "og:description", content: "Frag den KI-Chat zu Pharmakologie, Mischkonsum und Harm Reduction." },
+      { property: "og:url", content: "https://ravesave.lovable.app/chat" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/chat" }],
+  }),
 });
 
 interface Attachment {
@@ -279,12 +288,12 @@ function ChatPage() {
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={newChat} title="Neuer Chat" className="rounded-full glass p-2 hover:bg-muted/30">
+            <button onClick={newChat} title="Neuer Chat" aria-label="Neuer Chat" className="rounded-full glass p-2 hover:bg-muted/30">
               <Plus className="h-4 w-4" />
             </button>
             <button
               onClick={() => { refreshSessions(); setShowHistory(true); }}
-              title="Verlauf"
+              title="Verlauf" aria-label="Chat-Verlauf öffnen"
               className="rounded-full glass p-2 hover:bg-muted/30 relative"
             >
               <History className="h-4 w-4" />
@@ -349,8 +358,8 @@ function ChatPage() {
           <div className="flex-1 bg-background/60 backdrop-blur-sm" onClick={() => setShowHistory(false)} />
           <aside className="w-full max-w-sm h-full glass border-l flex flex-col">
             <div className="p-4 flex items-center justify-between border-b">
-              <h3 className="font-semibold">Chat-Verlauf</h3>
-              <button onClick={() => setShowHistory(false)} className="rounded-full p-1.5 hover:bg-muted/30">
+              <h2 className="font-semibold">Chat-Verlauf</h2>
+              <button onClick={() => setShowHistory(false)} aria-label="Verlauf schließen" className="rounded-full p-1.5 hover:bg-muted/30">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -396,21 +405,21 @@ function ChatPage() {
                           </button>
                           <button
                             onClick={() => startRename(s.id, s.title)}
-                            title="Umbenennen"
+                            title="Umbenennen" aria-label="Umbenennen"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => { const sess = loadSession(s.id); if (sess) exportSessionMarkdown(sess); }}
-                            title="Export .md"
+                            title="Export .md" aria-label="Als Markdown exportieren"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
                           >
                             <Download className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => removeSession(s.id)}
-                            title="Löschen"
+                            title="Löschen" aria-label="Löschen"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 text-destructive hover:bg-destructive/20"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -536,7 +545,7 @@ function ChatPage() {
         />
         <div className="flex items-center justify-between gap-2 px-1 pt-1">
           <div className="flex items-center gap-1">
-            <label className="cursor-pointer rounded-full p-2 hover:bg-muted/40" title="Datei anhängen">
+            <label className="cursor-pointer rounded-full p-2 hover:bg-muted/40" title="Datei anhängen" aria-label="Datei anhängen">
               <Paperclip className="h-4 w-4" />
               <input
                 type="file"
@@ -564,7 +573,7 @@ function ChatPage() {
           </div>
 
           {isLoading ? (
-            <button type="button" onClick={() => stop()} className="rounded-full bg-destructive/80 p-2 text-destructive-foreground" title="Stoppen">
+            <button type="button" onClick={() => stop()} className="rounded-full bg-destructive/80 p-2 text-destructive-foreground" title="Stoppen" aria-label="Antwort stoppen">
               <Square className="h-4 w-4" />
             </button>
           ) : (
@@ -572,7 +581,7 @@ function ChatPage() {
               type="submit"
               disabled={!input.trim() && attachments.length === 0}
               className="rounded-full bg-aurora animate-aurora p-2 text-primary-foreground glow disabled:opacity-40 disabled:bg-none"
-              title="Senden"
+              title="Senden" aria-label="Nachricht senden"
             >
               <Send className="h-4 w-4" />
             </button>

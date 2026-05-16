@@ -23,7 +23,16 @@ import { CypConflicts } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
-  head: () => ({ meta: [{ title: "Mischkonsum-Check — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Mischkonsum-Check — Rave Safe, have Fun" },
+      { name: "description", content: "Prüfe Wechselwirkungen zwischen 2 oder mehr Substanzen in Echtzeit: Risiko-Ampel, Rezeptorüberlapp, CYP-Konflikte und Begründung." },
+      { property: "og:title", content: "Mischkonsum-Check — Rave Safe, have Fun" },
+      { property: "og:description", content: "Risiko-Ampel für Substanz-Kombinationen mit Begründung." },
+      { property: "og:url", content: "https://ravesave.lovable.app/mix" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/mix" }],
+  }),
 });
 
 function MixPage() {
@@ -144,6 +153,8 @@ function MixPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Substanz suchen..."
+          aria-label="Substanz suchen"
+          type="search"
           className="w-full rounded-lg bg-input px-3 py-2 text-sm mb-4"
         />
         <GroupedPicker
