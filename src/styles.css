@@ -124,14 +124,33 @@
     radial-gradient(70% 60% at 110% 20%, oklch(0.35 0.16 220 / 0.28), transparent 60%),
     radial-gradient(80% 80% at 50% 120%, oklch(0.3 0.14 320 / 0.22), transparent 60%);
 
-  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.04) inset,
-    0 10px 30px -18px oklch(0 0 0 / 0.6);
-  --shadow-pop: 0 24px 60px -20px oklch(0 0 0 / 0.6),
-    0 2px 0 0 oklch(1 0 0 / 0.05) inset;
-  --shadow-glow: 0 0 32px -8px oklch(0.7 0.22 290 / 0.55);
+  --shadow-card:
+    0 1px 0 0 oklch(1 0 0 / 0.05) inset,
+    0 1px 2px 0 oklch(0 0 0 / 0.4),
+    0 12px 40px -20px oklch(0 0 0 / 0.7);
+  --shadow-pop:
+    0 1px 0 0 oklch(1 0 0 / 0.06) inset,
+    0 24px 60px -20px oklch(0 0 0 / 0.6),
+    0 2px 8px -4px oklch(0 0 0 / 0.5);
+  --shadow-glow: 0 0 36px -6px oklch(0.7 0.22 290 / 0.55);
   --shadow-elegant: 0 20px 60px -20px oklch(0.1 0.05 290 / 0.6);
+  --shadow-float:
+    0 1px 0 0 oklch(1 0 0 / 0.06) inset,
+    0 30px 80px -30px oklch(0 0 0 / 0.75),
+    0 0 60px -20px oklch(0.7 0.22 290 / 0.35);
 
   --blur-glass: 22px;
+
+  /* Aurora — signature multi-stop gradient (cyan → violet → magenta) */
+  --aurora:
+    linear-gradient(
+      120deg,
+      oklch(0.78 0.16 220) 0%,
+      oklch(0.72 0.2 260) 28%,
+      oklch(0.7 0.22 290) 55%,
+      oklch(0.74 0.22 320) 78%,
+      oklch(0.78 0.18 220) 100%
+    );
 }
 
 /* /mix — complementary palette (warm magenta → amber → teal),
