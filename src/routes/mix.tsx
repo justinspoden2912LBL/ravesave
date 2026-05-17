@@ -16,8 +16,11 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
-import { aggregateFlags, aggregateCyp, profileFor } from "@/lib/pharmacology";
+import { aggregateFlags, aggregateCyp, profileFor, aggregateMixRisks } from "@/lib/pharmacology";
 import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
+import { RiskDial } from "@/components/mix/RiskDial";
+import { RiskMatrix } from "@/components/mix/RiskMatrix";
+import { AlertCard } from "@/components/mix/AlertCard";
 import { ReceptorOverlap } from "@/components/viz/ReceptorMap";
 import { CypConflicts } from "@/components/viz/CypBadges";
 
