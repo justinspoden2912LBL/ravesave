@@ -134,6 +134,20 @@
   --blur-glass: 22px;
 }
 
+/* /mix — complementary palette (warm magenta → amber → teal),
+   complements the psychedelic cyan→violet of the rest of the app */
+.mix-scope {
+  --accent: oklch(0.78 0.2 25);
+  --accent-glow: oklch(0.82 0.2 75);
+  --accent-foreground: oklch(0.12 0.02 25);
+  --gradient-accent: linear-gradient(135deg, oklch(0.78 0.2 25), oklch(0.82 0.2 75) 55%, oklch(0.78 0.16 195));
+  --gradient-bg-mix: radial-gradient(80% 60% at 10% -10%, oklch(0.4 0.18 25 / 0.32), transparent 60%),
+    radial-gradient(70% 60% at 110% 10%, oklch(0.4 0.18 75 / 0.28), transparent 60%),
+    radial-gradient(80% 80% at 50% 120%, oklch(0.32 0.14 195 / 0.26), transparent 60%);
+  --shadow-glow: 0 0 36px -8px oklch(0.78 0.2 35 / 0.55);
+  background-image: var(--gradient-bg-mix);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
