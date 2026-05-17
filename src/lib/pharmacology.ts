@@ -1,6 +1,5 @@
-// Pharmakologische Profile pro Substanz: Risk-Flags, CYP-Interaktionen, Rezeptor-Targets.
-// Bewusst als separate Datei: keine Eingriffe in die große SUBSTANCES-Datenmenge.
-// Initial nur ~20 wichtigste Substanzen — UI fällt für fehlende sauber zurück.
+// Pharmakologische Profile pro Substanz: Risk-Flags, CYP-Interaktionen, Rezeptor-Targets,
+// Transmitter-Profil (DAT/NET/SERT/VMAT2) und subjektives Effekt-Profil.
 
 import {
   Flame,
@@ -101,7 +100,6 @@ export const RISK_FLAG_META: Record<
 
 export type CypEnzyme = "CYP2D6" | "CYP3A4" | "CYP1A2" | "CYP2C9" | "CYP2C19" | "CYP2B6" | "CYP2E1";
 export type CypRole = "substrate" | "inhibitor" | "inducer";
-
 export type CypInteraction = { enzyme: CypEnzyme; role: CypRole };
 
 export const CYP_ROLE_META: Record<CypRole, { symbol: string; label: string; tone: string }> = {
@@ -177,12 +175,34 @@ export const ACTION_LABEL: Record<TargetAction, string> = {
   negativeModulator: "Neg. Modulator",
 };
 
+// ─── Transmitter Profile (DAT/NET/SERT/VMAT2) ────────────────────────────
+// Signed scale -3..+3. Positive = release/agonism, Negative = reuptake inhibition.
+
+export interface TransmitterProfile {
+  DAT: number;   // Dopamin transporter activity (release+ / inhibit-)
+  NET: number;   // Noradrenalin
+  SERT: number;  // Serotonin
+  VMAT2: number; // Vesicular monoamine transporter interaction
+}
+
+// ─── Subjective Effect Profile (0..3) ────────────────────────────────────
+
+export interface EffectProfile {
+  warmth: number;        // empathogene Wärme
+  stimulation: number;   // körperliche/cognitive Stimulation
+  compulsiveness: number;// Craving / Re-Dose-Drang
+  psychosis: number;     // Psychoserisiko
+  neurotoxicity: number; // Neurotoxizitäts-Profil
+}
+
 // ─── Profil pro Substanz ─────────────────────────────────────────────────
 
 export interface PharmaProfile {
   flags: RiskFlag[];
   cyp: CypInteraction[];
   targets: ReceptorBinding[];
+  transmitter?: TransmitterProfile;
+  effects?: EffectProfile;
 }
 
 // Helper für kompakte Definition
@@ -190,7 +210,16 @@ const p = (
   flags: RiskFlag[],
   targets: ReceptorBinding[],
   cyp: CypInteraction[] = [],
-): PharmaProfile => ({ flags, cyp, targets });
+  transmitter?: TransmitterProfile,
+  effects?: EffectProfile,
+): PharmaProfile => ({ flags, cyp, targets, transmitter, effects });
+
+const tr = (DAT: number, NET: number, SERT: number, VMAT2 = 0): TransmitterProfile =>
+  ({ DAT, NET, SERT, VMAT2 });
+const ef = (
+  warmth: number, stimulation: number, compulsiveness: number,
+  psychosis: number, neurotoxicity: number,
+): EffectProfile => ({ warmth, stimulation, compulsiveness, psychosis, neurotoxicity });
 
 export const PHARMA: Record<string, PharmaProfile> = {
   // Psychedelics
@@ -202,6 +231,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT2C", action: "agonist", strength: 2 },
       { target: "D2", action: "partialAgonist", strength: 1 },
     ],
+    [],
+    tr(0, 0, 0),
+    ef(2, 2, 0, 2, 0),
   ),
   psilocybin: p(
     ["serotonergic", "psychosis"],
@@ -210,6 +242,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT1A", action: "agonist", strength: 2 },
       { target: "5HT2C", action: "agonist", strength: 2 },
     ],
+    [],
+    tr(0, 0, 0),
+    ef(2, 1, 0, 2, 0),
   ),
   dmt: p(
     ["serotonergic"],
@@ -218,6 +253,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT1A", action: "agonist", strength: 2 },
       { target: "Sigma1", action: "agonist", strength: 2 },
     ],
+    [],
+    tr(0, 0, 0),
+    ef(1, 1, 0, 2, 0),
   ),
   "2cb": p(
     ["serotonergic", "vasoconstriction"],
@@ -226,6 +264,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT2C", action: "agonist", strength: 2 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(2, 2, 1, 1, 0),
   ),
   mescaline: p(
     ["serotonergic"],
@@ -233,6 +273,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT2A", action: "agonist", strength: 2 },
       { target: "5HT1A", action: "agonist", strength: 1 },
     ],
+    [],
+    tr(0, 0, 0),
+    ef(2, 1, 0, 1, 0),
   ),
 
   // Empathogens
@@ -246,6 +289,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "5HT2A", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }, { enzyme: "CYP2D6", role: "inhibitor" }],
+    tr(2, 2, 3, 2),
+    ef(3, 2, 2, 1, 3),
   ),
 
   // Stimulants
@@ -258,6 +303,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "Sigma1", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP3A4", role: "substrate" }],
+    tr(-3, -3, -2, 0),
+    ef(0, 3, 3, 2, 2),
   ),
   amphetamine: p(
     ["psychosis", "hyperthermia", "vasoconstriction", "cardiotoxic"],
@@ -267,6 +314,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "VMAT2", action: "substrate", strength: 2 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }],
+    tr(3, 3, 1, 2),
+    ef(0, 3, 2, 2, 2),
   ),
   methamphetamine: p(
     ["psychosis", "hyperthermia", "vasoconstriction", "cardiotoxic", "seizure"],
@@ -278,11 +327,15 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "Sigma1", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }],
+    tr(3, 3, 1, 3),
+    ef(0, 3, 3, 3, 3),
   ),
   caffeine: p(
     ["seizure"],
     [],
     [{ enzyme: "CYP1A2", role: "substrate" }, { enzyme: "CYP1A2", role: "inhibitor" }],
+    tr(0, 1, 0, 0),
+    ef(0, 1, 1, 0, 0),
   ),
 
   // Cathinones
@@ -294,6 +347,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "SERT", action: "releaser", strength: 2 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }],
+    tr(2, 2, 2, 1),
+    ef(2, 3, 3, 1, 2),
   ),
   "3mmc": p(
     ["serotonergic", "vasoconstriction", "hyperthermia"],
@@ -302,6 +357,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "NET", action: "releaser", strength: 2 },
       { target: "SERT", action: "releaser", strength: 2 },
     ],
+    [],
+    tr(2, 2, 2, 1),
+    ef(2, 2, 3, 1, 2),
   ),
   "alpha-pvp": p(
     ["psychosis", "hyperthermia", "cardiotoxic", "vasoconstriction", "seizure"],
@@ -309,6 +367,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "DAT", action: "inhibitor", strength: 3 },
       { target: "NET", action: "inhibitor", strength: 3 },
     ],
+    [],
+    tr(-3, -3, 0, 0),
+    ef(0, 3, 3, 3, 2),
   ),
   mdpv: p(
     ["psychosis", "hyperthermia", "cardiotoxic", "vasoconstriction"],
@@ -316,6 +377,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "DAT", action: "inhibitor", strength: 3 },
       { target: "NET", action: "inhibitor", strength: 3 },
     ],
+    [],
+    tr(-3, -3, 0, 0),
+    ef(0, 3, 3, 3, 2),
   ),
 
   // Dissociatives
@@ -327,6 +391,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "MOR", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP3A4", role: "substrate" }, { enzyme: "CYP2B6", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(1, 1, 2, 2, 1),
   ),
   mxe: p(
     ["respiratoryDepression", "psychosis"],
@@ -335,6 +401,9 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "Sigma1", action: "agonist", strength: 2 },
       { target: "SERT", action: "inhibitor", strength: 1 },
     ],
+    [],
+    tr(0, 0, -1),
+    ef(1, 1, 2, 2, 2),
   ),
 
   // Cannabinoid
@@ -345,6 +414,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "CB2", action: "partialAgonist", strength: 1 },
     ],
     [{ enzyme: "CYP3A4", role: "substrate" }, { enzyme: "CYP2C9", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(1, 0, 1, 1, 0),
   ),
 
   // Opioids
@@ -355,6 +426,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "DOR", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP3A4", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(2, 0, 3, 0, 0),
   ),
   oxycodone: p(
     ["respiratoryDepression"],
@@ -363,11 +436,15 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "KOR", action: "agonist", strength: 1 },
     ],
     [{ enzyme: "CYP3A4", role: "substrate" }, { enzyme: "CYP2D6", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(2, 0, 3, 0, 0),
   ),
   fentanyl: p(
     ["respiratoryDepression"],
     [{ target: "MOR", action: "agonist", strength: 3 }],
     [{ enzyme: "CYP3A4", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(1, 0, 3, 0, 0),
   ),
   tramadol: p(
     ["respiratoryDepression", "serotonergic", "seizure"],
@@ -377,14 +454,22 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "NET", action: "inhibitor", strength: 2 },
     ],
     [{ enzyme: "CYP2D6", role: "substrate" }, { enzyme: "CYP3A4", role: "substrate" }],
+    tr(0, -2, -2),
+    ef(1, 1, 2, 1, 0),
   ),
   "u-47700": p(
     ["respiratoryDepression"],
     [{ target: "MOR", action: "agonist", strength: 3 }, { target: "KOR", action: "agonist", strength: 1 }],
+    [],
+    tr(0, 0, 0),
+    ef(1, 0, 3, 0, 0),
   ),
   etonitazene: p(
     ["respiratoryDepression"],
     [{ target: "MOR", action: "agonist", strength: 3 }],
+    [],
+    tr(0, 0, 0),
+    ef(1, 0, 3, 0, 0),
   ),
 
   // Depressants & benzos
@@ -395,6 +480,8 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "NMDA", action: "antagonist", strength: 2 },
     ],
     [{ enzyme: "CYP2E1", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(1, 0, 2, 1, 1),
   ),
   ghb: p(
     ["respiratoryDepression"],
@@ -402,11 +489,16 @@ export const PHARMA: Record<string, PharmaProfile> = {
       { target: "GABA-B", action: "agonist", strength: 3 },
       { target: "GABA-A", action: "positiveModulator", strength: 1 },
     ],
+    [],
+    tr(0, 0, 0),
+    ef(2, 0, 3, 0, 0),
   ),
   alprazolam: p(
     ["respiratoryDepression"],
     [{ target: "GABA-A", action: "positiveModulator", strength: 3 }],
     [{ enzyme: "CYP3A4", role: "substrate" }],
+    tr(0, 0, 0),
+    ef(0, 0, 3, 0, 0),
   ),
 };
 
@@ -418,8 +510,8 @@ export function profileFor(id: string): PharmaProfile | undefined {
 
 export interface FlagLoad {
   flag: RiskFlag;
-  score: number; // additiv: 1 pro Beitrag
-  contributors: string[]; // substance ids
+  score: number;
+  contributors: string[];
 }
 
 export function aggregateFlags(ids: string[]): FlagLoad[] {
@@ -442,7 +534,6 @@ export interface CypConflict {
   inhibitors: string[];
   inducers: string[];
   substrates: string[];
-  /** True wenn ≥1 Inhibitor/Induktor + ≥1 Substrat → Plasmaspiegel-Verschiebung */
   conflict: boolean;
 }
 
@@ -465,4 +556,196 @@ export function aggregateCyp(ids: string[]): CypConflict[] {
     c.conflict = c.substrates.length > 0 && (c.inhibitors.length > 0 || c.inducers.length > 0);
   }
   return Array.from(buckets.values());
+}
+
+// ─── Aggregierte Risiken für Mix-Checker ─────────────────────────────────
+
+export type MixRiskKey =
+  | "serotoninSyndrome"
+  | "respiratoryDepression"
+  | "seizure"
+  | "qtProlongation"
+  | "psychosis"
+  | "cardiovascularStrain"
+  | "neurotoxicityAmplification";
+
+export const MIX_RISK_META: Record<MixRiskKey, { label: string; short: string; blurb: string; token: string; icon: LucideIcon }> = {
+  serotoninSyndrome: {
+    label: "Serotonin-Syndrom",
+    short: "5-HT",
+    icon: Brain,
+    token: "var(--flag-serotonergic)",
+    blurb: "Übermaß an Serotonin durch Releaser + Reuptake-Hemmer oder MAOI. Lebensbedrohlich.",
+  },
+  respiratoryDepression: {
+    label: "Atemdepression",
+    short: "Atmung",
+    icon: Wind,
+    token: "var(--flag-respiratory)",
+    blurb: "Opioide + Benzos + Alkohol/GHB drücken den Atemantrieb additiv.",
+  },
+  seizure: {
+    label: "Krampfanfälle",
+    short: "Krampf",
+    icon: Zap,
+    token: "var(--flag-seizure)",
+    blurb: "Mehrere krampfschwellensenkende Substanzen oder Entzug + Stimulans.",
+  },
+  qtProlongation: {
+    label: "QT-Verlängerung",
+    short: "QT↑",
+    icon: HeartPulse,
+    token: "var(--flag-qt)",
+    blurb: "Verlängerung des QT-Intervalls → Torsade de Pointes.",
+  },
+  psychosis: {
+    label: "Psychose",
+    short: "Psy",
+    icon: Eye,
+    token: "var(--flag-psychosis)",
+    blurb: "Dopaminerge Überstimulation + Schlafentzug + Veranlagung.",
+  },
+  cardiovascularStrain: {
+    label: "Kardiovaskuläre Last",
+    short: "Herz",
+    icon: HeartPulse,
+    token: "var(--flag-cardiotoxic)",
+    blurb: "Vasokonstriktion + Stimulation + QT-Last → Herzinfarkt, Schlaganfall.",
+  },
+  neurotoxicityAmplification: {
+    label: "Neurotoxizität",
+    short: "Neuro",
+    icon: Brain,
+    token: "var(--flag-vaso)",
+    blurb: "Hyperthermie + serotonerge/dopaminerge Last → Schaden an Neuronen.",
+  },
+};
+
+export interface MixRiskScore {
+  key: MixRiskKey;
+  score: number;       // 0..100
+  level: "ok" | "warn" | "danger";
+  contributors: string[];
+  reason: string;
+}
+
+const lvl = (s: number): "ok" | "warn" | "danger" =>
+  s >= 65 ? "danger" : s >= 35 ? "warn" : "ok";
+
+export function aggregateMixRisks(ids: string[]): MixRiskScore[] {
+  const profiles = ids
+    .map((id) => ({ id, p: PHARMA[id] }))
+    .filter((x): x is { id: string; p: PharmaProfile } => !!x.p);
+  if (profiles.length < 1) return [];
+
+  const has = (id: string, flag: RiskFlag) => profiles.find((x) => x.id === id)?.p.flags.includes(flag);
+  const flagCount = (flag: RiskFlag) => profiles.filter((x) => x.p.flags.includes(flag));
+
+  // serotonin syndrome
+  const sero = flagCount("serotonergic");
+  const seroScore = Math.min(100, sero.length * 30 + (sero.length >= 2 ? 25 : 0));
+
+  // respiratory
+  const resp = flagCount("respiratoryDepression");
+  const respScore = Math.min(100, resp.length * 35 + (resp.length >= 2 ? 30 : 0));
+
+  // seizure
+  const sz = flagCount("seizure");
+  const szScore = Math.min(100, sz.length * 30 + (sz.length >= 2 ? 15 : 0));
+
+  // qt
+  const qt = flagCount("qtProlongation");
+  const qtScore = Math.min(100, qt.length * 35 + (qt.length >= 2 ? 25 : 0));
+
+  // psychosis
+  const psy = flagCount("psychosis");
+  const psyEffect = profiles.reduce((s, x) => s + (x.p.effects?.psychosis ?? 0), 0);
+  const psyScore = Math.min(100, psy.length * 25 + psyEffect * 10);
+
+  // cardiovascular
+  const vaso = flagCount("vasoconstriction");
+  const cardio = flagCount("cardiotoxic");
+  const cvScore = Math.min(100, vaso.length * 20 + cardio.length * 25 + qt.length * 15);
+
+  // neurotoxicity
+  const hyp = flagCount("hyperthermia");
+  const neuroEffect = profiles.reduce((s, x) => s + (x.p.effects?.neurotoxicity ?? 0), 0);
+  const neuroScore = Math.min(100, hyp.length * 20 + sero.length * 15 + neuroEffect * 10);
+
+  const result: MixRiskScore[] = [
+    {
+      key: "serotoninSyndrome",
+      score: seroScore,
+      level: lvl(seroScore),
+      contributors: sero.map((x) => x.id),
+      reason: sero.length >= 2
+        ? "Mehrere serotonerge Substanzen — additives 5-HT-Risiko."
+        : sero.length === 1
+        ? "Eine serotonerge Substanz — Risiko gering, ohne MAOI/SSRI."
+        : "Keine serotonergen Substanzen.",
+    },
+    {
+      key: "respiratoryDepression",
+      score: respScore,
+      level: lvl(respScore),
+      contributors: resp.map((x) => x.id),
+      reason: resp.length >= 2
+        ? "Mehrere atemdepressive Substanzen — lebensgefährlich additiv."
+        : resp.length === 1
+        ? "Eine atemdepressive Substanz — Wachsamkeit empfohlen."
+        : "Keine atemdepressiven Substanzen.",
+    },
+    {
+      key: "seizure",
+      score: szScore,
+      level: lvl(szScore),
+      contributors: sz.map((x) => x.id),
+      reason: sz.length >= 2
+        ? "Mehrere Substanzen senken Krampfschwelle."
+        : sz.length === 1
+        ? "Eine krampfschwellensenkende Substanz."
+        : "Kein erhöhtes Krampfrisiko aus diesem Mix.",
+    },
+    {
+      key: "qtProlongation",
+      score: qtScore,
+      level: lvl(qtScore),
+      contributors: qt.map((x) => x.id),
+      reason: qt.length >= 2
+        ? "Mehrere QT-verlängernde Substanzen — Torsade-Risiko."
+        : qt.length === 1
+        ? "Eine QT-verlängernde Substanz."
+        : "Kein bekanntes QT-Risiko.",
+    },
+    {
+      key: "psychosis",
+      score: psyScore,
+      level: lvl(psyScore),
+      contributors: psy.map((x) => x.id),
+      reason: psy.length >= 1
+        ? `Psychoserisiko durch ${psy.length} Substanz(en) + dopaminerge Last.`
+        : "Geringes Psychoserisiko.",
+    },
+    {
+      key: "cardiovascularStrain",
+      score: cvScore,
+      level: lvl(cvScore),
+      contributors: [...new Set([...vaso.map((x) => x.id), ...cardio.map((x) => x.id)])],
+      reason: cvScore >= 35
+        ? "Vasokonstriktion + Kardio-Belastung addieren sich."
+        : "Geringe Herz-Kreislauf-Belastung aus diesem Mix.",
+    },
+    {
+      key: "neurotoxicityAmplification",
+      score: neuroScore,
+      level: lvl(neuroScore),
+      contributors: [...new Set([...hyp.map((x) => x.id), ...sero.map((x) => x.id)])],
+      reason: neuroScore >= 35
+        ? "Hyperthermie + serotonerge Last erhöhen Neurotoxizität."
+        : "Niedriges Neurotoxizitäts-Profil.",
+    },
+  ];
+  // Suppress utility 'has' helper unused warning
+  void has;
+  return result.sort((a, b) => b.score - a.score);
 }

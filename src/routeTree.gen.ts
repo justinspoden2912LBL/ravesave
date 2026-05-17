@@ -21,6 +21,7 @@ import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SubstancesSlugRouteImport } from './routes/substances.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const SubstancesRoute = SubstancesRouteImport.update({
@@ -83,6 +84,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubstancesSlugRoute = SubstancesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SubstancesRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -101,8 +107,9 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRoute
+  '/substances': typeof SubstancesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -116,8 +123,9 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRoute
+  '/substances': typeof SubstancesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,8 +140,9 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRoute
+  '/substances': typeof SubstancesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/substances/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/substances/$slug'
   id:
     | '__root__'
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/substances/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,7 +207,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
-  SubstancesRoute: typeof SubstancesRoute
+  SubstancesRoute: typeof SubstancesRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -285,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/substances/$slug': {
+      id: '/substances/$slug'
+      path: '/$slug'
+      fullPath: '/substances/$slug'
+      preLoaderRoute: typeof SubstancesSlugRouteImport
+      parentRoute: typeof SubstancesRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -294,6 +313,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface SubstancesRouteChildren {
+  SubstancesSlugRoute: typeof SubstancesSlugRoute
+}
+
+const SubstancesRouteChildren: SubstancesRouteChildren = {
+  SubstancesSlugRoute: SubstancesSlugRoute,
+}
+
+const SubstancesRouteWithChildren = SubstancesRoute._addFileChildren(
+  SubstancesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -307,7 +338,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
-  SubstancesRoute: SubstancesRoute,
+  SubstancesRoute: SubstancesRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport

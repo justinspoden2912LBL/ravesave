@@ -9,8 +9,11 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { Nav, Footer } from "../components/Nav";
+import { Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
+import { TopBar } from "../components/shell/TopBar";
+import { BottomTabBar } from "../components/shell/BottomTabBar";
+import { PageTransition } from "../components/shell/PageTransition";
 
 function NotFoundComponent() {
   return (
@@ -89,9 +92,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
     ],
     scripts: [
@@ -139,12 +145,15 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
-        <Nav />
-        <main className="flex-1">
-          <Outlet />
+        <TopBar />
+        <main className="flex-1 pb-[calc(env(safe-area-inset-bottom)+88px)]">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+          <Footer />
         </main>
-        <Footer />
         <EmergencyButton />
+        <BottomTabBar />
       </div>
     </QueryClientProvider>
   );
