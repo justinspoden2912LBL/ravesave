@@ -29,10 +29,21 @@ export const Route = createFileRoute("/substances")({
       type: "application/ld+json",
       children: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "MedicalWebPage",
+        "@type": "CollectionPage",
         name: "Substanzen — Pharmakologie & Dosis",
         about: "Harm Reduction, Pharmakologie psychoaktiver Substanzen",
         url: "https://ravesave.lovable.app/substances",
+        inLanguage: "de",
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: SUBSTANCES.length,
+          itemListElement: SUBSTANCES.slice(0, 50).map((s, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: s.name,
+            url: `https://ravesave.lovable.app/substances/${s.id}`,
+          })),
+        },
       }),
     }],
   }),

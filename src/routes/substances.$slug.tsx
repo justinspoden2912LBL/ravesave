@@ -22,15 +22,43 @@ export const Route = createFileRoute("/substances/$slug")({
       </Link>
     </div>
   ),
-  head: ({ loaderData }) => {
-    const name = loaderData?.substance.name ?? "Substanz";
+  head: ({ loaderData, params }) => {
+    const s = loaderData?.substance;
+    const name = s?.name ?? "Substanz";
+    const slug = params?.slug ?? "";
+    const url = `https://ravesave.lovable.app/substances/${slug}`;
+    // Keep titles under 60 chars even for long substance names
+    const fullTitle = `${name} — Pharmakologie & Risiko | Rave Safe, have Fun`;
+    const title = fullTitle.length <= 60 ? fullTitle : `${name} — Pharmakologie & Risiko`;
+    const description = s?.shortDescription
+      ? `${name}: ${s.shortDescription}`.slice(0, 158)
+      : `${name}: Pharmakologie, Dosis, Wirkdauer, Rezeptorprofil und Risiko-Flags. Evidenzbasiert.`;
     return {
       meta: [
-        { title: `${name} — Pharmakologie & Risiko | Rave Safe, have Fun` },
-        { name: "description", content: `${name}: Pharmakologie, Dosis, Wirkdauer, Rezeptorprofil und Risiko-Flags. Evidenzbasiert.` },
+        { title },
+        { name: "description", content: description },
         { property: "og:title", content: `${name} — Pharmakologie & Risiko` },
-        { property: "og:description", content: loaderData?.substance.shortDescription ?? "" },
+        { property: "og:description", content: s?.shortDescription ?? description },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
       ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          name,
+          url,
+          description,
+          about: {
+            "@type": "DrugClass",
+            name: s?.category ?? "psychoactive substance",
+          },
+          inLanguage: "de",
+          isFamilyFriendly: false,
+        }),
+      }],
     };
   },
 });
