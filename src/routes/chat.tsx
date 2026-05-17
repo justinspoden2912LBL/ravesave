@@ -383,6 +383,7 @@ function ChatPage() {
                         <div className="flex gap-1">
                           <input
                             autoFocus
+                            aria-label="Chat-Titel umbenennen"
                             value={renameVal}
                             onChange={(e) => setRenameVal(e.target.value)}
                             onKeyDown={(e) => {
@@ -558,6 +559,8 @@ function ChatPage() {
               type="button"
               onClick={toggleVoice}
               className={`rounded-full p-2 transition ${listening ? "bg-risk-danger/30 text-risk-danger" : "hover:bg-muted/40"}`}
+              aria-label={listening ? "Spracheingabe stoppen" : "Spracheingabe starten"}
+              aria-pressed={listening}
               title={listening ? "Aufnahme stoppen" : "Sprache → Text"}
             >
               {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -566,6 +569,8 @@ function ChatPage() {
               type="button"
               onClick={() => { setSpeak(!speak); if (speak) window.speechSynthesis.cancel(); }}
               className={`rounded-full p-2 transition ${speak ? "bg-secondary/30 text-secondary" : "hover:bg-muted/40"}`}
+              aria-label={speak ? "Sprachausgabe ausschalten" : "Antworten vorlesen"}
+              aria-pressed={speak}
               title={speak ? "Sprachausgabe an (klicken zum Ausschalten)" : "Antworten vorlesen"}
             >
               {speak ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}

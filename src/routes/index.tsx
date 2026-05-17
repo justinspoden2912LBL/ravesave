@@ -49,7 +49,7 @@ function Home() {
             <div className="inline-flex items-center gap-2 text-xs text-secondary">
               <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
             </div>
-            <h3 className="mt-1 text-lg font-semibold">Richte dein Profil ein — 2 Minuten.</h3>
+            <p className="mt-1 text-lg font-semibold text-foreground">Richte dein Profil ein — 2 Minuten.</p>
             <p className="text-sm text-muted-foreground mt-1">
               Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal, jederzeit löschbar.
             </p>
@@ -161,9 +161,9 @@ function Home() {
 
       {/* Principles */}
       <section className="mt-12 rounded-3xl glass p-8">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <h2 className="flex items-center gap-2 text-sm text-muted-foreground font-normal uppercase tracking-wider">
           <Sparkles className="h-4 w-4 text-accent" /> Grundprinzipien
-        </div>
+        </h2>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           <Principle title="Start low, go slow.">
             Beginne immer mit der niedrigsten Dosis — besonders bei neuen Substanzen oder Chargen.
@@ -247,7 +247,7 @@ function CategoryCard({
 function Principle({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="font-semibold">{title}</h4>
+      <h3 className="font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{children}</p>
     </div>
   );

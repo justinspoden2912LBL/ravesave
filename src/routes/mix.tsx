@@ -91,10 +91,11 @@ function MixPage() {
               <button
                 key={id}
                 onClick={() => setSelected(selected.filter((x) => x !== id))}
+                aria-label={`${s.name} entfernen`}
                 className="flex items-center gap-1.5 rounded-full bg-aurora animate-aurora px-3 py-1 text-xs text-primary-foreground"
               >
                 {s.name}
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3" aria-hidden="true" />
               </button>
             );
           })}
@@ -259,6 +260,7 @@ function GroupedPicker({
           <div key={sup} className="rounded-xl border border-border/40 overflow-hidden">
             <button
               onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+              aria-expanded={isOpen}
               className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-muted/30 transition"
             >
               <div className="flex items-center gap-2">
@@ -277,6 +279,7 @@ function GroupedPicker({
                     <div key={cat} className="rounded-lg bg-background/30">
                       <button
                         onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                        aria-expanded={catOpen}
                         className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 hover:bg-muted/30 transition"
                       >
                         <div className="flex items-center gap-1.5">
