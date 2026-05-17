@@ -16,8 +16,11 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
-import { aggregateFlags, aggregateCyp, profileFor } from "@/lib/pharmacology";
+import { aggregateFlags, aggregateCyp, profileFor, aggregateMixRisks } from "@/lib/pharmacology";
 import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
+import { RiskDial } from "@/components/mix/RiskDial";
+import { RiskMatrix } from "@/components/mix/RiskMatrix";
+import { AlertCard } from "@/components/mix/AlertCard";
 import { ReceptorOverlap } from "@/components/viz/ReceptorMap";
 import { CypConflicts } from "@/components/viz/CypBadges";
 
@@ -66,11 +69,13 @@ function MixPage() {
   }, [selected]);
 
   const overall = overallRisk(selected);
+  const mixRisks = useMemo(() => aggregateMixRisks(selected), [selected]);
+  const criticalRisks = mixRisks.filter((r) => r.level !== "ok");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
+    <div className="mix-scope mx-auto max-w-6xl px-4 py-8 space-y-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-accent-gradient">Mischkonsum-Check</h1>
         <p className="text-muted-foreground mt-1">
           Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
         </p>
@@ -108,6 +113,48 @@ function MixPage() {
 
       {/* Pharmakologisches Profil — visuell */}
       {selected.length >= 1 && <PharmaProfileBlock ids={selected} />}
+
+      {/* Risiko-Dials */}
+      {mixRisks.length > 0 && (
+        <section className="rounded-2xl glass p-5 space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="font-semibold">Risiko-Profil</h2>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Aggregierte Scores · 0–100
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {mixRisks.map((r) => (
+              <RiskDial key={r.key} score={r} size={108} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Animierte Alerts für kritische Risiken */}
+      {criticalRisks.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-semibold px-1">Wissenschaftliche Erklärung</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {criticalRisks.map((r) => (
+              <AlertCard key={r.key} score={r} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Paar-Matrix */}
+      {selected.length >= 2 && (
+        <section className="rounded-2xl glass p-5 space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="font-semibold">Interaktions-Matrix</h2>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Paarweises Risiko
+            </span>
+          </div>
+          <RiskMatrix ids={selected} />
+        </section>
+      )}
 
       {/* Pair breakdown */}
       {pairs.length > 0 && (
