@@ -16,26 +16,10 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
-import { aggregateFlags, aggregateCyp, profileFor, aggregateMixRisks } from "@/lib/pharmacology";
-import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
-import { RiskDial } from "@/components/mix/RiskDial";
-import { RiskMatrix } from "@/components/mix/RiskMatrix";
-import { AlertCard } from "@/components/mix/AlertCard";
-import { ReceptorOverlap } from "@/components/viz/ReceptorMap";
-import { CypConflicts } from "@/components/viz/CypBadges";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
-  head: () => ({
-    meta: [
-      { title: "Mischkonsum-Check — Rave Safe, have Fun" },
-      { name: "description", content: "Prüfe Wechselwirkungen zwischen 2 oder mehr Substanzen in Echtzeit: Risiko-Ampel, Rezeptorüberlapp, CYP-Konflikte und Begründung." },
-      { property: "og:title", content: "Mischkonsum-Check — Rave Safe, have Fun" },
-      { property: "og:description", content: "Risiko-Ampel für Substanz-Kombinationen mit Begründung." },
-      { property: "og:url", content: "https://ravesave.lovable.app/mix" },
-    ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/mix" }],
-  }),
+  head: () => ({ meta: [{ title: "Mischkonsum-Check — Rave Safe, have Fun" }] }),
 });
 
 function MixPage() {
@@ -69,13 +53,11 @@ function MixPage() {
   }, [selected]);
 
   const overall = overallRisk(selected);
-  const mixRisks = useMemo(() => aggregateMixRisks(selected), [selected]);
-  const criticalRisks = mixRisks.filter((r) => r.level !== "ok");
 
   return (
-    <div className="mix-scope mx-auto max-w-6xl px-4 py-8 space-y-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-accent-gradient">Mischkonsum-Check</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
         <p className="text-muted-foreground mt-1">
           Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
         </p>
@@ -91,11 +73,10 @@ function MixPage() {
               <button
                 key={id}
                 onClick={() => setSelected(selected.filter((x) => x !== id))}
-                aria-label={`${s.name} entfernen`}
                 className="flex items-center gap-1.5 rounded-full bg-aurora animate-aurora px-3 py-1 text-xs text-primary-foreground"
               >
                 {s.name}
-                <X className="h-3 w-3" aria-hidden="true" />
+                <X className="h-3 w-3" />
               </button>
             );
           })}
@@ -111,51 +92,6 @@ function MixPage() {
           </div>
         )}
       </div>
-
-      {/* Pharmakologisches Profil — visuell */}
-      {selected.length >= 1 && <PharmaProfileBlock ids={selected} />}
-
-      {/* Risiko-Dials */}
-      {mixRisks.length > 0 && (
-        <section className="rounded-2xl glass p-5 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="font-semibold">Risiko-Profil</h2>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Aggregierte Scores · 0–100
-            </span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {mixRisks.map((r) => (
-              <RiskDial key={r.key} score={r} size={108} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Animierte Alerts für kritische Risiken */}
-      {criticalRisks.length > 0 && (
-        <section className="space-y-3">
-          <h2 className="font-semibold px-1">Wissenschaftliche Erklärung</h2>
-          <div className="grid gap-3 md:grid-cols-2">
-            {criticalRisks.map((r) => (
-              <AlertCard key={r.key} score={r} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Paar-Matrix */}
-      {selected.length >= 2 && (
-        <section className="rounded-2xl glass p-5 space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="font-semibold">Interaktions-Matrix</h2>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Paarweises Risiko
-            </span>
-          </div>
-          <RiskMatrix ids={selected} />
-        </section>
-      )}
 
       {/* Pair breakdown */}
       {pairs.length > 0 && (
@@ -201,8 +137,6 @@ function MixPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Substanz suchen..."
-          aria-label="Substanz suchen"
-          type="search"
           className="w-full rounded-lg bg-input px-3 py-2 text-sm mb-4"
         />
         <GroupedPicker
@@ -260,7 +194,6 @@ function GroupedPicker({
           <div key={sup} className="rounded-xl border border-border/40 overflow-hidden">
             <button
               onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
-              aria-expanded={isOpen}
               className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-muted/30 transition"
             >
               <div className="flex items-center gap-2">
@@ -279,7 +212,6 @@ function GroupedPicker({
                     <div key={cat} className="rounded-lg bg-background/30">
                       <button
                         onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
-                        aria-expanded={catOpen}
                         className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 hover:bg-muted/30 transition"
                       >
                         <div className="flex items-center gap-1.5">
@@ -347,59 +279,6 @@ function DetailToggle({
           {l === profileDetail && <span className="ml-1 opacity-60">·</span>}
         </button>
       ))}
-    </div>
-  );
-}
-
-function PharmaProfileBlock({ ids }: { ids: string[] }) {
-  const flagLoads = aggregateFlags(ids);
-  const cypConflicts = aggregateCyp(ids);
-  const layers = ids
-    .map((id) => {
-      const s = SUBSTANCES.find((x) => x.id === id);
-      const prof = profileFor(id);
-      if (!s || !prof) return null;
-      return { id, name: s.name, targets: prof.targets };
-    })
-    .filter((l): l is { id: string; name: string; targets: NonNullable<ReturnType<typeof profileFor>>["targets"] } => !!l);
-
-  const hasData = flagLoads.length > 0 || layers.length > 0 || cypConflicts.length > 0;
-  if (!hasData) return null;
-
-  return (
-    <div className="rounded-2xl glass p-5 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="font-semibold">Pharmakologisches Profil deines Mix</h2>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Additiv über alle ausgewählten Substanzen
-        </span>
-      </div>
-
-      <div className="grid gap-5 md:grid-cols-[1fr_auto]">
-        <div className="space-y-2 min-w-0">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Risiko-Last
-          </div>
-          <RiskLoadBars loads={flagLoads} />
-        </div>
-        {layers.length > 0 && (
-          <div className="space-y-2">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Rezeptor-Überlagerung
-            </div>
-            <ReceptorOverlap layers={layers} size={160} />
-          </div>
-        )}
-      </div>
-
-      {cypConflicts.some((c) => c.conflict) && (
-        <div className="space-y-2">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            CYP-Interaktions-Konflikte
-          </div>
-          <CypConflicts conflicts={cypConflicts} />
-        </div>
-      )}
     </div>
   );
 }

@@ -5,16 +5,7 @@ import { loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/stats")({
   component: StatsPage,
-  head: () => ({
-    meta: [
-      { title: "Statistik — Rave Safe, have Fun" },
-      { name: "description", content: "Visualisiere deine Konsum-Muster: Häufigkeit pro Substanz, Kategorie-Verteilung, Stimmung und Trends der letzten 30 Tage." },
-      { property: "og:title", content: "Statistik — Rave Safe, have Fun" },
-      { property: "og:description", content: "Konsum-Muster und Trends aus deinem lokalen Protokoll." },
-      { property: "og:url", content: "https://ravesave.lovable.app/stats" },
-    ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/stats" }],
-  }),
+  head: () => ({ meta: [{ title: "Statistik — Rave Safe, have Fun" }] }),
 });
 
 function StatsPage() {

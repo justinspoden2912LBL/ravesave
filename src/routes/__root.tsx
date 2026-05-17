@@ -9,11 +9,8 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { Footer } from "../components/Nav";
+import { Nav, Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
-import { TopBar } from "../components/shell/TopBar";
-import { BottomTabBar } from "../components/shell/BottomTabBar";
-import { PageTransition } from "../components/shell/PageTransition";
 
 function NotFoundComponent() {
   return (
@@ -83,39 +80,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Rave Safe, have Fun" },
-      { property: "og:url", content: "https://ravesave.lovable.app/" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
-      },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "Rave Safe, have Fun",
-          url: "https://ravesave.lovable.app/",
-          description:
-            "Harm-Reduction-Companion: Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen.",
-          publisher: {
-            "@type": "Organization",
-            name: "Rave Safe, have Fun",
-            url: "https://ravesave.lovable.app/",
-          },
-        }),
+        href: appCss,
       },
     ],
   }),
@@ -145,15 +120,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
-        <TopBar />
-        <main className="flex-1 pb-[calc(env(safe-area-inset-bottom)+88px)]">
-          <PageTransition>
-            <Outlet />
-          </PageTransition>
-          <Footer />
+        <Nav />
+        <main className="flex-1">
+          <Outlet />
         </main>
+        <Footer />
         <EmergencyButton />
-        <BottomTabBar />
       </div>
     </QueryClientProvider>
   );

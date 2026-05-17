@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RisksRouteImport } from './routes/risks'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -21,7 +20,6 @@ import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SubstancesSlugRouteImport } from './routes/substances.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const SubstancesRoute = SubstancesRouteImport.update({
@@ -32,11 +30,6 @@ const SubstancesRoute = SubstancesRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -84,11 +77,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SubstancesSlugRoute = SubstancesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => SubstancesRoute,
-} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -105,11 +93,9 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRouteWithChildren
+  '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
-  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -121,11 +107,9 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRouteWithChildren
+  '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
-  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,11 +122,9 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
-  '/substances': typeof SubstancesRouteWithChildren
+  '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
-  '/substances/$slug': typeof SubstancesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,11 +138,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
-    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
-    | '/substances/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,11 +152,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
-    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
-    | '/substances/$slug'
   id:
     | '__root__'
     | '/'
@@ -188,11 +166,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
-    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
-    | '/substances/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,9 +181,8 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   RisksRoute: typeof RisksRoute
   SettingsRoute: typeof SettingsRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
-  SubstancesRoute: typeof SubstancesRouteWithChildren
+  SubstancesRoute: typeof SubstancesRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -225,13 +200,6 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -297,13 +265,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/substances/$slug': {
-      id: '/substances/$slug'
-      path: '/$slug'
-      fullPath: '/substances/$slug'
-      preLoaderRoute: typeof SubstancesSlugRouteImport
-      parentRoute: typeof SubstancesRoute
-    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -313,18 +274,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface SubstancesRouteChildren {
-  SubstancesSlugRoute: typeof SubstancesSlugRoute
-}
-
-const SubstancesRouteChildren: SubstancesRouteChildren = {
-  SubstancesSlugRoute: SubstancesSlugRoute,
-}
-
-const SubstancesRouteWithChildren = SubstancesRoute._addFileChildren(
-  SubstancesRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -336,9 +285,8 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   RisksRoute: RisksRoute,
   SettingsRoute: SettingsRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
-  SubstancesRoute: SubstancesRouteWithChildren,
+  SubstancesRoute: SubstancesRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport

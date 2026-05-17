@@ -12,33 +12,14 @@ import {
   type SubstanceCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
-import { profileFor, aggregateFlags, aggregateCyp } from "@/lib/pharmacology";
-import { RiskFlagChips } from "@/components/viz/RiskFlagChips";
-import { ReceptorMap, ReceptorOverlap } from "@/components/viz/ReceptorMap";
-import { CypBadges, CypConflicts } from "@/components/viz/CypBadges";
-import { RiskLoadBars } from "@/components/viz/RiskLoadBars";
 
 export const Route = createFileRoute("/risks")({
   component: RisksPage,
   head: () => ({
     meta: [
       { title: "Risiko-Übersicht — Rave Safe, have Fun" },
-      { name: "description", content: "Alle Mischkonsum-Paarungen pro Substanz mit Risikostufe, Rezeptorprofil, CYP-Konflikten und Begründung." },
-      { property: "og:title", content: "Risiko-Übersicht — Rave Safe, have Fun" },
-      { property: "og:description", content: "Risiko-Matrix pro Substanz mit pharmakologischer Begründung." },
-      { property: "og:url", content: "https://ravesave.lovable.app/risks" },
+      { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick." },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/risks" }],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "MedicalWebPage",
-        name: "Risiko-Übersicht — Mischkonsum",
-        about: "Harm Reduction, Wechselwirkungen psychoaktiver Substanzen",
-        url: "https://ravesave.lovable.app/risks",
-      }),
-    }],
   }),
 });
 
@@ -127,8 +108,6 @@ function RisksPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Substanz suchen..."
-              aria-label="Substanz suchen"
-              type="search"
               className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
             />
           </div>
@@ -165,27 +144,14 @@ function RisksPage() {
             <>
               <div className="rounded-2xl glass p-5">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="min-w-0 flex-1">
+                  <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
                       {CATEGORY_LABEL[selected.category]}
                     </div>
                     <h2 className="text-2xl font-bold mt-0.5">{selected.name}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{selected.shortDescription}</p>
-                    {profileFor(selected.id) && (
-                      <div className="mt-3 space-y-2">
-                        <RiskFlagChips flags={profileFor(selected.id)!.flags} size="sm" />
-                        <CypBadges cyp={profileFor(selected.id)!.cyp} />
-                      </div>
-                    )}
                   </div>
-                  {profileFor(selected.id) && (
-                    <ReceptorMap
-                      targets={profileFor(selected.id)!.targets}
-                      size={110}
-                      className="shrink-0"
-                    />
-                  )}
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <div className="flex items-center gap-2">
                     <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
                     <Link
                       to="/mix"
@@ -538,8 +504,6 @@ function PairingCard({
             </div>
           )}
 
-          <PairPharmaVisual self={self} other={other} />
-
           <div className="grid gap-2 sm:grid-cols-2">
             {[self, other].map((s) => (
               <SubstanceBrief key={s.id} s={s} />
@@ -592,7 +556,6 @@ function SubstanceBrief({ s }: { s: import("@/lib/substances").Substance }) {
         <Pill className="h-3 w-3 text-secondary" />
         Dosis & Evidenz — {s.name}
       </div>
-      {profileFor(s.id) && <CypBadges cyp={profileFor(s.id)!.cyp} />}
 
       {primary ? (
         <div className="space-y-1">
@@ -654,38 +617,6 @@ function SubstanceBrief({ s }: { s: import("@/lib/substances").Substance }) {
           </ul>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function PairPharmaVisual({
-  self,
-  other,
-}: {
-  self: import("@/lib/substances").Substance;
-  other: import("@/lib/substances").Substance;
-}) {
-  const pa = profileFor(self.id);
-  const pb = profileFor(other.id);
-  if (!pa && !pb) return null;
-  const loads = aggregateFlags([self.id, other.id]);
-  const cyp = aggregateCyp([self.id, other.id]);
-  const layers = [
-    pa ? { id: self.id, name: self.name, targets: pa.targets } : null,
-    pb ? { id: other.id, name: other.name, targets: pb.targets } : null,
-  ].filter((l): l is { id: string; name: string; targets: NonNullable<ReturnType<typeof profileFor>>["targets"] } => !!l);
-  return (
-    <div className="rounded-lg bg-background/50 p-2.5 border border-border/40 space-y-2.5">
-      <div className="text-[10px] uppercase tracking-wider font-semibold text-foreground/70">
-        Pharmakologische Überlagerung
-      </div>
-      <div className="grid gap-3 sm:grid-cols-[auto_1fr] items-start">
-        {layers.length > 0 && <ReceptorOverlap layers={layers} size={130} />}
-        <div className="space-y-2 min-w-0">
-          <RiskLoadBars loads={loads} />
-          <CypConflicts conflicts={cyp} />
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink, Search } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
@@ -11,60 +11,30 @@ import {
   type SuperCategory,
   type Substance,
 } from "@/lib/substances";
-import { profileFor } from "@/lib/pharmacology";
-import { RiskFlagChips } from "@/components/viz/RiskFlagChips";
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
-  head: () => ({
-    meta: [
-      { title: "Substanzen — Pharmakologie & Dosis | Rave Safe, have Fun" },
-      { name: "description", content: "Evidenzbasiertes Substanz-Wiki: Rezeptorprofile, Dosis-Orientierung, Wirkdauer und Risikoflags für über 100 psychoaktive Substanzen." },
-      { property: "og:title", content: "Substanzen — Pharmakologie & Dosis" },
-      { property: "og:description", content: "Über 100 Substanzen mit Rezeptorprofil, Dosis und Risikoflags." },
-      { property: "og:url", content: "https://ravesave.lovable.app/substances" },
-    ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/substances" }],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        name: "Substanzen — Pharmakologie & Dosis",
-        about: "Harm Reduction, Pharmakologie psychoaktiver Substanzen",
-        url: "https://ravesave.lovable.app/substances",
-        inLanguage: "de",
-        mainEntity: {
-          "@type": "ItemList",
-          numberOfItems: SUBSTANCES.length,
-          itemListElement: SUBSTANCES.slice(0, 50).map((s, i) => ({
-            "@type": "ListItem",
-            position: i + 1,
-            name: s.name,
-            url: `https://ravesave.lovable.app/substances/${s.id}`,
-          })),
-        },
-      }),
-    }],
-  }),
+  head: () => ({ meta: [{ title: "Substanzen — Rave Safe, have Fun" }] }),
 });
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<SuperCategory | "all">("all");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
+  const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
 
   const q = query.toLowerCase().trim();
+  const searching = q.length > 0;
 
   const matches = useMemo(
     () =>
       SUBSTANCES.filter(
         (s) =>
-          (activeFilter === "all" || CATEGORY_TO_SUPER[s.category] === activeFilter) &&
-          (!q ||
-            s.name.toLowerCase().includes(q) ||
-            s.aliases.some((a) => a.toLowerCase().includes(q))),
+          !q ||
+          s.name.toLowerCase().includes(q) ||
+          s.aliases.some((a) => a.toLowerCase().includes(q)),
       ),
-    [q, activeFilter],
+    [q],
   );
 
   const tree = useMemo(() => {
@@ -78,65 +48,174 @@ function SubstancesPage() {
   }, [matches]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pb-12">
-      <header className="pt-4 pb-6">
-        <h1 className="text-4xl font-bold tracking-tight font-display">Substanzen</h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {SUBSTANCES.length} Substanzen mit Pharmakologie, Dosis und Risikoprofil.
+    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
+      <header>
+        <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
+        <p className="text-muted-foreground mt-1">
+          Erst Oberkategorie wählen — dann Klasse — dann Substanz. Kompakt bis ausführlich.
         </p>
       </header>
 
-      {/* Search */}
-      <div className="glass-card p-2 mb-3 sticky top-12 z-30 backdrop-blur-2xl">
+      <div className="rounded-2xl glass p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Suche Name oder Alias…"
-            aria-label="Substanz oder Alias suchen"
-            type="search"
-            className="w-full rounded-xl bg-transparent pl-10 pr-3 py-2.5 text-sm focus:outline-none"
+            placeholder="Suche (Name oder Alias)..."
+            className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
         </div>
       </div>
 
-      {/* Filter chips */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3 -mx-4 px-4">
-        <FilterChip active={activeFilter === "all"} onClick={() => setActiveFilter("all")}>
-          Alle
-        </FilterChip>
-        {SUPER_CATEGORY_ORDER.map((s) => (
-          <FilterChip
-            key={s}
-            active={activeFilter === s}
-            onClick={() => setActiveFilter(s)}
-          >
-            {SUPER_CATEGORY_LABEL[s]}
-          </FilterChip>
-        ))}
-      </div>
-
-      <div className="space-y-6 mt-2">
+      <div className="space-y-2">
         {SUPER_CATEGORY_ORDER.map((sup) => {
           const cats = tree[sup];
           if (!cats) return null;
+          const count = Object.values(cats).reduce((n, arr) => n + (arr?.length ?? 0), 0);
+          const isOpen = searching || !!openSuper[sup];
           return (
-            <section key={sup}>
-              <h2 className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/80 font-medium mb-2 px-1">
-                {SUPER_CATEGORY_LABEL[sup]}
-              </h2>
-              <div className="glass-card overflow-hidden divide-y divide-white/[0.05]">
-                {(Object.entries(cats) as [SubstanceCategory, Substance[]][]).flatMap(([cat, list]) =>
-                  list.map((s) => <SubstanceRow key={s.id} s={s} catLabel={CATEGORY_LABEL[cat]} />)
-                )}
-              </div>
-            </section>
+            <div key={sup} className="rounded-2xl glass overflow-hidden">
+              <button
+                onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+                className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left hover:bg-muted/30 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                  <span className="font-semibold">{SUPER_CATEGORY_LABEL[sup]}</span>
+                </div>
+                <span className="text-[11px] tabular-nums text-muted-foreground rounded-full bg-muted/50 px-2 py-0.5">
+                  {count}
+                </span>
+              </button>
+
+              {isOpen && (
+                <div className="px-3 pb-3 space-y-2">
+                  {(Object.entries(cats) as [SubstanceCategory, Substance[]][]).map(([cat, list]) => {
+                    const catOpen = searching || !!openCat[cat];
+                    return (
+                      <div key={cat} className="rounded-xl border border-border/50 bg-background/30">
+                        <button
+                          onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                          className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left hover:bg-muted/30 transition"
+                        >
+                          <div className="flex items-center gap-2">
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform ${catOpen ? "rotate-90" : ""}`} />
+                            <span className="text-sm font-medium">{CATEGORY_LABEL[cat]}</span>
+                          </div>
+                          <span className="text-[10px] tabular-nums text-muted-foreground">{list.length}</span>
+                        </button>
+                        {catOpen && (
+                          <ul className="px-2 pb-2 space-y-1.5">
+                            {list.map((s) => {
+                              const open = openId === s.id;
+                              return (
+                                <li
+                                  key={s.id}
+                                  className={`rounded-lg bg-background/60 border ${open ? "border-primary/50" : "border-border/40"}`}
+                                >
+                                  <button
+                                    onClick={() => setOpenId(open ? null : s.id)}
+                                    className="w-full text-left px-3 py-2"
+                                  >
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="min-w-0">
+                                        <div className="font-medium text-sm truncate">{s.name}</div>
+                                        {s.aliases.length > 0 && (
+                                          <div className="text-[10px] text-muted-foreground truncate">
+                                            {s.aliases.join(", ")}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <ChevronRight className={`h-4 w-4 mt-0.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`} />
+                                    </div>
+                                    {!open && (
+                                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                                        {s.shortDescription}
+                                      </p>
+                                    )}
+                                  </button>
+
+                                  {open && (
+                                    <div className="px-3 pb-3 space-y-3 border-t border-border/40 pt-3 text-sm">
+                                      <p className="text-muted-foreground">{s.shortDescription}</p>
+                                      <Row label="Mechanismus">{s.mechanism}</Row>
+                                      <Row label="Eintritt">{s.onset}</Row>
+                                      <Row label="Dauer">{s.duration}</Row>
+
+                                      <div>
+                                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                          Dosis-Bereiche
+                                        </div>
+                                        {s.doses.map((d, i) => (
+                                          <div key={i} className="rounded-xl glass p-3 mb-2">
+                                            <div className="font-medium text-xs mb-2">{d.route}</div>
+                                            <div className="grid grid-cols-5 gap-1 text-[11px]">
+                                              <Dose label="Schwelle" v={d.threshold} />
+                                              <Dose label="Leicht" v={d.light} />
+                                              <Dose label="Üblich" v={d.common} />
+                                              <Dose label="Stark" v={d.strong} />
+                                              <Dose label="Heavy" v={d.heavy} />
+                                            </div>
+                                            {d.notes && (
+                                              <p className="text-xs text-muted-foreground mt-2">{d.notes}</p>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {s.warnings.length > 0 && (
+                                        <div>
+                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                            Warnungen
+                                          </div>
+                                          <ul className="list-disc pl-4 space-y-1">
+                                            {s.warnings.map((w, i) => (
+                                              <li key={i}>{w}</li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+
+                                      {s.evidence.length > 0 && (
+                                        <div>
+                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                            Quellen / Evidenz
+                                          </div>
+                                          <ul className="space-y-1">
+                                            {s.evidence.map((e, i) => (
+                                              <li key={i}>
+                                                <a
+                                                  href={e.url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center gap-1 text-secondary hover:underline"
+                                                >
+                                                  {e.label} <ExternalLink className="h-3 w-3" />
+                                                </a>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
 
         {matches.length === 0 && (
-          <div className="glass-card p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl glass p-8 text-center text-sm text-muted-foreground">
             Keine Treffer für „{query}".
           </div>
         )}
@@ -145,52 +224,20 @@ function SubstancesPage() {
   );
 }
 
-function FilterChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <button
-      onClick={onClick}
-      className={`pressable shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-        active
-          ? "bg-accent text-accent-foreground glow"
-          : "bg-white/[0.04] text-muted-foreground hover:text-foreground hover:bg-white/[0.08] ring-1 ring-white/[0.06]"
-      }`}
-    >
-      {children}
-    </button>
+    <div className="flex gap-3">
+      <span className="w-24 shrink-0 text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="flex-1">{children}</span>
+    </div>
   );
 }
 
-function SubstanceRow({ s, catLabel }: { s: Substance; catLabel: string }) {
-  const prof = profileFor(s.id);
+function Dose({ label, v }: { label: string; v?: string }) {
   return (
-    <Link
-      to="/substances/$slug"
-      params={{ slug: s.id }}
-      className="pressable flex items-center gap-3 p-3.5 hover:bg-white/[0.03] transition-colors"
-    >
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-sm">{s.name}</span>
-          <span className="text-[10px] text-muted-foreground/80">{catLabel}</span>
-        </div>
-        {s.aliases.length > 0 && (
-          <div className="text-[11px] text-muted-foreground/70 truncate mt-0.5">
-            {s.aliases.slice(0, 3).join(" · ")}
-          </div>
-        )}
-        {prof && prof.flags.length > 0 && (
-          <RiskFlagChips flags={prof.flags.slice(0, 4)} size="xs" className="mt-1.5" />
-        )}
-      </div>
-      <ChevronRight className="h-4 w-4 text-muted-foreground/60 shrink-0" />
-    </Link>
+    <div className={`rounded-md px-1.5 py-1 text-center ${v ? "bg-muted/60" : "bg-muted/20 text-muted-foreground/40"}`}>
+      <div className="text-[9px] uppercase tracking-wider opacity-60">{label}</div>
+      <div className="font-mono">{v ?? "—"}</div>
+    </div>
   );
 }

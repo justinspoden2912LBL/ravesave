@@ -23,25 +23,7 @@ export const Route = createFileRoute("/knigge")({
         content:
           "Verhaltenskodex für bewussten Konsum: Konsens, Aufklärung, Verantwortung füreinander. KO-Tropfen und heimliches Verabreichen sind eine Straftat — was du wissen und tun solltest.",
       },
-      { property: "og:title", content: "Drogenknigge — Verhaltenskodex" },
-      { property: "og:description", content: "Konsens, Aufklärung, Verantwortung — der Knigge für bewussten Konsum." },
-      { property: "og:url", content: "https://ravesave.lovable.app/knigge" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/knigge" }],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: "Drogenknigge — Verhaltenskodex für bewussten Konsum",
-        description:
-          "Konsens, Aufklärung, Verantwortung füreinander. KO-Tropfen und heimliches Verabreichen sind eine Straftat.",
-        url: "https://ravesave.lovable.app/knigge",
-        inLanguage: "de",
-        author: { "@type": "Organization", name: "Rave Safe, have Fun" },
-        publisher: { "@type": "Organization", name: "Rave Safe, have Fun" },
-      }),
-    }],
   }),
 });
 
