@@ -28,6 +28,20 @@ export const Route = createFileRoute("/knigge")({
       { property: "og:url", content: "https://ravesave.lovable.app/knigge" },
     ],
     links: [{ rel: "canonical", href: "https://ravesave.lovable.app/knigge" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Drogenknigge — Verhaltenskodex für bewussten Konsum",
+        description:
+          "Konsens, Aufklärung, Verantwortung füreinander. KO-Tropfen und heimliches Verabreichen sind eine Straftat.",
+        url: "https://ravesave.lovable.app/knigge",
+        inLanguage: "de",
+        author: { "@type": "Organization", name: "Rave Safe, have Fun" },
+        publisher: { "@type": "Organization", name: "Rave Safe, have Fun" },
+      }),
+    }],
   }),
 });
 
