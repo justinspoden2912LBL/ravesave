@@ -69,11 +69,13 @@ function MixPage() {
   }, [selected]);
 
   const overall = overallRisk(selected);
+  const mixRisks = useMemo(() => aggregateMixRisks(selected), [selected]);
+  const criticalRisks = mixRisks.filter((r) => r.level !== "ok");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
+    <div className="mix-scope mx-auto max-w-6xl px-4 py-8 space-y-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-accent-gradient">Mischkonsum-Check</h1>
         <p className="text-muted-foreground mt-1">
           Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
         </p>
