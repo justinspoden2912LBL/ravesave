@@ -114,6 +114,48 @@ function MixPage() {
       {/* Pharmakologisches Profil — visuell */}
       {selected.length >= 1 && <PharmaProfileBlock ids={selected} />}
 
+      {/* Risiko-Dials */}
+      {mixRisks.length > 0 && (
+        <section className="rounded-2xl glass p-5 space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="font-semibold">Risiko-Profil</h2>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Aggregierte Scores · 0–100
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {mixRisks.map((r) => (
+              <RiskDial key={r.key} score={r} size={108} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Animierte Alerts für kritische Risiken */}
+      {criticalRisks.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-semibold px-1">Wissenschaftliche Erklärung</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {criticalRisks.map((r) => (
+              <AlertCard key={r.key} score={r} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Paar-Matrix */}
+      {selected.length >= 2 && (
+        <section className="rounded-2xl glass p-5 space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="font-semibold">Interaktions-Matrix</h2>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Paarweises Risiko
+            </span>
+          </div>
+          <RiskMatrix ids={selected} />
+        </section>
+      )}
+
       {/* Pair breakdown */}
       {pairs.length > 0 && (
         <div className="rounded-2xl glass p-5">
