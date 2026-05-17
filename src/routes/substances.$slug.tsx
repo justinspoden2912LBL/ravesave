@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ExternalLink, AlertTriangle, ChevronDown, Clock } from "lucide-react";
-import { SUBSTANCES, CATEGORY_LABEL, RISK_META, assessPair } from "@/lib/substances";
+import { SUBSTANCES, CATEGORY_LABEL, RISK_META, assessPair, type Substance } from "@/lib/substances";
 import { profileFor, RISK_FLAG_META } from "@/lib/pharmacology";
 import { RiskFlagChips } from "@/components/viz/RiskFlagChips";
 import { CypBadges } from "@/components/viz/CypBadges";
@@ -47,7 +47,7 @@ const SECTIONS = [
 ];
 
 function SubstanceDetail() {
-  const { substance: s } = Route.useLoaderData();
+  const { substance: s } = Route.useLoaderData() as { substance: Substance };
   const prof = profileFor(s.id);
   const [activeSec, setActiveSec] = useState("overview");
 
