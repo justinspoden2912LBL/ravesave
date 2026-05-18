@@ -261,6 +261,33 @@ function SubstancesPage() {
   );
 }
 
+function FilterChip({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "bg-muted/40 text-foreground/80 hover:bg-muted/70"
+      }`}
+    >
+      <span>{label}</span>
+      <span className="tabular-nums opacity-70">{count}</span>
+    </button>
+  );
+}
+
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3">
