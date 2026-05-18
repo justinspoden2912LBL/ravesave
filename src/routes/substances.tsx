@@ -253,7 +253,7 @@ function SubstancesPage() {
 
         {matches.length === 0 && (
           <div className="rounded-2xl glass p-8 text-center text-sm text-muted-foreground">
-            Keine Treffer für „{query}".
+            {query ? `Keine Treffer für „${query}".` : "Keine Substanzen in dieser Kategorie."}
           </div>
         )}
       </div>
