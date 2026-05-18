@@ -19,23 +19,43 @@ export const Route = createFileRoute("/substances")({
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
+  const [filterSuper, setFilterSuper] = useState<SuperCategory | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
   const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
 
   const q = query.toLowerCase().trim();
-  const searching = q.length > 0;
+  const searching = q.length > 0 || filterSuper !== "all";
 
-  const matches = useMemo(
-    () =>
-      SUBSTANCES.filter(
-        (s) =>
-          !q ||
-          s.name.toLowerCase().includes(q) ||
-          s.aliases.some((a) => a.toLowerCase().includes(q)),
-      ),
-    [q],
-  );
+  // Count per super-category across the full dataset for the filter chips.
+  const superCounts = useMemo(() => {
+    const counts: Partial<Record<SuperCategory, number>> = {};
+    for (const s of SUBSTANCES) {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      counts[sup] = (counts[sup] ?? 0) + 1;
+    }
+    return counts;
+  }, []);
+
+  const matches = useMemo(() => {
+    return SUBSTANCES.filter((s) => {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      if (filterSuper !== "all" && sup !== filterSuper) return false;
+      if (!q) return true;
+      const hay = [
+        s.name,
+        s.id,
+        ...s.aliases,
+        s.shortDescription,
+        s.mechanism,
+        CATEGORY_LABEL[s.category],
+        SUPER_CATEGORY_LABEL[sup],
+      ]
+        .join(" \u0001 ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [q, filterSuper]);
 
   const tree = useMemo(() => {
     const t: Partial<Record<SuperCategory, Partial<Record<SubstanceCategory, Substance[]>>>> = {};
