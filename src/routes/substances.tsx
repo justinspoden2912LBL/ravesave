@@ -19,23 +19,43 @@ export const Route = createFileRoute("/substances")({
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
+  const [filterSuper, setFilterSuper] = useState<SuperCategory | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
   const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
 
   const q = query.toLowerCase().trim();
-  const searching = q.length > 0;
+  const searching = q.length > 0 || filterSuper !== "all";
 
-  const matches = useMemo(
-    () =>
-      SUBSTANCES.filter(
-        (s) =>
-          !q ||
-          s.name.toLowerCase().includes(q) ||
-          s.aliases.some((a) => a.toLowerCase().includes(q)),
-      ),
-    [q],
-  );
+  // Count per super-category across the full dataset for the filter chips.
+  const superCounts = useMemo(() => {
+    const counts: Partial<Record<SuperCategory, number>> = {};
+    for (const s of SUBSTANCES) {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      counts[sup] = (counts[sup] ?? 0) + 1;
+    }
+    return counts;
+  }, []);
+
+  const matches = useMemo(() => {
+    return SUBSTANCES.filter((s) => {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      if (filterSuper !== "all" && sup !== filterSuper) return false;
+      if (!q) return true;
+      const hay = [
+        s.name,
+        s.id,
+        ...s.aliases,
+        s.shortDescription,
+        s.mechanism,
+        CATEGORY_LABEL[s.category],
+        SUPER_CATEGORY_LABEL[sup],
+      ]
+        .join(" \u0001 ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [q, filterSuper]);
 
   const tree = useMemo(() => {
     const t: Partial<Record<SuperCategory, Partial<Record<SubstanceCategory, Substance[]>>>> = {};
@@ -56,15 +76,32 @@ function SubstancesPage() {
         </p>
       </header>
 
-      <div className="rounded-2xl glass p-4">
+      <div className="rounded-2xl glass p-4 space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Suche (Name oder Alias)..."
+            placeholder="Suche (Name, Alias, Klasse, Wirkung)…"
             className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <FilterChip
+            active={filterSuper === "all"}
+            onClick={() => setFilterSuper("all")}
+            label="Alle"
+            count={SUBSTANCES.length}
+          />
+          {SUPER_CATEGORY_ORDER.map((sup) => (
+            <FilterChip
+              key={sup}
+              active={filterSuper === sup}
+              onClick={() => setFilterSuper(sup)}
+              label={SUPER_CATEGORY_LABEL[sup]}
+              count={superCounts[sup] ?? 0}
+            />
+          ))}
         </div>
       </div>
 
@@ -216,11 +253,38 @@ function SubstancesPage() {
 
         {matches.length === 0 && (
           <div className="rounded-2xl glass p-8 text-center text-sm text-muted-foreground">
-            Keine Treffer für „{query}".
+            {query ? `Keine Treffer für „${query}".` : "Keine Substanzen in dieser Kategorie."}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "bg-muted/40 text-foreground/80 hover:bg-muted/70"
+      }`}
+    >
+      <span>{label}</span>
+      <span className="tabular-nums opacity-70">{count}</span>
+    </button>
   );
 }
 
