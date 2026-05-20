@@ -19,7 +19,16 @@ import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
-  head: () => ({ meta: [{ title: "Mischkonsum-Check — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Mischkonsum-Check — Rave Safe, have Fun" },
+      { name: "description", content: "Prüfe Kombinationen aus 2+ Substanzen mit einer Ampel-Bewertung und detaillierten Hinweisen zu Wechselwirkungen." },
+      { property: "og:title", content: "Mischkonsum-Check — Rave Safe, have Fun" },
+      { property: "og:description", content: "Ampel-Risikobewertung für Substanzkombinationen mit Quellen und Erklärungen." },
+      { property: "og:url", content: "https://ravesave.lovable.app/mix" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/mix" }],
+  }),
 });
 
 function MixPage() {

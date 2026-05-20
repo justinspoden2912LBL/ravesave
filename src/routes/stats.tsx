@@ -5,7 +5,16 @@ import { loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/stats")({
   component: StatsPage,
-  head: () => ({ meta: [{ title: "Statistik — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Statistik — Rave Safe, have Fun" },
+      { name: "description", content: "Muster, Häufigkeiten und Trends aus deinem lokalen Konsumprotokoll." },
+      { property: "og:title", content: "Statistik — Rave Safe, have Fun" },
+      { property: "og:description", content: "Auswertung deines lokalen Konsumprotokolls." },
+      { property: "og:url", content: "https://ravesave.lovable.app/stats" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/stats" }],
+  }),
 });
 
 function StatsPage() {

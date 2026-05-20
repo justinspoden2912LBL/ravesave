@@ -18,8 +18,12 @@ export const Route = createFileRoute("/risks")({
   head: () => ({
     meta: [
       { title: "Risiko-Übersicht — Rave Safe, have Fun" },
-      { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick." },
+      { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick — gefiltert nach Kategorie und Risikostufe." },
+      { property: "og:title", content: "Risiko-Übersicht — Rave Safe, have Fun" },
+      { property: "og:description", content: "Wechselwirkungen pro Substanz, sortiert nach Risikostufe." },
+      { property: "og:url", content: "https://ravesave.lovable.app/risks" },
     ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/risks" }],
   }),
 });
 

@@ -14,7 +14,16 @@ import {
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
-  head: () => ({ meta: [{ title: "Substanzen — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Substanz-Wiki — Rave Safe, have Fun" },
+      { name: "description", content: "Evidenzbasierte Infos zu 80+ psychoaktiven Substanzen: Pharmakologie, Dosierung, Wirkdauer und Risiken." },
+      { property: "og:title", content: "Substanz-Wiki — Rave Safe, have Fun" },
+      { property: "og:description", content: "Pharmakologie, Dosierung und Risiken zu 80+ Substanzen — gruppiert und durchsuchbar." },
+      { property: "og:url", content: "https://ravesave.lovable.app/substances" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/substances" }],
+  }),
 });
 
 function SubstancesPage() {
