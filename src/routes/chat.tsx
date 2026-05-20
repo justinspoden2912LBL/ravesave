@@ -288,12 +288,13 @@ function ChatPage() {
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={newChat} title="Neuer Chat" className="rounded-full glass p-2 hover:bg-muted/30">
+            <button onClick={newChat} title="Neuer Chat" aria-label="Neuen Chat starten" className="rounded-full glass p-2 hover:bg-muted/30">
               <Plus className="h-4 w-4" />
             </button>
             <button
               onClick={() => { refreshSessions(); setShowHistory(true); }}
               title="Verlauf"
+              aria-label="Chat-Verlauf öffnen"
               className="rounded-full glass p-2 hover:bg-muted/30 relative"
             >
               <History className="h-4 w-4" />
