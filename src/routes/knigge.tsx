@@ -21,7 +21,28 @@ export const Route = createFileRoute("/knigge")({
       {
         name: "description",
         content:
-          "Verhaltenskodex für bewussten Konsum: Konsens, Aufklärung, Verantwortung füreinander. KO-Tropfen und heimliches Verabreichen sind eine Straftat — was du wissen und tun solltest.",
+          "Verhaltenskodex für bewussten Konsum: Konsens, Aufklärung und Verantwortung füreinander — kurz erklärt.",
+      },
+      { property: "og:title", content: "Drogenknigge — Verhaltenskodex" },
+      { property: "og:description", content: "Konsens, Aufklärung, Verantwortung: 9 Regeln für bewussten Konsum." },
+      { property: "og:url", content: "https://ravesave.lovable.app/knigge" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/knigge" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: RULES.map((r) => ({
+            "@type": "Question",
+            name: r.title.replace(/&amp;/g, "&"),
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: r.body.replace(/&amp;/g, "&"),
+            },
+          })),
+        }),
       },
     ],
   }),
