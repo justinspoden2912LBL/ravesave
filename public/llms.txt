@@ -1,0 +1,15 @@
+# Rave Safe, have Fun
+
+> Harm-Reduction-Begleiter: Konsum protokollieren, Mischkonsum-Risiken prüfen und evidenzbasierte Substanz-Infos abrufen. Alle Daten bleiben lokal im Browser.
+
+## Pages
+
+- [Home](/): Überblick, Schnellzugriff auf Protokoll, Mix-Check und Substanz-Wiki.
+- [Protokoll](/log): Konsum, Dosis und Stimmung lokal dokumentieren.
+- [Mischkonsum-Check](/mix): Ampel-Bewertung für Kombinationen aus zwei oder mehr Substanzen.
+- [Risiko-Übersicht](/risks): Alle Wechselwirkungen pro Substanz auf einen Blick.
+- [Substanzen](/substances): Wiki mit Pharmakologie, Dosierung und Wirkdauer.
+- [Drogenknigge](/knigge): Verhaltenskodex für bewussten, respektvollen Konsum.
+- [KI-Chat](/chat): Fragen zur Studienlage und zu Substanzen stellen.
+- [Statistik](/stats): Muster und Trends aus dem eigenen Protokoll.
+- [Über](/about): Hintergrund und Motivation des Entwicklers.
