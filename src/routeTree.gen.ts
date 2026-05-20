@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RisksRouteImport } from './routes/risks'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -30,6 +31,11 @@ const SubstancesRoute = SubstancesRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/risks'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/substances'
     | '/api/chat'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   RisksRoute: typeof RisksRoute
   SettingsRoute: typeof SettingsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   RisksRoute: RisksRoute,
   SettingsRoute: SettingsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
   ApiChatRoute: ApiChatRoute,

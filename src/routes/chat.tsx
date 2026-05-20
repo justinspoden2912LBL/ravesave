@@ -17,7 +17,16 @@ import {
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
-  head: () => ({ meta: [{ title: "KI-Chat — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "KI-Chat — Rave Safe, have Fun" },
+      { name: "description", content: "Stelle Fragen zur Studienlage, lade Dokumente hoch und chatte direkt mit der KI über Substanzen und Harm Reduction." },
+      { property: "og:title", content: "KI-Chat — Rave Safe, have Fun" },
+      { property: "og:description", content: "KI-gestützter Chat zu Pharmakologie, Studien und Harm Reduction." },
+      { property: "og:url", content: "https://ravesave.lovable.app/chat" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/chat" }],
+  }),
 });
 
 interface Attachment {
@@ -279,12 +288,13 @@ function ChatPage() {
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={newChat} title="Neuer Chat" className="rounded-full glass p-2 hover:bg-muted/30">
+            <button onClick={newChat} title="Neuer Chat" aria-label="Neuen Chat starten" className="rounded-full glass p-2 hover:bg-muted/30">
               <Plus className="h-4 w-4" />
             </button>
             <button
               onClick={() => { refreshSessions(); setShowHistory(true); }}
               title="Verlauf"
+              aria-label="Chat-Verlauf öffnen"
               className="rounded-full glass p-2 hover:bg-muted/30 relative"
             >
               <History className="h-4 w-4" />
@@ -349,8 +359,8 @@ function ChatPage() {
           <div className="flex-1 bg-background/60 backdrop-blur-sm" onClick={() => setShowHistory(false)} />
           <aside className="w-full max-w-sm h-full glass border-l flex flex-col">
             <div className="p-4 flex items-center justify-between border-b">
-              <h3 className="font-semibold">Chat-Verlauf</h3>
-              <button onClick={() => setShowHistory(false)} className="rounded-full p-1.5 hover:bg-muted/30">
+              <h2 className="font-semibold">Chat-Verlauf</h2>
+              <button onClick={() => setShowHistory(false)} aria-label="Verlauf schließen" className="rounded-full p-1.5 hover:bg-muted/30">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -382,7 +392,7 @@ function ChatPage() {
                             }}
                             className="flex-1 rounded-md bg-background/40 px-2 py-1 text-sm outline-none ring-1 ring-border focus:ring-primary"
                           />
-                          <button onClick={commitRename} className="rounded-md p-1 hover:bg-muted/30">
+                          <button onClick={commitRename} aria-label="Neuen Namen speichern" className="rounded-md p-1 hover:bg-muted/30">
                             <Check className="h-4 w-4" />
                           </button>
                         </div>
@@ -397,6 +407,7 @@ function ChatPage() {
                           <button
                             onClick={() => startRename(s.id, s.title)}
                             title="Umbenennen"
+                            aria-label="Chat umbenennen"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -404,6 +415,7 @@ function ChatPage() {
                           <button
                             onClick={() => { const sess = loadSession(s.id); if (sess) exportSessionMarkdown(sess); }}
                             title="Export .md"
+                            aria-label="Chat als Markdown exportieren"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 hover:bg-muted/30"
                           >
                             <Download className="h-3.5 w-3.5" />
@@ -411,6 +423,7 @@ function ChatPage() {
                           <button
                             onClick={() => removeSession(s.id)}
                             title="Löschen"
+                            aria-label="Chat löschen"
                             className="opacity-0 group-hover:opacity-100 rounded-md p-1 text-destructive hover:bg-destructive/20"
                           >
                             <Trash2 className="h-3.5 w-3.5" />

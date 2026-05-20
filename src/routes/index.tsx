@@ -22,8 +22,12 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen." },
+      { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
+      { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
+      { property: "og:description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
+      { property: "og:url", content: "https://ravesave.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/" }],
   }),
 });
 
@@ -45,7 +49,7 @@ function Home() {
             <div className="inline-flex items-center gap-2 text-xs text-secondary">
               <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
             </div>
-            <h3 className="mt-1 text-lg font-semibold">Richte dein Profil ein — 2 Minuten.</h3>
+            <h2 className="mt-1 text-lg font-semibold">Richte dein Profil ein — 2 Minuten.</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal, jederzeit löschbar.
             </p>
@@ -61,6 +65,7 @@ function Home() {
               onClick={() => { dismissOnboarding(); setShowPrompt(false); }}
               className="rounded-full p-2 text-muted-foreground hover:text-foreground"
               title="Später"
+              aria-label="Onboarding-Hinweis schließen"
             >
               <X className="h-4 w-4" />
             </button>
@@ -242,7 +247,7 @@ function CategoryCard({
 function Principle({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="font-semibold">{title}</h4>
+      <h3 className="font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{children}</p>
     </div>
   );

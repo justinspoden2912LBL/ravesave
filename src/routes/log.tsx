@@ -6,7 +6,16 @@ import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
-  head: () => ({ meta: [{ title: "Protokoll — Rave Safe, have Fun" }] }),
+  head: () => ({
+    meta: [
+      { title: "Protokoll — Rave Safe, have Fun" },
+      { name: "description", content: "Dokumentiere Substanz, Dosis, Set & Setting lokal im Browser und erkenne riskante Kombinationen der letzten Stunden." },
+      { property: "og:title", content: "Konsum-Protokoll — Rave Safe, have Fun" },
+      { property: "og:description", content: "Dokumentiere Substanz, Dosis und Stimmung lokal — mit Live-Warnung bei kritischen Kombinationen." },
+      { property: "og:url", content: "https://ravesave.lovable.app/log" },
+    ],
+    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/log" }],
+  }),
 });
 
 function LogPage() {
@@ -67,6 +76,7 @@ function LogPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 lg:grid-cols-[400px_1fr]">
+      <h1 className="sr-only">Konsum-Protokoll</h1>
       {/* Form */}
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
