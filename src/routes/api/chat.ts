@@ -68,9 +68,9 @@ export const Route = createFileRoute("/api/chat")({
           const result = streamText({
             model,
             system: SYSTEM_PROMPT + profileBlock,
-            messages: await convertToModelMessages(messages as UIMessage[]),
+            messages: await convertToModelMessages(safeMessages as UIMessage[]),
           });
-          return result.toUIMessageStreamResponse({ originalMessages: messages as UIMessage[] });
+          return result.toUIMessageStreamResponse({ originalMessages: safeMessages as UIMessage[] });
         } catch (e: any) {
           const msg = e?.message ?? "AI Gateway error";
           const status = e?.statusCode ?? 500;
