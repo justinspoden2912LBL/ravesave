@@ -310,10 +310,10 @@ function SubstanceCard({
           )}
 
           <div className="px-3 pb-3 pt-2 text-sm">
-            {tab === "overview" && <OverviewTab s={s} />}
-            {tab === "dose" && <DoseTab d={route} />}
-            {tab === "duration" && <DurationTab s={s} d={route} />}
-            {tab === "risks" && <RisksTab s={s} d={route} />}
+            {tab === "overview" && <OverviewTab s={s} expert={expert} />}
+            {tab === "dose" && <DoseTab s={s} d={route} expert={expert} />}
+            {tab === "duration" && <DurationTab s={s} d={route} expert={expert} />}
+            {tab === "risks" && <RisksTab s={s} d={route} expert={expert} />}
             {tab === "pharma" && expert && <PharmaTab s={s} />}
           </div>
         </div>
