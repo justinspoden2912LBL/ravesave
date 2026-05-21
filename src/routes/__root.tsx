@@ -74,8 +74,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
+      { title: "Rave safe, have fun -" },
+      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser ganz ohne Drama" },
       { name: "author", content: "Rave Safe, have Fun" },
       { name: "theme-color", content: "#0c0a1c" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
@@ -86,8 +86,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b6fb24a3-6b99-4c83-b64e-710ff7a88488" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b6fb24a3-6b99-4c83-b64e-710ff7a88488" },
+      { property: "og:title", content: "Rave safe, have fun -" },
+      { name: "twitter:title", content: "Rave safe, have fun -" },
+      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser ganz ohne Drama" },
+      { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser ganz ohne Drama" },
     ],
     links: [
       {
