@@ -73,6 +73,21 @@ export const SUBSTANCES: Substance[] = [
       { label: "PsychonautWiki LSD", url: "https://psychonautwiki.org/wiki/LSD" },
     ],
     warnings: ["HPPD-Risiko bei häufigem Gebrauch", "Set & Setting maßgeblich", "Kreuztoleranz zu anderen 5-HT2A-Agonisten"],
+    expert: {
+      halfLife: "Plasma t½ ≈ 3–5 h; subjektive Wirkdauer länger durch langsame Rezeptor-Dissoziation",
+      bioavailability: "oral ~71 % (Aghajanian/Bing 1964)",
+      cyp: "Hauptsächlich CYP3A4-vermittelte N-Demethylierung zu nor-LSD; CYP1A2/2D6 minor",
+      pharmacokinetics: "Lineare Kinetik 40–200 µg; Vd ≈ 0.27 L/kg; Plasma-Peak 1.5–4 h",
+      receptorAffinities: [
+        { target: "5-HT2A", ki: "1.1 nM", action: "Partialagonist (β-Arrestin biased)" },
+        { target: "5-HT2C", ki: "5.5 nM", action: "Partialagonist" },
+        { target: "5-HT1A", ki: "1.1 nM", action: "Agonist" },
+        { target: "D2", ki: "27 nM", action: "Partialagonist" },
+        { target: "D1", ki: "180 nM", action: "schwacher Agonist" },
+        { target: "TAAR1", ki: "~150 nM", action: "Agonist" },
+      ],
+      notes: "Subjektive Wirkung korreliert mit prolongierter 5-HT2A-Besetzung (Wacker 2017, Cell). Tail-Effekt durch verzögerte Dissoziation aus N-terminaler Loop-Konformation.",
+    },
   },
   {
     id: "psilocybin",
@@ -88,6 +103,18 @@ export const SUBSTANCES: Substance[] = [
       { label: "Carhart-Harris 2021 – Trial of Psilocybin vs Escitalopram (NEJM)", url: "https://www.nejm.org/doi/full/10.1056/NEJMoa2032994" },
     ],
     warnings: ["Pilzbestimmung kritisch – Verwechslungsgefahr", "Übelkeit häufig"],
+    expert: {
+      halfLife: "Psilocin t½ ≈ 2.5 h (1.5–3 h); Psilocybin selbst t½ ≈ 1 h (Prodrug)",
+      bioavailability: "oral ~52 % (Psilocin nach Dephosphorylierung)",
+      cyp: "Psilocin via Aldehyd-Dehydrogenase + MAO oxidiert; CYP2D6 minor",
+      pharmacokinetics: "Dosis-linear bis 25 mg Psilocybin; Plasma-Peak 80–105 min",
+      receptorAffinities: [
+        { target: "5-HT2A", ki: "6 nM", action: "Agonist" },
+        { target: "5-HT2C", ki: "97 nM", action: "Agonist" },
+        { target: "5-HT1A", ki: "190 nM", action: "Agonist" },
+      ],
+      notes: "Default-Mode-Network-Entkopplung bildgebend gezeigt (Carhart-Harris 2012, PNAS).",
+    },
   },
   {
     id: "dmt",
@@ -145,6 +172,21 @@ export const SUBSTANCES: Substance[] = [
       { label: "DanceSafe MDMA", url: "https://dancesafe.org/mdma/" },
     ],
     warnings: ["Hyperthermie + Hyponatriämie-Risiko", "Mindestens 4–6 Wochen Pause empfohlen", "Drug-Checking nutzen"],
+    expert: {
+      halfLife: "MDMA t½ ≈ 7–9 h; MDA-Metabolit t½ ≈ 16–28 h",
+      bioavailability: "oral ~75 %",
+      cyp: "CYP2D6 (O-Demethylenierung, sättigbar → nicht-lineare Kinetik!) + CYP3A4/CYP1A2; Auto-Inhibition von 2D6 ist klinisch relevant",
+      pharmacokinetics: "Nicht-lineare PK ab ~100 mg: Verdoppelung der Dosis → ~3× Plasmaspiegel (de la Torre 2000)",
+      receptorAffinities: [
+        { target: "SERT", ki: "1.4 µM", action: "Substrat → Serotonin-Releaser (TA-1)" },
+        { target: "NET", ki: "0.5 µM", action: "Substrat → NE-Releaser" },
+        { target: "DAT", ki: "1.6 µM", action: "Substrat → DA-Releaser (schwächer)" },
+        { target: "5-HT2A", ki: "~6 µM", action: "schwacher Agonist" },
+        { target: "TAAR1", action: "voller Agonist – moduliert Monoamin-Release" },
+        { target: "α2A", action: "Agonist" },
+      ],
+      notes: "Release-Ratio SERT:DAT ≈ 10:1 erklärt das empathogene > stimulierende Profil. Serotonin-Depletion + 5-HT2A-Downregulation → 'Tuesday Blues'.",
+    },
   },
 
   // ───── Stimulants ─────
@@ -160,6 +202,20 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "insufflated", light: "10–30 mg", common: "30–60 mg", strong: "60–90 mg" }],
     evidence: [{ label: "EMCDDA Cocaine Profile", url: "https://www.emcdda.europa.eu/publications/drug-profiles/cocaine_en" }],
     warnings: ["Kardiotox – Vasospasmus, Infarkt-Risiko", "Mit Alkohol → Cocaethylen (hepato-/kardiotox)"],
+    expert: {
+      halfLife: "Plasma t½ ≈ 0.7–1.5 h; Benzoylecgonin t½ ≈ 5–8 h (Urin-Marker)",
+      bioavailability: "nasal ~80 %, oral ~33 %, gerauchte Base (Crack) ~70 %",
+      cyp: "Plasma-Cholinesterase + Leber-Carboxylesterase (Hauptweg); CYP3A4 minor zu Norcocain (hepatotox)",
+      pharmacokinetics: "Schnelle BBB-Penetration; lokalanästhetische Na-Kanal-Blockade summiert sich kardial",
+      receptorAffinities: [
+        { target: "DAT", ki: "240 nM", action: "Wiederaufnahme-Hemmer" },
+        { target: "SERT", ki: "300 nM", action: "Wiederaufnahme-Hemmer" },
+        { target: "NET", ki: "780 nM", action: "Wiederaufnahme-Hemmer" },
+        { target: "Nav1.5 (Herz)", action: "Blockade → QRS-Verbreiterung, Arrhythmie" },
+        { target: "σ1", action: "Agonist (kardiotoxisch mitverantwortlich)" },
+      ],
+      notes: "Cocaethylen (mit Ethanol): t½ ~2.5 h, 5× kardiale Toxizität von Cocain alleine.",
+    },
   },
   {
     id: "amphetamine",
@@ -173,6 +229,20 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", threshold: "5 mg", light: "10–20 mg", common: "20–50 mg", strong: "50–100 mg" }],
     evidence: [{ label: "PsychonautWiki Amphetamine", url: "https://psychonautwiki.org/wiki/Amphetamine" }],
     warnings: ["Hoher Blutdruck", "Schlafmangel → Psychose-Risiko"],
+    expert: {
+      halfLife: "d-Amphetamin t½ ≈ 9–11 h (pH-abhängig: saurer Urin verkürzt auf 7 h)",
+      bioavailability: "oral ~75 %, nasal ~75 %, rektal hoch",
+      cyp: "CYP2D6 (4-Hydroxylierung) + Deaminierung via CYP2C; klinisch relevant: 2D6-PM zeigen längere Wirkung",
+      pharmacokinetics: "Vd ≈ 3–5 L/kg; renal eliminiert (30–40 % unverändert bei normalem Urin-pH)",
+      receptorAffinities: [
+        { target: "DAT", action: "Substrat → DA-Efflux via Reverse Transport (TAAR1-vermittelt)" },
+        { target: "NET", action: "Substrat → NE-Efflux (stärker als DAT)" },
+        { target: "VMAT2", action: "Inhibition + Vesikel-Depletion" },
+        { target: "TAAR1", action: "voller Agonist – Schlüssel für Releaser-Profil" },
+        { target: "MAO-A/B", action: "schwache Hemmung in hoher Dosis" },
+      ],
+      notes: "Release-Ratio NE:DA ≈ 3:1 (vs. Methamphetamin ~1:1). l-Isomer dominant peripher/noradrenerg, d-Isomer zentral.",
+    },
   },
   {
     id: "methamphetamine",
@@ -199,6 +269,18 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", light: "40–100 mg", common: "100–250 mg", strong: "250–500 mg", heavy: "500+ mg" }],
     evidence: [{ label: "EFSA Caffeine Safety", url: "https://www.efsa.europa.eu/en/efsajournal/pub/4102" }],
     warnings: ["Über 400 mg/Tag oft schon belastend (Herz, Schlaf)"],
+    expert: {
+      halfLife: "t½ ≈ 3–7 h (Raucher kürzer, Schwangere/orale Kontrazeptiva bis 10 h)",
+      bioavailability: "oral ~99 %",
+      cyp: "CYP1A2 (~95 %, → Paraxanthin); 1A2-Induktion via Rauchen → schnellerer Abbau",
+      pharmacokinetics: "Plasma-Peak 30–60 min; lineare Kinetik",
+      receptorAffinities: [
+        { target: "Adenosin A1", ki: "12 µM", action: "kompetitiver Antagonist" },
+        { target: "Adenosin A2A", ki: "2 µM", action: "kompetitiver Antagonist (psychostim. Hauptmechanismus)" },
+        { target: "PDE", action: "Hemmung nur in supraphysiologischer Dosis" },
+      ],
+      notes: "Toleranz via Adenosin-Rezeptor-Upregulation in 1–2 Wochen. Entzug: Vasodilatation → Kopfschmerz.",
+    },
   },
 
   // ───── Cathinones ─────
@@ -270,6 +352,21 @@ export const SUBSTANCES: Substance[] = [
       { label: "Krystal 2019 – Ketamine for Depression (Am J Psych)", url: "https://ajp.psychiatryonline.org/doi/10.1176/appi.ajp.2018.18020138" },
     ],
     warnings: ["Blasen-Toxizität bei häufigem Gebrauch", "Mit Depressiva → Atemdepression"],
+    expert: {
+      halfLife: "t½ ≈ 2.5–3 h (Ketamin), Norketamin t½ ≈ 4 h (aktiv)",
+      bioavailability: "i.v. 100 %, i.m. ~93 %, nasal ~45 %, oral ~17 %, rektal ~25 %",
+      cyp: "CYP3A4 > CYP2B6 > CYP2C9 (N-Demethylierung zu Norketamin → Hydroxynorketamin)",
+      pharmacokinetics: "Stark lipophil; Vd ≈ 2–3 L/kg; Plasma-Peak nasal ~20 min, oral ~30 min",
+      receptorAffinities: [
+        { target: "NMDA (PCP-Site)", ki: "0.5 µM", action: "non-kompetitiver Open-Channel-Blocker" },
+        { target: "µ-Opioid", ki: "42 µM", action: "schwacher Agonist (klinisch debattiert)" },
+        { target: "κ-Opioid", ki: "28 µM", action: "Agonist" },
+        { target: "σ1", ki: "130 nM", action: "Agonist" },
+        { target: "DAT/NET", action: "schwache Hemmung in hoher Dosis" },
+        { target: "HCN1", action: "Hemmung – Beiträgt zu hypnotischer Wirkung" },
+      ],
+      notes: "S-Ketamin (Esketamin) ~4× potenter am NMDA, kürzeres Aufwachen. Antidepressive Wirkung über (2R,6R)-Hydroxynorketamin + AMPA-Glutamat-Burst (Zanos 2016, Nature).",
+    },
   },
   {
     id: "mxe",
@@ -298,6 +395,19 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", threshold: "1 mg THC", light: "2.5–5 mg", common: "5–15 mg", strong: "15–30 mg" }],
     evidence: [{ label: "NASEM 2017 – Health Effects of Cannabis", url: "https://nap.nationalacademies.org/catalog/24625" }],
     warnings: ["Edibles: lange Anflutung – Geduld!", "Psychose-Risiko bei prädisponierten Personen"],
+    expert: {
+      halfLife: "THC initial t½ ≈ 1–2 h, terminal 20–30 h (Fettverteilung); 11-OH-THC aktiv",
+      bioavailability: "rauchen/vapen ~25 % (10–35 %), oral ~6 % (4–12 %, hoher First-Pass)",
+      cyp: "CYP2C9 (→ 11-OH-THC, aktiv) + CYP3A4 (→ inaktive Metabolite); CYP2C9*3-PM zeigen 3× höhere AUC",
+      pharmacokinetics: "Stark lipophil, Vd ≈ 10 L/kg; Akkumulation in Fettgewebe → Detektion in Urin Wochen nach Konsum",
+      receptorAffinities: [
+        { target: "CB1", ki: "10–40 nM", action: "Partialagonist (synth. wie WIN55 sind Vollagonisten)" },
+        { target: "CB2", ki: "24–146 nM", action: "Partialagonist" },
+        { target: "GPR55", action: "Antagonist" },
+        { target: "PPARγ", action: "Agonist (langfristige Effekte)" },
+      ],
+      notes: "11-OH-THC ist potenter und ZNS-gängiger als THC – erklärt die intensivere/längere Wirkung von Edibles. CBD ist negativer allosterischer Modulator am CB1 und dämpft THC-Angst.",
+    },
   },
 
   // ───── Opioids ─────
@@ -313,6 +423,18 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "insufflated", light: "5–15 mg", common: "15–30 mg", strong: "30+ mg", notes: "Reinheit extrem variabel!" }],
     evidence: [{ label: "EMCDDA Heroin Profile", url: "https://www.emcdda.europa.eu/publications/drug-profiles/heroin_en" }],
     warnings: ["Atemdepression / Überdosis", "Naloxon bereithalten", "Fentanyl-Kontamination möglich"],
+    expert: {
+      halfLife: "Heroin t½ ≈ 2–6 min (Prodrug!); 6-MAM t½ ≈ 6–25 min; Morphin t½ ≈ 2–3 h",
+      bioavailability: "i.v. 100 %, nasal ~50–60 %, oral ~30 % (komplett zu Morphin metabolisiert)",
+      cyp: "Diacetylmorphin → 6-MAM via Plasma-Esterasen → Morphin; Morphin glucuronidiert via UGT2B7 zu M6G (aktiv, potent) und M3G (neuroexzitatorisch)",
+      pharmacokinetics: "Sehr lipophil → schneller BBB-Übertritt erklärt 'Rush' im Vergleich zu Morphin",
+      receptorAffinities: [
+        { target: "µ-Opioid", action: "Voll-Agonist (über 6-MAM und Morphin)" },
+        { target: "δ-Opioid", action: "schwacher Agonist" },
+        { target: "κ-Opioid", action: "schwacher Agonist" },
+      ],
+      notes: "Atemdepression dosisabhängig über µ-Rezeptor im Prä-Bötzinger-Komplex. Naloxon (0.4 mg i.m./i.n.) ist kompetitiver Antagonist – Wirkdauer 30–90 min, oft kürzer als Heroin → Re-Dosing nötig.",
+    },
   },
   {
     id: "fentanyl",
@@ -380,6 +502,18 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", light: "0.5–1 g", common: "1–2 g", strong: "2–3 g", notes: "Sehr schmaler Bereich – immer abwiegen / mit Spritze dosieren" }],
     evidence: [{ label: "Brennan 2017 – GHB Overdose (Addiction)", url: "https://pubmed.ncbi.nlm.nih.gov/27859803/" }],
     warnings: ["Mit Alkohol/Benzos: Atemstillstand", "Mindestabstand 2–3 h zwischen Dosen"],
+    expert: {
+      halfLife: "t½ ≈ 30–60 min (nicht-lineare/sättigbare Kinetik!)",
+      bioavailability: "oral ~25 % (hoher First-Pass via GHB-Dehydrogenase)",
+      cyp: "Nicht CYP-abhängig: GHB-Dehydrogenase + Succinic-Semialdehyd-Dehydrogenase → CO₂/H₂O über Krebs-Zyklus",
+      pharmacokinetics: "Michaelis-Menten-Kinetik: Verdoppelung der Dosis → mehr als doppelte AUC. Re-Dose-Risiko durch nicht-lineare Akkumulation.",
+      receptorAffinities: [
+        { target: "GHB-Rezeptor", ki: "0.4–1 µM", action: "Agonist (niedrige Dosis: stimulierend)" },
+        { target: "GABA-B", ki: "5 mM", action: "schwacher Agonist (hohe Dosis: Sedierung/Koma)" },
+        { target: "Glutamat-Release", action: "moduliert NMDA über GHB-R" },
+      ],
+      notes: "GBL/1,4-BD sind Prodrugs (Esterase- bzw. ADH-vermittelt) – schnellerer Onset, ~2× Potenz von GHB.",
+    },
   },
 
   // ───── Benzodiazepines ─────
@@ -395,6 +529,17 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", threshold: "0.25 mg", light: "0.5 mg", common: "0.5–1 mg", strong: "1–2 mg" }],
     evidence: [{ label: "Ait-Daoud 2018 – Alprazolam Review", url: "https://pubmed.ncbi.nlm.nih.gov/28944752/" }],
     warnings: ["Mit Opioiden/Alkohol Atemdepression", "Schnelle Toleranz, harter Entzug"],
+    expert: {
+      halfLife: "t½ ≈ 11–13 h (Erwachsene)",
+      bioavailability: "oral ~90 %",
+      cyp: "CYP3A4 (überwiegend); Inhibitoren wie Ketoconazol, Grapefruit, Ritonavir → massive Spiegelerhöhung",
+      pharmacokinetics: "Hoch lipophil; Plasma-Peak 1–2 h; Vd ≈ 0.9 L/kg",
+      receptorAffinities: [
+        { target: "GABA-A (α1)", action: "Positiv allosterischer Modulator (Sedierung, Amnesie)" },
+        { target: "GABA-A (α2/α3)", action: "PAM (Anxiolyse, Muskelrelaxation)" },
+      ],
+      notes: "Höhere intrinsische Aktivität an α1 als z. B. Diazepam → stärker anxiolytisch-sedierend bei niedrigem mg-Bereich, aber höheres Abhängigkeits-/Rebound-Potenzial.",
+    },
   },
   {
     id: "diazepam",

@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronRight,
   Sparkles,
   Heart,
   Flame,
@@ -33,7 +34,16 @@ import {
   type Profession,
   type ExpertiseLevel,
 } from "@/lib/profile";
-import { SUBSTANCES } from "@/lib/substances";
+import {
+  SUBSTANCES,
+  CATEGORY_LABEL,
+  CATEGORY_TO_SUPER,
+  SUPER_CATEGORY_LABEL,
+  SUPER_CATEGORY_ORDER,
+  type SubstanceCategory,
+  type SuperCategory,
+  type Substance,
+} from "@/lib/substances";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -249,56 +259,15 @@ function Onboarding() {
         )}
 
         {step === 2 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-2xl font-bold">Erfahrung</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Häufigkeit & Applikationsform pro Substanz. Lass leer, was nicht zutrifft — du kannst es jederzeit ergänzen.
-              </p>
-            </div>
-            <div className="max-h-[420px] overflow-y-auto pr-2 space-y-2">
-              {SUBSTANCES.map((s) => {
-                const e = getExp(s.name);
-                const active = e.frequency !== "never" || e.routes.length > 0;
-                return (
-                  <details
-                    key={s.id}
-                    className={`rounded-xl ring-1 transition ${active ? "ring-primary/50 bg-primary/5" : "ring-border"}`}
-                  >
-                    <summary className="cursor-pointer list-none px-4 py-2.5 flex items-center justify-between">
-                      <span className="text-sm font-medium">{s.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {active ? `${e.frequency} · ${e.routes.join("/") || "—"}` : "tippen"}
-                      </span>
-                    </summary>
-                    <div className="px-4 pb-3 space-y-2">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Häufigkeit</div>
-                        <Chips
-                          options={FREQS.map((f) => ({ v: f.v, label: f.label }))}
-                          value={e.frequency}
-                          onSelect={(v) => setExp(s.name, { frequency: v as Frequency })}
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Applikation</div>
-                        <Chips
-                          multi
-                          options={ROUTES.map((r) => ({ v: r.v, label: r.label }))}
-                          values={e.routes}
-                          onToggle={(v) =>
-                            setExp(s.name, { routes: toggleArr(e.routes, v as RouteForm) })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </details>
-                );
-              })}
-            </div>
-            <NavRow onBack={() => setStep(1)} onNext={() => setStep(3)} />
-          </div>
+          <ExperienceStep
+            getExp={getExp}
+            setExp={setExp}
+            toggleArr={toggleArr}
+            onBack={() => setStep(1)}
+            onNext={() => setStep(3)}
+          />
         )}
+
 
         {step === 3 && (
           <div className="space-y-6">
@@ -526,3 +495,173 @@ function Chips({
     </div>
   );
 }
+
+/* ─────────── Experience step: grouped accordion ─────────── */
+
+function ExperienceStep({
+  getExp,
+  setExp,
+  toggleArr,
+  onBack,
+  onNext,
+}: {
+  getExp: (name: string) => SubstanceExperience;
+  setExp: (name: string, patch: Partial<SubstanceExperience>) => void;
+  toggleArr: <T>(arr: T[], v: T) => T[];
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
+  const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const tree = useMemo(() => {
+    const t: Partial<Record<SuperCategory, Partial<Record<SubstanceCategory, Substance[]>>>> = {};
+    for (const s of SUBSTANCES) {
+      const sup = CATEGORY_TO_SUPER[s.category];
+      const bucket = (t[sup] ??= {});
+      (bucket[s.category] ??= []).push(s);
+    }
+    return t;
+  }, []);
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-2xl font-bold">Erfahrung</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Tipp einfach an, was du <strong className="text-foreground">grob</strong> kennst — Häufigkeit reicht, Applikation
+          ist optional. Wir nutzen das <em>nur zur Kalibrierung</em>: damit die KI weiß, ob sie mit dir Basics oder
+          Pharmakologie sprechen kann. Keine Bewertung, keine Präzision nötig.
+        </p>
+      </div>
+
+      <div className="max-h-[480px] overflow-y-auto pr-1 space-y-2">
+        {SUPER_CATEGORY_ORDER.map((sup) => {
+          const cats = tree[sup];
+          if (!cats) return null;
+          const supOpen = !!openSuper[sup];
+          const totalActive = Object.values(cats).reduce(
+            (n, arr) =>
+              n + (arr?.filter((s) => {
+                const e = getExp(s.name);
+                return e.frequency !== "never" || e.routes.length > 0;
+              }).length ?? 0),
+            0
+          );
+          const total = Object.values(cats).reduce((n, arr) => n + (arr?.length ?? 0), 0);
+          return (
+            <div key={sup} className="rounded-xl ring-1 ring-border overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+                className="w-full flex items-center justify-between gap-2 px-4 py-3 hover:bg-muted/20 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <ChevronRight className={`h-4 w-4 transition-transform ${supOpen ? "rotate-90" : ""}`} />
+                  <span className="font-semibold">{SUPER_CATEGORY_LABEL[sup]}</span>
+                </div>
+                <span className="text-[11px] tabular-nums text-muted-foreground">
+                  {totalActive > 0 ? `${totalActive} markiert · ` : ""}
+                  {total}
+                </span>
+              </button>
+
+              {supOpen && (
+                <div className="px-2 pb-2 space-y-1.5">
+                  {(Object.entries(cats) as [SubstanceCategory, Substance[]][]).map(([cat, list]) => {
+                    const catOpen = !!openCat[cat];
+                    return (
+                      <div key={cat} className="rounded-lg bg-background/30">
+                        <button
+                          type="button"
+                          onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                          className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-muted/20 transition"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform ${catOpen ? "rotate-90" : ""}`} />
+                            <span className="text-xs font-medium">{CATEGORY_LABEL[cat]}</span>
+                          </div>
+                          <span className="text-[10px] tabular-nums text-muted-foreground">{list.length}</span>
+                        </button>
+
+                        {catOpen && (
+                          <ul className="px-2 pb-2 space-y-1">
+                            {list.map((s) => {
+                              const e = getExp(s.name);
+                              const active = e.frequency !== "never" || e.routes.length > 0;
+                              const isOpen = openId === s.id;
+                              return (
+                                <li
+                                  key={s.id}
+                                  className={`rounded-lg ring-1 transition ${
+                                    active ? "ring-primary/50 bg-primary/5" : "ring-border/40"
+                                  }`}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => setOpenId(isOpen ? null : s.id)}
+                                    className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left"
+                                  >
+                                    <span className="text-sm">{s.name}</span>
+                                    <span className="text-[10px] text-muted-foreground">
+                                      {active
+                                        ? `${FREQ_SHORT[e.frequency]}${e.routes.length ? " · " + e.routes.join("/") : ""}`
+                                        : "tippen"}
+                                    </span>
+                                  </button>
+                                  {isOpen && (
+                                    <div className="px-3 pb-3 space-y-2 border-t border-border/30 pt-2">
+                                      <div>
+                                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                                          Wie oft?
+                                        </div>
+                                        <Chips
+                                          options={FREQS.map((f) => ({ v: f.v, label: f.label }))}
+                                          value={e.frequency}
+                                          onSelect={(v) => setExp(s.name, { frequency: v as Frequency })}
+                                        />
+                                      </div>
+                                      <div>
+                                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                                          Wie eingenommen? <span className="opacity-60">(optional)</span>
+                                        </div>
+                                        <Chips
+                                          multi
+                                          options={ROUTES.map((r) => ({ v: r.v, label: r.label }))}
+                                          values={e.routes}
+                                          onToggle={(v) =>
+                                            setExp(s.name, { routes: toggleArr(e.routes, v as RouteForm) })
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <NavRow onBack={onBack} onNext={onNext} />
+    </div>
+  );
+}
+
+const FREQ_SHORT: Record<Frequency, string> = {
+  never: "nie",
+  tried_once: "1×",
+  rare: "selten",
+  monthly: "monatlich",
+  weekly: "wöchentlich",
+  daily: "täglich",
+};

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, ExternalLink, Search, FlaskConical } from "lucide-react";
+import { ChevronRight, ExternalLink, Search, FlaskConical, Sparkles, Zap, Brain, Wind, Pill, Cloud, Beaker, CircleDot } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
@@ -126,20 +126,22 @@ function SubstancesPage() {
             className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          <FilterChip
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <SuperChip
             active={filterSuper === "all"}
             onClick={() => setFilterSuper("all")}
             label="Alle"
             count={SUBSTANCES.length}
+            Icon={CircleDot}
           />
           {SUPER_CATEGORY_ORDER.map((sup) => (
-            <FilterChip
+            <SuperChip
               key={sup}
               active={filterSuper === sup}
               onClick={() => setFilterSuper(sup)}
               label={SUPER_CATEGORY_LABEL[sup]}
               count={superCounts[sup] ?? 0}
+              Icon={SUPER_ICON[sup]}
             />
           ))}
         </div>
@@ -510,29 +512,44 @@ function PharmaTab({ s }: { s: Substance }) {
 
 /* ─────────── Atoms ─────────── */
 
-function FilterChip({
+const SUPER_ICON: Record<SuperCategory, typeof CircleDot> = {
+  hallucinogen: Sparkles,
+  stimulant_group: Zap,
+  depressant_group: Cloud,
+  opioid_group: Pill,
+  empathogen_group: Brain,
+  cannabinoid_group: Wind,
+  other_group: Beaker,
+};
+
+function SuperChip({
   active,
   onClick,
   label,
   count,
+  Icon,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   count: number;
+  Icon: typeof CircleDot;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition ${
+      className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition border ${
         active
-          ? "bg-primary text-primary-foreground"
-          : "bg-muted/40 text-foreground/80 hover:bg-muted/70"
+          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+          : "bg-muted/30 border-border/50 text-foreground/85 hover:bg-muted/60"
       }`}
     >
-      <span>{label}</span>
-      <span className="tabular-nums opacity-70">{count}</span>
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className="flex-1 text-left truncate font-medium">{label}</span>
+      <span className={`tabular-nums text-xs rounded-full px-1.5 py-0.5 ${
+        active ? "bg-primary-foreground/20" : "bg-muted/60"
+      }`}>{count}</span>
     </button>
   );
 }
