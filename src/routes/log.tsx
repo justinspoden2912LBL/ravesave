@@ -71,6 +71,7 @@ function LogPage() {
     setUnit(e.unit);
     setRoute(e.route);
     setWhen(new Date().toISOString().slice(0, 16));
+    setFormOpenMobile(true);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
