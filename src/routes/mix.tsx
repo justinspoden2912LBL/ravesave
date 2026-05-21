@@ -146,9 +146,12 @@ function MixPage() {
       {/* Picker — grouped by super category */}
       <div className="rounded-2xl glass p-5">
         <input
+          ref={searchRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Substanz suchen..."
+          aria-label="Substanz suchen"
+          autoFocus
           className="w-full rounded-lg bg-input px-3 py-2 text-sm mb-4"
         />
         <GroupedPicker
