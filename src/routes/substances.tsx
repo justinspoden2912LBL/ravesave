@@ -385,20 +385,28 @@ function quickDose(d?: DoseRange) {
 
 /* ─────────── Tab bodies ─────────── */
 
-function OverviewTab({ s, expert }: { s: Substance; expert: boolean }) {
+function OverviewTab({ s, depth }: { s: Substance; depth: Depth }) {
+  const expert = depth === "experte";
+  const casual = depth === "einfach";
+  const wirkungLabel = casual ? "So wirkt's" : depth === "experte" ? "Wirkmechanismus" : "Wirkung";
   return (
     <div className="space-y-2">
       <p className="text-muted-foreground">{s.shortDescription}</p>
+      {casual && (
+        <p className="text-xs text-muted-foreground/90 italic">
+          Locker gesagt: probier's nie ohne Plan. Niedrig anfangen, Zeit lassen, jemand Nüchterner in der Nähe — das ist nicht spießig, das ist clever.
+        </p>
+      )}
       <Row label="Klasse">{CATEGORY_LABEL[s.category]}</Row>
-      <Row label="Wirkung">{s.mechanism}</Row>
-      <Row label="Eintritt">{s.onset}</Row>
-      <Row label="Dauer">{s.duration}</Row>
+      <Row label={wirkungLabel}>{s.mechanism}</Row>
+      <Row label={casual ? "Wann's startet" : "Eintritt"}>{s.onset}</Row>
+      <Row label={casual ? "Wie lange" : "Dauer"}>{s.duration}</Row>
       {expert && s.expert?.notes && (
         <ExpertBlock>
           <p className="text-muted-foreground">{s.expert.notes}</p>
         </ExpertBlock>
       )}
-      {s.evidence.length > 0 && (
+      {depth !== "einfach" && s.evidence.length > 0 && (
         <div className="pt-1">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Quellen</div>
           <ul className="space-y-0.5">
@@ -421,19 +429,31 @@ function OverviewTab({ s, expert }: { s: Substance; expert: boolean }) {
   );
 }
 
-function DoseTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
+function DoseTab({ s, d, depth }: { s: Substance; d?: DoseRange; depth: Depth }) {
   if (!d) return <p className="text-muted-foreground text-xs">Keine Dosisdaten.</p>;
+  const expert = depth === "experte";
+  const casual = depth === "einfach";
   return (
     <div className="space-y-2">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.route}</div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.route}</div>
+        {casual && (
+          <div className="text-[10px] text-secondary">Tipp: Erste Mal? Schwelle oder Leicht.</div>
+        )}
+      </div>
       <div className="grid grid-cols-5 gap-1 text-[11px]">
-        <Dose label="Schwelle" v={d.threshold} />
+        <Dose label={casual ? "Tasten" : "Schwelle"} v={d.threshold} />
         <Dose label="Leicht" v={d.light} />
-        <Dose label="Üblich" v={d.common} />
+        <Dose label={casual ? "Normal" : "Üblich"} v={d.common} />
         <Dose label="Stark" v={d.strong} />
-        <Dose label="Heavy" v={d.heavy} />
+        <Dose label={casual ? "Heftig" : "Heavy"} v={d.heavy} />
       </div>
       {d.notes && <p className="text-xs text-muted-foreground">{d.notes}</p>}
+      {casual && (
+        <p className="text-[11px] text-muted-foreground">
+          Mengen sind grobe Richtwerte aus Erfahrungsberichten — nicht für dich persönlich kalibriert. Körpergewicht, Tagesform und Reinheit verschieben alles.
+        </p>
+      )}
       {expert && s.expert?.bioavailability && (
         <ExpertBlock>
           <Row label="Bioverfügbarkeit">{s.expert.bioavailability}</Row>
@@ -443,16 +463,23 @@ function DoseTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolea
   );
 }
 
-function DurationTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
+function DurationTab({ s, d, depth }: { s: Substance; d?: DoseRange; depth: Depth }) {
+  const expert = depth === "experte";
+  const casual = depth === "einfach";
   const onset = d?.onset ?? s.onset;
   const total = d?.total ?? s.duration;
   return (
     <div className="space-y-3">
+      {casual && (
+        <p className="text-xs text-muted-foreground">
+          Plan deinen Abend grob: bis es richtig anflutet dauert's, und das Runterkommen kostet auch nochmal Zeit. Nicht nachlegen, bevor du sicher weißt, wo du stehst.
+        </p>
+      )}
       <div className="grid grid-cols-2 gap-2">
-        <Stat label="Eintritt" v={onset} />
+        <Stat label={casual ? "Start" : "Eintritt"} v={onset} />
         <Stat label="Peak" v={d?.peak ?? "—"} />
-        <Stat label="Gesamtdauer" v={total} />
-        <Stat label="Nachwirkung" v={d?.afterglow ?? s.afterEffects ?? "—"} />
+        <Stat label={casual ? "Insgesamt" : "Gesamtdauer"} v={total} />
+        <Stat label={casual ? "Danach" : "Nachwirkung"} v={d?.afterglow ?? s.afterEffects ?? "—"} />
       </div>
       {expert && (s.expert?.halfLife || s.expert?.pharmacokinetics) && (
         <ExpertBlock>
@@ -464,10 +491,17 @@ function DurationTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: bo
   );
 }
 
-function RisksTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
+function RisksTab({ s, d, depth }: { s: Substance; d?: DoseRange; depth: Depth }) {
+  const expert = depth === "experte";
+  const casual = depth === "einfach";
   const classTips = CATEGORY_HR_TIPS[s.category] ?? [];
   return (
     <div className="space-y-3">
+      {casual && (
+        <p className="text-xs text-muted-foreground">
+          Ehrlich: nichts davon ist „safe". Aber wer die Punkte hier kennt und beachtet, fängt schon mal sehr viel ab.
+        </p>
+      )}
       {d?.riskNotes && (
         <div className="rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs">
           <span className="font-medium text-amber-300/90">{d.route}: </span>
@@ -476,7 +510,9 @@ function RisksTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boole
       )}
       {s.warnings.length > 0 && (
         <div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Substanzspezifisch</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            {casual ? "Worauf besonders aufpassen" : "Substanzspezifisch"}
+          </div>
           <ul className="list-disc pl-4 space-y-0.5 text-xs">
             {s.warnings.map((w, i) => (
               <li key={i}>{w}</li>
@@ -487,7 +523,7 @@ function RisksTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boole
       {classTips.length > 0 && (
         <div>
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-            Klasse: {CATEGORY_LABEL[s.category]}
+            {casual ? "Allgemein für diese Art Substanz" : `Klasse: ${CATEGORY_LABEL[s.category]}`}
           </div>
           <ul className="list-disc pl-4 space-y-0.5 text-xs text-muted-foreground">
             {classTips.map((t, i) => (
@@ -504,6 +540,7 @@ function RisksTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boole
     </div>
   );
 }
+
 
 function ExpertBlock({ children }: { children: React.ReactNode }) {
   return (
