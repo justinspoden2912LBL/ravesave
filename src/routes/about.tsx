@@ -183,6 +183,51 @@ function AboutPage() {
         </Link>
       </section>
 
+      <section className="rounded-2xl glass p-5 space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <BookOpen className="h-4 w-4 text-secondary" /> Quellen &amp; Vertrauen
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Dosis-Bereiche, Wechselwirkungen und Wirkdauern werden mit folgenden öffentlichen,
+          fachlich anerkannten Quellen abgeglichen:
+        </p>
+        <ul className="grid sm:grid-cols-3 gap-2 text-sm">
+          <li>
+            <a
+              href="https://tripsit.me/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg bg-background/40 border border-border/60 px-3 py-2 hover:border-secondary/60 hover:text-foreground transition"
+            >
+              <div className="font-medium">TripSit</div>
+              <div className="text-xs text-muted-foreground">Wechselwirkungs-Matrix &amp; Factsheets</div>
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.emcdda.europa.eu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg bg-background/40 border border-border/60 px-3 py-2 hover:border-secondary/60 hover:text-foreground transition"
+            >
+              <div className="font-medium">EMCDDA / EUDA</div>
+              <div className="text-xs text-muted-foreground">Europäische Drogen­beobachtungs­stelle</div>
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://psychonautwiki.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg bg-background/40 border border-border/60 px-3 py-2 hover:border-secondary/60 hover:text-foreground transition"
+            >
+              <div className="font-medium">PsychonautWiki</div>
+              <div className="text-xs text-muted-foreground">Pharmakologie &amp; subjektive Effekte</div>
+            </a>
+          </li>
+        </ul>
+      </section>
+
       <section className="rounded-2xl glass p-5 space-y-2">
         <div className="flex items-center gap-2 font-semibold">
           <Mail className="h-4 w-4 text-secondary" /> Feedback &amp; Anregungen

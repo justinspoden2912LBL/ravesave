@@ -164,17 +164,31 @@ function MixPage() {
       {/* Legend */}
       <div className="rounded-2xl glass p-5">
         <h3 className="font-semibold mb-3">Legende</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
           {(Object.keys(RISK_META) as Array<keyof typeof RISK_META>).map((k) => (
-            <div key={k} className={`rounded-lg border px-3 py-2 ${RISK_META[k].bg}`}>
-              <span className={`font-semibold ${RISK_META[k].color}`}>{RISK_META[k].label}</span>
-            </div>
+            <li key={k} className={`rounded-lg border px-3 py-2 ${RISK_META[k].bg}`}>
+              <div className="flex items-center gap-2">
+                <span className={`font-semibold ${RISK_META[k].color}`}>{RISK_META[k].label}</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground leading-snug">
+                {LEGEND_DESC[k]}
+              </p>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );
 }
+
+const LEGEND_DESC: Record<keyof typeof RISK_META, string> = {
+  safe: "Keine bekannten relevanten Wechselwirkungen — bleibt grundsätzlich kein risikofreier Konsum.",
+  synergy: "Wirkungen verstärken sich gewollt — Dosis reduzieren und Wirkung abwarten.",
+  caution: "Vorsicht — mögliche unangenehme oder riskante Wechselwirkungen. Niedrig dosieren, nicht allein konsumieren.",
+  unsafe: "Riskant — deutlich erhöhte Wahrscheinlichkeit für Notfälle. Besser nicht kombinieren.",
+  danger: "Lebensgefährlich — Atemstillstand, Krampf oder Tod möglich. Nicht kombinieren.",
+  unknown: "Keine belastbaren Daten — Vorsicht walten lassen und im Zweifel trennen.",
+};
 
 function GroupedPicker({
   items,

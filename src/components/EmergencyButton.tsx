@@ -204,7 +204,7 @@ export function EmergencyButton() {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto space-y-4">
+      <DialogContent className="max-w-lg max-h-[85dvh] sm:max-h-[90vh] overflow-y-auto overscroll-contain space-y-4">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <Siren className="h-5 w-5" /> Notfall-Hilfe
@@ -215,12 +215,21 @@ export function EmergencyButton() {
         </DialogHeader>
 
         {/* Always-visible 112 */}
-        <a
-          href="tel:112"
-          className="flex items-center justify-center gap-2 rounded-2xl bg-destructive px-4 py-4 text-lg font-bold text-destructive-foreground shadow-md hover:brightness-110"
-        >
-          <Phone className="h-6 w-6" /> 112 anrufen
-        </a>
+        <div className="space-y-1.5">
+          <a
+            href="tel:112"
+            aria-label="Notruf 112 anrufen"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-destructive px-4 py-4 text-lg font-bold text-destructive-foreground shadow-md hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/60"
+          >
+            <Phone className="h-6 w-6" /> 112 anrufen
+          </a>
+          <p className="text-center text-xs text-muted-foreground">
+            Oder ruf jetzt direkt <strong className="text-foreground">112</strong> an — kostenlos, EU-weit, ohne Guthaben.
+          </p>
+          <p className="text-center text-xs text-muted-foreground/80">
+            ↓ Weiter unten: Symptom-Check, stabile Seitenlage, Hotlines.
+          </p>
+        </div>
 
         {/* Medical ID — immer sichtbar, damit Ersthelfer:innen Infos finden */}
         <MedicalCard />
