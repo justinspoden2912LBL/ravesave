@@ -259,56 +259,15 @@ function Onboarding() {
         )}
 
         {step === 2 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-2xl font-bold">Erfahrung</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Häufigkeit & Applikationsform pro Substanz. Lass leer, was nicht zutrifft — du kannst es jederzeit ergänzen.
-              </p>
-            </div>
-            <div className="max-h-[420px] overflow-y-auto pr-2 space-y-2">
-              {SUBSTANCES.map((s) => {
-                const e = getExp(s.name);
-                const active = e.frequency !== "never" || e.routes.length > 0;
-                return (
-                  <details
-                    key={s.id}
-                    className={`rounded-xl ring-1 transition ${active ? "ring-primary/50 bg-primary/5" : "ring-border"}`}
-                  >
-                    <summary className="cursor-pointer list-none px-4 py-2.5 flex items-center justify-between">
-                      <span className="text-sm font-medium">{s.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {active ? `${e.frequency} · ${e.routes.join("/") || "—"}` : "tippen"}
-                      </span>
-                    </summary>
-                    <div className="px-4 pb-3 space-y-2">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Häufigkeit</div>
-                        <Chips
-                          options={FREQS.map((f) => ({ v: f.v, label: f.label }))}
-                          value={e.frequency}
-                          onSelect={(v) => setExp(s.name, { frequency: v as Frequency })}
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Applikation</div>
-                        <Chips
-                          multi
-                          options={ROUTES.map((r) => ({ v: r.v, label: r.label }))}
-                          values={e.routes}
-                          onToggle={(v) =>
-                            setExp(s.name, { routes: toggleArr(e.routes, v as RouteForm) })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </details>
-                );
-              })}
-            </div>
-            <NavRow onBack={() => setStep(1)} onNext={() => setStep(3)} />
-          </div>
+          <ExperienceStep
+            getExp={getExp}
+            setExp={setExp}
+            toggleArr={toggleArr}
+            onBack={() => setStep(1)}
+            onNext={() => setStep(3)}
+          />
         )}
+
 
         {step === 3 && (
           <div className="space-y-6">
