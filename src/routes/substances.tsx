@@ -49,19 +49,21 @@ function SubstancesPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
   const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
-  const [expert, setExpert] = useState(false);
+  const [depth, setDepth] = useState<Depth>("fortgeschritten");
 
   useEffect(() => {
     try {
-      const v = localStorage.getItem(EXPERT_KEY);
-      if (v === "1") setExpert(true);
+      const v = localStorage.getItem(DEPTH_KEY) as Depth | null;
+      if (v === "einfach" || v === "fortgeschritten" || v === "experte") setDepth(v);
     } catch {}
   }, []);
   useEffect(() => {
     try {
-      localStorage.setItem(EXPERT_KEY, expert ? "1" : "0");
+      localStorage.setItem(DEPTH_KEY, depth);
     } catch {}
-  }, [expert]);
+  }, [depth]);
+
+  const expert = depth === "experte";
 
   const q = query.toLowerCase().trim();
   const searching = q.length > 0 || filterSuper !== "all";
@@ -105,29 +107,50 @@ function SubstancesPage() {
     return t;
   }, [matches]);
 
+  const intro =
+    depth === "einfach"
+      ? "Hier findest du das Wichtigste zu jeder Substanz — locker erklärt, ohne Fachchinesisch, aber ehrlich zu den Risiken."
+      : depth === "fortgeschritten"
+      ? "Übersichten zu Dosis, Wirkdauer und Risiken pro Applikationsweg — mit klaren Safer-Use-Hinweisen."
+      : "Volle pharmakologische Tiefe: Rezeptorprofile, Pharmakokinetik, CYP-Interaktionen, Quellen.";
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Kompakt & scanbar. Wähle Substanz → Applikationsweg → Tab.
-          </p>
+      <header className="space-y-3">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
+            <p className="text-muted-foreground mt-1 text-sm max-w-xl">{intro}</p>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setExpert((v) => !v)}
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium border transition shrink-0 ${
-            expert
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-muted/30 border-border/60 text-foreground/80 hover:bg-muted/60"
-          }`}
-          title="Pharmakologie, Rezeptoraffinitäten, CYP, Halbwertszeit"
-        >
-          <FlaskConical className="h-3.5 w-3.5" />
-          Expertenmodus {expert ? "an" : "aus"}
-        </button>
+
+        <div className="rounded-2xl glass p-3 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <FlaskConical className="h-3 w-3" /> Detailtiefe
+            </span>
+            <span className="text-[10px] text-muted-foreground hidden sm:block">{DEPTH_META[depth].hint}</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {(Object.keys(DEPTH_META) as Depth[]).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDepth(d)}
+                className={`rounded-lg px-3 py-2 text-xs font-medium border transition ${
+                  depth === d
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-muted/20 border-border/50 text-foreground/80 hover:bg-muted/50"
+                }`}
+              >
+                {DEPTH_META[d].label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground sm:hidden">{DEPTH_META[depth].hint}</p>
+        </div>
       </header>
+
 
       <div className="rounded-2xl glass p-4 space-y-3">
         <div className="relative">
