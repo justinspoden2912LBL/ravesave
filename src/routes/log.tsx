@@ -102,13 +102,36 @@ function LogPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 md:grid-cols-[minmax(320px,400px)_1fr]">
       <h1 className="sr-only">Konsum-Protokoll</h1>
+
+      {/* Mobile: prominent "Neuer Eintrag" trigger before the form expands */}
+      {!formOpenMobile && (
+        <button
+          onClick={() => setFormOpenMobile(true)}
+          className="md:hidden inline-flex w-full items-center justify-center gap-2 rounded-full bg-aurora animate-aurora px-5 py-3 text-sm font-semibold text-primary-foreground glow"
+        >
+          <Plus className="h-4 w-4" /> Neuer Eintrag
+        </button>
+      )}
+
       {/* Form */}
-      <aside className="md:sticky md:top-24 md:self-start">
+      <aside
+        className={`md:sticky md:top-24 md:self-start ${formOpenMobile ? "" : "hidden md:block"}`}
+      >
         <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Plus className="h-5 w-5" style={{ color: "oklch(0.78 0.22 320)" }} />
-            Neuer Eintrag
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Plus className="h-5 w-5" style={{ color: "oklch(0.78 0.22 320)" }} />
+              Neuer Eintrag
+            </h2>
+            <button
+              type="button"
+              onClick={() => setFormOpenMobile(false)}
+              className="md:hidden inline-flex items-center justify-center rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted/40 min-h-11 min-w-11"
+              aria-label="Formular schließen"
+            >
+              ✕
+            </button>
+          </div>
 
           <Field
             label="Substanz"
@@ -172,16 +195,18 @@ function LogPage() {
             />
           </Field>
 
-          <Field label={`Stimmung: ${["⛈","🌧","🌤","☀️","✨"][mood - 1]}`}>
+          <Field label={`Stimmung ${["⛈","🌧","🌤","☀️","✨"][mood - 1]}`}>
             <input
               type="range" min={1} max={5} value={mood}
               onChange={(e) => setMood(+e.target.value)}
               className="w-full accent-primary"
-              aria-label="Stimmung von schlecht bis sehr gut"
+              aria-label="Stimmung von schlecht (1) bis sehr gut (5)"
+              aria-valuetext={`${mood} von 5`}
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-              <span>😰 Schlecht</span>
-              <span>🤩 Sehr gut</span>
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>Schlecht</span>
+              <span>Neutral</span>
+              <span>Gut</span>
             </div>
           </Field>
 
