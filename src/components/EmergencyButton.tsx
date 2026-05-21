@@ -330,9 +330,9 @@ export function EmergencyButton() {
           <section className="space-y-3">
             <button
               onClick={reset}
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1.5 min-h-11 px-3 -ml-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40"
             >
-              <ArrowLeft className="h-3.5 w-3.5" /> Zurück zum Symptom-Check
+              <ArrowLeft className="h-4 w-4" /> Zurück zum Symptom-Check
             </button>
 
             <div className="rounded-2xl bg-destructive/10 ring-1 ring-destructive/30 p-4 space-y-2">
