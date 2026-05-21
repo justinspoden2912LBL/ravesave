@@ -1,0 +1,27 @@
+{
+  "name": "Rave Safe, have Fun",
+  "short_name": "Rave Safe",
+  "description": "Harm-Reduction-Companion: Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0a1c",
+  "theme_color": "#0c0a1c",
+  "lang": "de",
+  "categories": ["health", "education", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
