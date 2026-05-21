@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, Heart, ShieldAlert, Sparkles } from "lucide-react";
+import { BookOpen, Heart, Mail, Pencil, Save, ShieldAlert, Sparkles, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -19,7 +21,75 @@ export const Route = createFileRoute("/about")({
   }),
 });
 
+const FALLBACK_INTRO = `Ich habe selbst Erfahrungen mit über **84 psychoaktiven Substanzen** gemacht — über praktisch jeden denkbaren Applikationsweg. Diese Reise hat mir eines sehr deutlich gezeigt: Konsum kann Genuss, Verbindung und tiefe Selbsterkenntnis bedeuten — und im selben Atemzug ernsthaft gefährlich werden.
+
+Genau deshalb gibt es dieses Tool. Es soll dir helfen, in wenigen Sekunden einzuschätzen, was du gerade vorhast: Welche Wechselwirkungen sind kritisch, welche Dosis ist realistisch, worauf solltest du achten. Ziel ist nicht, dir irgendwas auszureden — sondern dass du eine gute, bewusste Erfahrung machst und das Risiko dabei so klein wie möglich hältst.`;
+
+function renderMarkdownish(text: string) {
+  return text.split(/\n{2,}/).map((para, i) => {
+    const parts = para.split(/(\*\*[^*]+\*\*)/g).map((seg, j) =>
+      seg.startsWith("**") && seg.endsWith("**") ? (
+        <strong key={j}>{seg.slice(2, -2)}</strong>
+      ) : (
+        <span key={j}>{seg}</span>
+      )
+    );
+    return <p key={i}>{parts}</p>;
+  });
+}
+
 function AboutPage() {
+  const [intro, setIntro] = useState<string>(FALLBACK_INTRO);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("site_content")
+        .select("content")
+        .eq("key", "about_intro")
+        .maybeSingle();
+      if (!cancelled && data?.content) setIntro(data.content);
+
+      const { data: userData } = await supabase.auth.getUser();
+      if (cancelled || !userData.user) return;
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData.user.id);
+      if (!cancelled && roles?.some((r) => r.role === "admin")) setIsAdmin(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const startEdit = () => {
+    setDraft(intro);
+    setEditing(true);
+  };
+
+  const save = async () => {
+    setSaving(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("site_content")
+      .upsert({ key: "about_intro", content: draft, updated_by: userData.user?.id ?? null });
+    setSaving(false);
+    if (error) {
+      alert("Speichern fehlgeschlagen: " + error.message);
+      return;
+    }
+    setIntro(draft);
+    setEditing(false);
+    setSavedAt(Date.now());
+  };
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 space-y-8">
       <header className="space-y-3">
@@ -33,20 +103,53 @@ function AboutPage() {
         </p>
       </header>
 
-      <section className="rounded-3xl glass p-6 space-y-4 text-[15px] leading-relaxed">
-        <p>
-          Ich habe selbst Erfahrungen mit über <strong>84 psychoaktiven Substanzen</strong>{" "}
-          gemacht — über praktisch jeden denkbaren Applikationsweg. Diese Reise hat mir eines
-          sehr deutlich gezeigt: Konsum kann Genuss, Verbindung und tiefe Selbsterkenntnis
-          bedeuten — und im selben Atemzug ernsthaft gefährlich werden.
-        </p>
-        <p>
-          Genau deshalb gibt es dieses Tool. Es soll dir helfen, in wenigen Sekunden
-          einzuschätzen, was du gerade vorhast: Welche Wechselwirkungen sind kritisch,
-          welche Dosis ist realistisch, worauf solltest du achten. Ziel ist nicht, dir
-          irgendwas auszureden — sondern dass du eine gute, bewusste Erfahrung machst und
-          das Risiko dabei so klein wie möglich hältst.
-        </p>
+      <section className="rounded-3xl glass p-6 space-y-4 text-[15px] leading-relaxed relative">
+        {isAdmin && !editing && (
+          <button
+            onClick={startEdit}
+            className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 text-primary px-3 py-1 text-xs hover:bg-primary/25 transition"
+            title="Info-Text bearbeiten (Admin)"
+          >
+            <Pencil className="h-3 w-3" /> Bearbeiten
+          </button>
+        )}
+
+        {editing ? (
+          <div className="space-y-3">
+            <div className="text-xs text-muted-foreground">
+              Markdown-light: **fett**, Absätze durch Leerzeile.
+            </div>
+            <textarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              rows={14}
+              className="w-full rounded-lg bg-input p-3 text-sm font-mono leading-relaxed"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={save}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+              >
+                <Save className="h-4 w-4" /> {saving ? "Speichern…" : "Speichern"}
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-muted/60 px-4 py-2 text-sm"
+              >
+                <X className="h-4 w-4" /> Abbrechen
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {renderMarkdownish(intro)}
+            {savedAt && (
+              <div className="text-[11px] text-secondary">Gespeichert ✓</div>
+            )}
+          </>
+        )}
+
         <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
           <div className="flex items-center gap-2 font-semibold text-destructive">
             <ShieldAlert className="h-4 w-4" /> Ehrlich bleiben
@@ -78,6 +181,21 @@ function AboutPage() {
         >
           <BookOpen className="h-4 w-4" /> Beiträge lesen
         </Link>
+      </section>
+
+      <section className="rounded-2xl glass p-5 space-y-2">
+        <div className="flex items-center gap-2 font-semibold">
+          <Mail className="h-4 w-4 text-secondary" /> Feedback &amp; Anregungen
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Bug gefunden, Verbesserungsvorschlag oder einfach Feedback? Immer her damit:
+        </p>
+        <a
+          href="mailto:ravesafe.live@gmail.com?subject=Rave%20Safe%20Feedback"
+          className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-sm font-medium hover:bg-primary/25 transition"
+        >
+          <Mail className="h-4 w-4" /> ravesafe.live@gmail.com
+        </a>
       </section>
 
       <div className="flex flex-wrap gap-2">
