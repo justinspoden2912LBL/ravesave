@@ -310,10 +310,10 @@ function SubstanceCard({
           )}
 
           <div className="px-3 pb-3 pt-2 text-sm">
-            {tab === "overview" && <OverviewTab s={s} />}
-            {tab === "dose" && <DoseTab d={route} />}
-            {tab === "duration" && <DurationTab s={s} d={route} />}
-            {tab === "risks" && <RisksTab s={s} d={route} />}
+            {tab === "overview" && <OverviewTab s={s} expert={expert} />}
+            {tab === "dose" && <DoseTab s={s} d={route} expert={expert} />}
+            {tab === "duration" && <DurationTab s={s} d={route} expert={expert} />}
+            {tab === "risks" && <RisksTab s={s} d={route} expert={expert} />}
             {tab === "pharma" && expert && <PharmaTab s={s} />}
           </div>
         </div>
@@ -330,7 +330,7 @@ function quickDose(d?: DoseRange) {
 
 /* ─────────── Tab bodies ─────────── */
 
-function OverviewTab({ s }: { s: Substance }) {
+function OverviewTab({ s, expert }: { s: Substance; expert: boolean }) {
   return (
     <div className="space-y-2">
       <p className="text-muted-foreground">{s.shortDescription}</p>
@@ -338,6 +338,11 @@ function OverviewTab({ s }: { s: Substance }) {
       <Row label="Wirkung">{s.mechanism}</Row>
       <Row label="Eintritt">{s.onset}</Row>
       <Row label="Dauer">{s.duration}</Row>
+      {expert && s.expert?.notes && (
+        <ExpertBlock>
+          <p className="text-muted-foreground">{s.expert.notes}</p>
+        </ExpertBlock>
+      )}
       {s.evidence.length > 0 && (
         <div className="pt-1">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Quellen</div>
@@ -361,7 +366,7 @@ function OverviewTab({ s }: { s: Substance }) {
   );
 }
 
-function DoseTab({ d }: { d?: DoseRange }) {
+function DoseTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
   if (!d) return <p className="text-muted-foreground text-xs">Keine Dosisdaten.</p>;
   return (
     <div className="space-y-2">
@@ -374,24 +379,37 @@ function DoseTab({ d }: { d?: DoseRange }) {
         <Dose label="Heavy" v={d.heavy} />
       </div>
       {d.notes && <p className="text-xs text-muted-foreground">{d.notes}</p>}
+      {expert && s.expert?.bioavailability && (
+        <ExpertBlock>
+          <Row label="Bioverfügbarkeit">{s.expert.bioavailability}</Row>
+        </ExpertBlock>
+      )}
     </div>
   );
 }
 
-function DurationTab({ s, d }: { s: Substance; d?: DoseRange }) {
+function DurationTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
   const onset = d?.onset ?? s.onset;
   const total = d?.total ?? s.duration;
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <Stat label="Eintritt" v={onset} />
-      <Stat label="Peak" v={d?.peak ?? "—"} />
-      <Stat label="Gesamtdauer" v={total} />
-      <Stat label="Nachwirkung" v={d?.afterglow ?? s.afterEffects ?? "—"} />
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-2">
+        <Stat label="Eintritt" v={onset} />
+        <Stat label="Peak" v={d?.peak ?? "—"} />
+        <Stat label="Gesamtdauer" v={total} />
+        <Stat label="Nachwirkung" v={d?.afterglow ?? s.afterEffects ?? "—"} />
+      </div>
+      {expert && (s.expert?.halfLife || s.expert?.pharmacokinetics) && (
+        <ExpertBlock>
+          {s.expert?.halfLife && <Row label="Halbwertszeit">{s.expert.halfLife}</Row>}
+          {s.expert?.pharmacokinetics && <Row label="Pharmakokinetik">{s.expert.pharmacokinetics}</Row>}
+        </ExpertBlock>
+      )}
     </div>
   );
 }
 
-function RisksTab({ s, d }: { s: Substance; d?: DoseRange }) {
+function RisksTab({ s, d, expert }: { s: Substance; d?: DoseRange; expert: boolean }) {
   const classTips = CATEGORY_HR_TIPS[s.category] ?? [];
   return (
     <div className="space-y-3">
@@ -423,6 +441,23 @@ function RisksTab({ s, d }: { s: Substance; d?: DoseRange }) {
           </ul>
         </div>
       )}
+      {expert && s.expert?.cyp && (
+        <ExpertBlock>
+          <Row label="CYP-Interaktion">{s.expert.cyp}</Row>
+        </ExpertBlock>
+      )}
+    </div>
+  );
+}
+
+function ExpertBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 space-y-1">
+      <div className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-primary/80 font-medium">
+        <FlaskConical className="h-3 w-3" />
+        Expertendaten
+      </div>
+      {children}
     </div>
   );
 }
