@@ -97,33 +97,76 @@ function LoginCard() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
+  const [signupDone, setSignupDone] = useState<{ email: string; needsConfirm: boolean } | null>(
+    null,
+  );
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setErr(null);
-    setInfo(null);
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
         if (error) throw error;
-        setInfo(
-          "Account angelegt. Bestätige ggf. die E-Mail. Bitte dann den Account in der Cloud-Konsole als Admin hinterlegen.",
-        );
+        // If a session is returned, email confirmation is disabled and the user is already signed in.
+        const needsConfirm = !data.session;
+        setSignupDone({ email, needsConfirm });
       }
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Login fehlgeschlagen");
     } finally {
       setBusy(false);
     }
+  }
+
+  if (signupDone) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-2xl glass p-6 space-y-4 text-center">
+          <div className="mx-auto h-12 w-12 rounded-full bg-secondary/15 flex items-center justify-center">
+            <ShieldCheck className="h-6 w-6 text-secondary" />
+          </div>
+          <h1 className="text-xl font-bold">Admin-Setup erfolgreich</h1>
+          <p className="text-sm text-muted-foreground">
+            Account für <strong className="text-foreground">{signupDone.email}</strong> wurde
+            angelegt.
+          </p>
+          {signupDone.needsConfirm ? (
+            <p className="text-xs text-muted-foreground">
+              Bitte bestätige zuerst den Link in deiner E-Mail. Danach kannst du dich hier
+              einloggen.
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Du kannst dich jetzt mit deiner E-Mail und deinem Passwort einloggen.
+            </p>
+          )}
+          <p className="text-[11px] text-muted-foreground">
+            Hinweis: Admin-Rechte werden separat in der Cloud-Konsole vergeben.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("signin");
+              setPassword("");
+              setErr(null);
+              setSignupDone(null);
+            }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow"
+          >
+            <LogIn className="h-4 w-4" /> Zum Login
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -162,7 +205,6 @@ function LoginCard() {
         </label>
 
         {err && <p className="text-xs text-destructive">{err}</p>}
-        {info && <p className="text-xs text-secondary">{info}</p>}
 
         <button
           type="submit"
@@ -177,7 +219,6 @@ function LoginCard() {
           onClick={() => {
             setMode(mode === "signin" ? "signup" : "signin");
             setErr(null);
-            setInfo(null);
           }}
           className="w-full text-xs text-muted-foreground hover:text-foreground"
         >
