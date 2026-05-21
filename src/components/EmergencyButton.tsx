@@ -412,6 +412,78 @@ export function EmergencyButton() {
   );
 }
 
+function HandoverCard() {
+  const [recent, setRecent] = useState<LogEntry[]>([]);
+  const [info, setInfo] = useState<EmergencyInfo>(emptyEmergencyInfo());
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const cutoff = Date.now() - 12 * 3600 * 1000;
+    setRecent(loadEntries().filter((e) => e.timestamp >= cutoff).sort((a, b) => b.timestamp - a.timestamp));
+    setInfo(loadEmergencyInfo());
+  }, [open]);
+
+  const hasData = recent.length > 0 || hasAnyEmergencyInfo(info);
+
+  return (
+    <section className="rounded-2xl bg-muted/15 ring-1 ring-border p-4 space-y-2">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-2 text-left"
+        aria-expanded={open}
+      >
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <IdCard className="h-4 w-4 text-secondary" /> Übergabe für Rettungsdienst
+        </h3>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          {open ? "schließen" : "zeigen"}
+        </span>
+      </button>
+      {open && (
+        <div className="space-y-2 text-sm">
+          <p className="text-xs text-muted-foreground">
+            Neutrale Übersicht — keine Bewertung, keine Diagnose. Zeig dem Rettungsdienst diese Infos oder lies sie laut vor.
+          </p>
+          {recent.length > 0 ? (
+            <div className="rounded-lg bg-background/60 p-2.5 space-y-1.5">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Substanzen letzte 12 h (lokales Protokoll)
+              </div>
+              <ul className="space-y-1">
+                {recent.map((e) => {
+                  const s = SUBSTANCES.find((x) => x.id === e.substanceId);
+                  const t = new Date(e.timestamp);
+                  return (
+                    <li key={e.id} className="text-sm">
+                      <span className="font-medium">{s?.name ?? e.substanceId}</span>
+                      <span className="text-muted-foreground"> · {e.dose} {e.unit} · {e.route} · {t.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">Keine Einträge im Protokoll der letzten 12 Stunden.</p>
+          )}
+          {(info.medications || info.allergies || info.conditions || info.contactPhone) && (
+            <div className="rounded-lg bg-background/60 p-2.5 space-y-1 text-sm">
+              {info.medications && <div><span className="text-muted-foreground text-xs">Medikamente:</span> {info.medications}</div>}
+              {info.allergies && <div><span className="text-muted-foreground text-xs">Allergien:</span> {info.allergies}</div>}
+              {info.conditions && <div><span className="text-muted-foreground text-xs">Vorerkrankungen:</span> {info.conditions}</div>}
+              {info.contactPhone && <div><span className="text-muted-foreground text-xs">Notfallkontakt:</span> {info.contactName ?? ""} {info.contactPhone}</div>}
+            </div>
+          )}
+          {!hasData && (
+            <p className="text-xs text-muted-foreground">
+              Noch keine Protokoll- oder Notfall-Daten hinterlegt.
+            </p>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function MedicalCard() {
   const [info, setInfo] = useState<EmergencyInfo>(emptyEmergencyInfo());
   const [editing, setEditing] = useState(false);
