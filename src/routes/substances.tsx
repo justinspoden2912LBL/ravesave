@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, ExternalLink, Search, FlaskConical } from "lucide-react";
+import { ChevronRight, ExternalLink, Search, FlaskConical, Sparkles, Zap, Brain, Wind, Pill, Cloud, Beaker, CircleDot } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
@@ -126,20 +126,22 @@ function SubstancesPage() {
             className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          <FilterChip
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <SuperChip
             active={filterSuper === "all"}
             onClick={() => setFilterSuper("all")}
             label="Alle"
             count={SUBSTANCES.length}
+            Icon={CircleDot}
           />
           {SUPER_CATEGORY_ORDER.map((sup) => (
-            <FilterChip
+            <SuperChip
               key={sup}
               active={filterSuper === sup}
               onClick={() => setFilterSuper(sup)}
               label={SUPER_CATEGORY_LABEL[sup]}
               count={superCounts[sup] ?? 0}
+              Icon={SUPER_ICON[sup]}
             />
           ))}
         </div>
