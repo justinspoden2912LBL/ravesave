@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, ExternalLink, Search, FlaskConical, Sparkles, Zap, Brain, Wind, Pill, Cloud, Beaker, CircleDot } from "lucide-react";
+import { ChevronRight, ExternalLink, Mail, Search, FlaskConical, Sparkles, Zap, Brain, Wind, Pill, Cloud, Beaker, CircleDot } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
@@ -28,7 +28,20 @@ export const Route = createFileRoute("/substances")({
   }),
 });
 
-const EXPERT_KEY = "rs.expertMode";
+const DEPTH_KEY = "rs.depth";
+type Depth = "einfach" | "fortgeschritten" | "experte";
+
+const DEPTH_META: Record<Depth, { label: string; hint: string }> = {
+  einfach: { label: "Einfach", hint: "Locker erklärt, das Wichtigste auf einen Blick." },
+  fortgeschritten: { label: "Fortgeschritten", hint: "Mehr Kontext, klare Empfehlungen, mehr Tiefe." },
+  experte: { label: "Experte", hint: "Pharmakologie, Rezeptorprofile, PK/CYP — volle Tiefe." },
+};
+
+const TAB_LABELS: Record<Depth, Record<"overview" | "dose" | "duration" | "risks" | "pharma", string>> = {
+  einfach: { overview: "Was ist das?", dose: "Wie viel?", duration: "Wie lange?", risks: "Worauf achten", pharma: "Pharma" },
+  fortgeschritten: { overview: "Übersicht", dose: "Dosis", duration: "Wirkdauer", risks: "Risiken", pharma: "Pharma" },
+  experte: { overview: "Übersicht", dose: "Dosis", duration: "Pharmakokinetik", risks: "Risikoprofil", pharma: "Pharmakologie" },
+};
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
