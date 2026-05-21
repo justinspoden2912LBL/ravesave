@@ -525,16 +525,69 @@ function ExperienceStep({
     return t;
   }, []);
 
+  // Quick mode: tap a substance group to mark all substances within as "rare" experience.
+  // Removes that pressure to specify each substance individually.
+  function groupHasAny(sup: SuperCategory): boolean {
+    return SUBSTANCES.some((s) => {
+      if (CATEGORY_TO_SUPER[s.category] !== sup) return false;
+      const e = getExp(s.name);
+      return e.frequency !== "never";
+    });
+  }
+  function toggleGroup(sup: SuperCategory) {
+    const turnOn = !groupHasAny(sup);
+    for (const s of SUBSTANCES) {
+      if (CATEGORY_TO_SUPER[s.category] !== sup) continue;
+      setExp(s.name, { frequency: turnOn ? "rare" : "never" });
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div>
         <h2 className="text-2xl font-bold">Erfahrung</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Tipp einfach an, was du <strong className="text-foreground">grob</strong> kennst — Häufigkeit reicht, Applikation
-          ist optional. Wir nutzen das <em>nur zur Kalibrierung</em>: damit die KI weiß, ob sie mit dir Basics oder
-          Pharmakologie sprechen kann. Keine Bewertung, keine Präzision nötig.
+          Tipp einfach an, mit welchen <strong className="text-foreground">Gruppen</strong> du Erfahrung hast — das reicht völlig.
+          Details (Häufigkeit, Applikation, einzelne Substanzen) kannst du unten <em>optional</em> ergänzen.
+          Wir nutzen das nur zur Kalibrierung. Keine Bewertung, keine Pflicht.
+        </p>
+        <p className="text-[11px] text-muted-foreground mt-2">
+          Diese Angaben helfen nur bei Selbsteinschätzung und Notfallkontext. Sie ersetzen keine medizinische Beratung.
         </p>
       </div>
+
+      {/* Quick chips: substance groups */}
+      <div className="rounded-2xl glass p-4 space-y-2">
+        <div className="text-xs font-semibold">Mit welchen Substanzgruppen hast du Erfahrung?</div>
+        <div className="flex flex-wrap gap-1.5">
+          {SUPER_CATEGORY_ORDER.map((sup) => {
+            const on = groupHasAny(sup);
+            return (
+              <button
+                key={sup}
+                type="button"
+                onClick={() => toggleGroup(sup)}
+                aria-pressed={on}
+                className={`rounded-full px-3 py-1.5 text-xs transition ${
+                  on ? "bg-aurora animate-aurora text-primary-foreground glow" : "glass hover:bg-muted/30"
+                }`}
+              >
+                {SUPER_CATEGORY_LABEL[sup]}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          Du kannst weiter unten einzelne Substanzen genauer angeben — musst du aber nicht.
+        </p>
+      </div>
+
+      <details className="rounded-2xl ring-1 ring-border">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-medium select-none">
+          Optional: einzelne Substanzen genauer angeben
+        </summary>
+        <div className="px-4 pb-4 pt-1">
+
 
       <div className="max-h-[480px] overflow-y-auto pr-1 space-y-2">
         {SUPER_CATEGORY_ORDER.map((sup) => {
