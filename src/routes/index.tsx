@@ -202,14 +202,15 @@ function CategoryCard({
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`rounded-2xl glass overflow-hidden transition-all ${
+      className={`rounded-2xl glass overflow-hidden transition-all hover:ring-1 hover:ring-primary/30 ${
         open ? "ring-1 ring-primary/40" : ""
       }`}
     >
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/20 transition"
+        className="w-full flex items-center gap-3 p-4 text-left cursor-pointer hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
         aria-expanded={open}
+        aria-label={`${title}: ${open ? "zuklappen" : "aufklappen"}`}
       >
         <div className="h-10 w-10 shrink-0 rounded-xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
           <Icon className="h-5 w-5" />
