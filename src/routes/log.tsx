@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Trash2, Plus, Clock, AlertTriangle } from "lucide-react";
+import { Trash2, Plus, Clock, AlertTriangle, RotateCcw, Info } from "lucide-react";
 import { SUBSTANCES, assessPair, RISK_META } from "@/lib/substances";
 import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
 
@@ -17,6 +17,15 @@ export const Route = createFileRoute("/log")({
     links: [{ rel: "canonical", href: "https://ravesave.lovable.app/log" }],
   }),
 });
+
+function doseHint(substanceId: string): string | null {
+  const s = SUBSTANCES.find((x) => x.id === substanceId);
+  if (!s || !s.doses?.length) return null;
+  const d = s.doses[0];
+  const range = d.common ?? d.light ?? d.strong;
+  if (!range) return null;
+  return `${s.name}: üblich ${range}${d.route ? ` (${d.route})` : ""}`;
+}
 
 function LogPage() {
   const [entries, setEntries] = useState<LogEntry[]>([]);
@@ -54,6 +63,17 @@ function LogPage() {
     setEntries(loadEntries());
   }
 
+  function repeat(e: LogEntry) {
+    setSubstanceId(e.substanceId);
+    setDose(e.dose);
+    setUnit(e.unit);
+    setRoute(e.route);
+    setWhen(new Date().toISOString().slice(0, 16));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
   // Last 12h — flag risky combos
   const recent = useMemo(() => {
     const cutoff = Date.now() - 12 * 3600 * 1000;
@@ -74,18 +94,32 @@ function LogPage() {
     return out;
   }, [recent]);
 
+  const hint = doseHint(substanceId);
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 lg:grid-cols-[400px_1fr]">
+    <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 md:grid-cols-[minmax(320px,400px)_1fr]">
       <h1 className="sr-only">Konsum-Protokoll</h1>
       {/* Form */}
-      <aside className="lg:sticky lg:top-24 lg:self-start">
+      <aside className="md:sticky md:top-24 md:self-start">
         <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <Plus className="h-5 w-5 text-aurora" style={{ color: "oklch(0.78 0.22 320)" }} />
+            <Plus className="h-5 w-5" style={{ color: "oklch(0.78 0.22 320)" }} />
             Neuer Eintrag
           </h2>
 
-          <Field label="Substanz">
+          <Field
+            label="Substanz"
+            rightSlot={
+              <Link
+                to="/substances"
+                title={`${SUBSTANCES.find((s) => s.id === substanceId)?.name} im Wiki öffnen`}
+                aria-label="Substanz im Wiki öffnen"
+                className="inline-flex items-center justify-center rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted/40"
+              >
+                <Info className="h-3.5 w-3.5" />
+              </Link>
+            }
+          >
             <select
               value={substanceId}
               onChange={(e) => setSubstanceId(e.target.value)}
@@ -113,6 +147,11 @@ function LogPage() {
               </select>
             </Field>
           </div>
+          {hint && (
+            <p className="-mt-2 text-xs text-muted-foreground">
+              <span className="text-secondary">Richtwert:</span> {hint}
+            </p>
+          )}
 
           <Field label="Applikation">
             <select value={route} onChange={(e) => setRoute(e.target.value)} className="w-full rounded-lg bg-input px-3 py-2 text-sm">
@@ -135,7 +174,12 @@ function LogPage() {
               type="range" min={1} max={5} value={mood}
               onChange={(e) => setMood(+e.target.value)}
               className="w-full accent-primary"
+              aria-label="Stimmung von schlecht bis sehr gut"
             />
+            <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+              <span>😰 Schlecht</span>
+              <span>🤩 Sehr gut</span>
+            </div>
           </Field>
 
           <Field label="Notizen">
@@ -187,7 +231,9 @@ function LogPage() {
         <h2 className="text-xl font-bold">Verlauf ({entries.length})</h2>
         {entries.length === 0 ? (
           <div className="rounded-2xl glass p-10 text-center text-muted-foreground">
-            Noch keine Einträge. Lege links deinen ersten an.
+            Noch keine Einträge. {""}
+            <span className="md:hidden">Lege oben deinen ersten an.</span>
+            <span className="hidden md:inline">Lege links deinen ersten an.</span>
           </div>
         ) : (
           <ul className="space-y-2">
@@ -211,13 +257,23 @@ function LogPage() {
                     </div>
                     {e.notes && <p className="mt-2 text-sm whitespace-pre-wrap">{e.notes}</p>}
                   </div>
-                  <button
-                    onClick={() => remove(e.id)}
-                    className="opacity-0 group-hover:opacity-100 transition rounded-full p-2 hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
-                    aria-label="Löschen"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="flex flex-col items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition">
+                    <button
+                      onClick={() => repeat(e)}
+                      className="rounded-full p-2 hover:bg-secondary/20 text-muted-foreground hover:text-secondary"
+                      aria-label="Erneut dosieren (Formular ausfüllen)"
+                      title="Wiederholen / Re-Dose"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => remove(e.id)}
+                      className="rounded-full p-2 hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+                      aria-label="Löschen"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </li>
               );
             })}
@@ -228,10 +284,21 @@ function LogPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+  rightSlot,
+}: {
+  label: string;
+  children: React.ReactNode;
+  rightSlot?: React.ReactNode;
+}) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium text-muted-foreground mb-1">{label}</span>
+      <span className="flex items-center justify-between text-xs font-medium text-muted-foreground mb-1">
+        <span>{label}</span>
+        {rightSlot}
+      </span>
       {children}
     </label>
   );
