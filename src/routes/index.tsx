@@ -121,7 +121,7 @@ function Home() {
           <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
             Was möchtest du tun?
           </h2>
-          <span className="text-xs text-muted-foreground">Zum Aufklappen tippen</span>
+          <span className="text-xs text-muted-foreground">Zum Öffnen antippen</span>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           <CategoryCard

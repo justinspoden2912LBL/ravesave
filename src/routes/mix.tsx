@@ -182,12 +182,12 @@ function MixPage() {
 }
 
 const LEGEND_DESC: Record<keyof typeof RISK_META, string> = {
-  safe: "Keine bekannten relevanten Wechselwirkungen — bleibt grundsätzlich kein risikofreier Konsum.",
-  synergy: "Wirkungen verstärken sich gewollt — Dosis reduzieren und Wirkung abwarten.",
+  safe: 'Keine bekannten kritischen Wechselwirkungen in unseren Quellen — heißt nicht "sicher". Restrisiko bleibt immer.',
+  synergy: "Wirkungen verstärken sich gewollt — Dosis runter, Wirkung abwarten, nicht nachlegen.",
   caution: "Vorsicht — mögliche unangenehme oder riskante Wechselwirkungen. Niedrig dosieren, nicht allein konsumieren.",
-  unsafe: "Riskant — deutlich erhöhte Wahrscheinlichkeit für Notfälle. Besser nicht kombinieren.",
-  danger: "Lebensgefährlich — Atemstillstand, Krampf oder Tod möglich. Nicht kombinieren.",
-  unknown: "Keine belastbaren Daten — Vorsicht walten lassen und im Zweifel trennen.",
+  unsafe: "Riskant — erhöhte körperliche oder psychische Belastung möglich. Besser nicht kombinieren.",
+  danger: "Gefährlich — Atemstillstand, Krampf oder Tod möglich. Kombination vermeiden, bei Symptomen 112.",
+  unknown: "Keine belastbaren Daten — im Zweifel trennen, nicht raten.",
 };
 
 function GroupedPicker({
