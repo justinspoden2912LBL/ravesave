@@ -33,7 +33,18 @@ import {
   type Profession,
   type ExpertiseLevel,
 } from "@/lib/profile";
-import { SUBSTANCES } from "@/lib/substances";
+import {
+  SUBSTANCES,
+  CATEGORY_LABEL,
+  CATEGORY_TO_SUPER,
+  SUPER_CATEGORY_LABEL,
+  SUPER_CATEGORY_ORDER,
+  type SubstanceCategory,
+  type SuperCategory,
+  type Substance,
+} from "@/lib/substances";
+import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
