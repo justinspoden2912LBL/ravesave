@@ -330,9 +330,9 @@ export function EmergencyButton() {
           <section className="space-y-3">
             <button
               onClick={reset}
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1.5 min-h-11 px-3 -ml-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40"
             >
-              <ArrowLeft className="h-3.5 w-3.5" /> Zurück zum Symptom-Check
+              <ArrowLeft className="h-4 w-4" /> Zurück zum Symptom-Check
             </button>
 
             <div className="rounded-2xl bg-destructive/10 ring-1 ring-destructive/30 p-4 space-y-2">
@@ -429,13 +429,14 @@ function HandoverCard() {
     <section className="rounded-2xl bg-muted/15 ring-1 ring-border p-4 space-y-2">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2 text-left"
+        className="w-full flex items-center justify-between gap-2 text-left min-h-11 -mx-1 px-1 rounded-lg hover:bg-muted/30"
         aria-expanded={open}
+        aria-label={open ? "Übergabe für Rettungsdienst schließen" : "Übergabe für Rettungsdienst zeigen"}
       >
         <h3 className="flex items-center gap-2 text-sm font-semibold">
           <IdCard className="h-4 w-4 text-secondary" /> Übergabe für Rettungsdienst
         </h3>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <span aria-hidden className="text-[10px] uppercase tracking-wider text-muted-foreground">
           {open ? "schließen" : "zeigen"}
         </span>
       </button>
@@ -546,31 +547,40 @@ function MedicalCard() {
 
   return (
     <section className="rounded-2xl bg-secondary/10 ring-1 ring-secondary/30 p-4 space-y-3">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-sm font-semibold">
           <IdCard className="h-4 w-4 text-secondary" /> Medizinische Notfall-Karte
         </h3>
-        {!editing && (
-          <div className="flex items-center gap-1.5">
-            {has && (
-              <button
-                onClick={() => setShowcase(true)}
-                className="inline-flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1 text-xs font-semibold text-destructive-foreground hover:brightness-110"
-              >
-                <Maximize2 className="h-3 w-3" /> Jetzt zeigen
-              </button>
-            )}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {(has || editing) && (
+            <button
+              onClick={() => setShowcase(true)}
+              aria-label="Vorschau der Notfall-Karte im Vollbild öffnen"
+              className="inline-flex items-center gap-1 min-h-9 rounded-full bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground hover:brightness-110"
+            >
+              <Maximize2 className="h-3.5 w-3.5" /> Vorschau
+            </button>
+          )}
+          {!editing && (
             <button
               onClick={startEdit}
-              className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-xs hover:bg-muted/40"
+              className="inline-flex items-center gap-1 min-h-9 rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/40"
             >
-              <Pencil className="h-3 w-3" /> {has ? "Bearbeiten" : "Anlegen"}
+              <Pencil className="h-3.5 w-3.5" /> {has ? "Bearbeiten" : "Anlegen"}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {showcase && <FullscreenMedicalCard info={info} onClose={() => setShowcase(false)} />}
+      <p className="text-xs text-muted-foreground -mt-1">
+        Trag <strong className="text-foreground">deine eigenen</strong> Gesundheitsdaten ein und separat eine
+        <strong className="text-foreground"> Person, die im Notfall erreichbar</strong> ist. Alles bleibt lokal in
+        deinem Browser.
+      </p>
+
+      {showcase && (
+        <FullscreenMedicalCard info={editing ? draft : info} onClose={() => setShowcase(false)} />
+      )}
 
       {!editing && (
         has ? (
@@ -602,36 +612,56 @@ function MedicalCard() {
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Noch nichts hinterlegt. Trag Allergien, Vorerkrankungen und einen Notfallkontakt ein — alles bleibt lokal in deinem Browser.
+            Noch nichts hinterlegt. Tippe auf <strong>Anlegen</strong>, um deine Gesundheitsdaten und einen
+            Notfallkontakt zu hinterlegen.
           </p>
         )
       )}
 
       {editing && (
-        <div className="space-y-2.5 text-sm">
-          <div className="grid grid-cols-2 gap-2">
-            <Field label="Name Kontakt" value={draft.contactName ?? ""} max={80} onChange={(v) => setDraft({ ...draft, contactName: v })} />
-            <Field label="Beziehung" value={draft.contactRelation ?? ""} max={40} placeholder="z. B. Partnerin" onChange={(v) => setDraft({ ...draft, contactRelation: v })} />
-          </div>
-          <Field label="Telefon Kontakt" value={draft.contactPhone ?? ""} max={40} placeholder="+49 …" onChange={(v) => setDraft({ ...draft, contactPhone: v })} />
-          <Field label="Blutgruppe" value={draft.bloodType ?? ""} max={8} placeholder="0+, A−, …" onChange={(v) => setDraft({ ...draft, bloodType: v })} />
-          <Area label="Allergien" value={draft.allergies ?? ""} max={500} placeholder="z. B. Penicillin, Erdnüsse" onChange={(v) => setDraft({ ...draft, allergies: v })} />
-          <Area label="Vorerkrankungen" value={draft.conditions ?? ""} max={500} placeholder="z. B. Epilepsie, Asthma, Herzfehler" onChange={(v) => setDraft({ ...draft, conditions: v })} />
-          <Area label="Aktuelle Medikamente" value={draft.medications ?? ""} max={500} placeholder="z. B. SSRI Sertralin 50 mg" onChange={(v) => setDraft({ ...draft, medications: v })} />
-          <Area label="Sonstiges" value={draft.notes ?? ""} max={500} placeholder="Organspende-Ausweis, Sprache, …" onChange={(v) => setDraft({ ...draft, notes: v })} />
+        <div className="space-y-4 text-sm">
+          {/* SEKTION 1: Eigene Daten */}
+          <fieldset className="rounded-xl bg-background/40 ring-1 ring-border p-3 space-y-2.5">
+            <legend className="px-1.5 text-xs font-semibold uppercase tracking-wider text-secondary">
+              Über dich — deine Gesundheitsdaten
+            </legend>
+            <p className="text-[11px] text-muted-foreground">
+              Diese Infos beziehen sich auf <strong>dich selbst</strong>. Sie helfen dem Rettungsdienst, schnell richtig zu reagieren.
+            </p>
+            <Field label="Blutgruppe" value={draft.bloodType ?? ""} max={8} placeholder="0+, A−, …" onChange={(v) => setDraft({ ...draft, bloodType: v })} />
+            <Area label="Allergien" value={draft.allergies ?? ""} max={500} placeholder="z. B. Penicillin, Erdnüsse" onChange={(v) => setDraft({ ...draft, allergies: v })} />
+            <Area label="Vorerkrankungen" value={draft.conditions ?? ""} max={500} placeholder="z. B. Epilepsie, Asthma, Herzfehler" onChange={(v) => setDraft({ ...draft, conditions: v })} />
+            <Area label="Aktuelle Medikamente" value={draft.medications ?? ""} max={500} placeholder="z. B. SSRI Sertralin 50 mg" onChange={(v) => setDraft({ ...draft, medications: v })} />
+            <Area label="Sonstiges" value={draft.notes ?? ""} max={500} placeholder="Organspende-Ausweis, Sprache, …" onChange={(v) => setDraft({ ...draft, notes: v })} />
+          </fieldset>
 
-          {error && <p className="text-xs text-destructive">{error}</p>}
+          {/* SEKTION 2: Notfallkontakt */}
+          <fieldset className="rounded-xl bg-background/40 ring-1 ring-border p-3 space-y-2.5">
+            <legend className="px-1.5 text-xs font-semibold uppercase tracking-wider text-secondary">
+              Notfallkontakt — wen sollen wir anrufen?
+            </legend>
+            <p className="text-[11px] text-muted-foreground">
+              <strong>Eine andere Person</strong>, die im Ernstfall benachrichtigt werden soll — nicht du selbst.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="Name" value={draft.contactName ?? ""} max={80} placeholder="z. B. Sam Müller" onChange={(v) => setDraft({ ...draft, contactName: v })} />
+              <Field label="Beziehung" value={draft.contactRelation ?? ""} max={40} placeholder="z. B. Partnerin" onChange={(v) => setDraft({ ...draft, contactRelation: v })} />
+            </div>
+            <Field label="Telefonnummer" value={draft.contactPhone ?? ""} max={40} placeholder="+49 …" onChange={(v) => setDraft({ ...draft, contactPhone: v })} />
+          </fieldset>
+
+          {error && <p className="text-xs text-destructive" role="alert">{error}</p>}
 
           <div className="flex flex-wrap gap-2 pt-1">
-            <button onClick={save} className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:brightness-110">
-              <Save className="h-3.5 w-3.5" /> Speichern
+            <button onClick={save} className="inline-flex items-center gap-1.5 min-h-11 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground hover:brightness-110">
+              <Save className="h-4 w-4" /> Speichern
             </button>
-            <button onClick={cancel} className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/40">
+            <button onClick={cancel} className="min-h-11 rounded-full glass px-4 py-2 text-sm hover:bg-muted/40">
               Abbrechen
             </button>
             {has && (
-              <button onClick={reset} className="ml-auto inline-flex items-center gap-1 rounded-full bg-destructive/15 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/25">
-                <Trash2 className="h-3.5 w-3.5" /> Löschen
+              <button onClick={reset} className="ml-auto inline-flex items-center gap-1 min-h-11 rounded-full bg-destructive/15 px-4 py-2 text-sm text-destructive hover:bg-destructive/25">
+                <Trash2 className="h-4 w-4" /> Löschen
               </button>
             )}
           </div>
