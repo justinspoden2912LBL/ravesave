@@ -258,10 +258,22 @@ function LogPage() {
 
         <h2 className="text-xl font-bold">Verlauf ({entries.length})</h2>
         {entries.length === 0 ? (
-          <div className="rounded-2xl glass p-10 text-center text-muted-foreground">
-            Noch keine Einträge. {""}
-            <span className="md:hidden">Lege oben deinen ersten an.</span>
-            <span className="hidden md:inline">Lege links deinen ersten an.</span>
+          <div className="rounded-2xl glass p-8 text-center space-y-3">
+            <div className="mx-auto h-12 w-12 rounded-full bg-aurora animate-aurora glow" />
+            <h3 className="text-base font-semibold">Noch keine Einträge</h3>
+            <p className="text-sm text-muted-foreground">
+              Halte fest, was du wann genommen hast. Alles bleibt lokal auf deinem Gerät und hilft dir,
+              riskante Kombinationen früh zu erkennen.
+            </p>
+            <button
+              onClick={() => {
+                setFormOpenMobile(true);
+                if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-5 py-2.5 text-sm font-semibold text-primary-foreground glow"
+            >
+              <Plus className="h-4 w-4" /> Ersten Eintrag anlegen
+            </button>
           </div>
         ) : (
           <ul className="space-y-2">
