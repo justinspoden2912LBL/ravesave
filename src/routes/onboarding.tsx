@@ -704,9 +704,12 @@ function ExperienceStep({
           );
         })}
       </div>
+        </div>
+      </details>
 
       <NavRow onBack={onBack} onNext={onNext} />
     </div>
+
   );
 }
 
