@@ -429,13 +429,14 @@ function HandoverCard() {
     <section className="rounded-2xl bg-muted/15 ring-1 ring-border p-4 space-y-2">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2 text-left"
+        className="w-full flex items-center justify-between gap-2 text-left min-h-11 -mx-1 px-1 rounded-lg hover:bg-muted/30"
         aria-expanded={open}
+        aria-label={open ? "Übergabe für Rettungsdienst schließen" : "Übergabe für Rettungsdienst zeigen"}
       >
         <h3 className="flex items-center gap-2 text-sm font-semibold">
           <IdCard className="h-4 w-4 text-secondary" /> Übergabe für Rettungsdienst
         </h3>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <span aria-hidden className="text-[10px] uppercase tracking-wider text-muted-foreground">
           {open ? "schließen" : "zeigen"}
         </span>
       </button>
