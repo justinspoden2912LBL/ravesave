@@ -30,12 +30,17 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-40 glass border-b">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="h-8 w-8 rounded-full bg-aurora animate-aurora glow" />
+        <Link
+          to="/"
+          className="flex items-center gap-2 shrink-0 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          aria-label="Rave Safe, have Fun — zur Startseite"
+          title="Zur Startseite"
+        >
+          <div className="h-8 w-8 rounded-full bg-aurora animate-aurora glow" aria-hidden="true" />
           <span className="text-base sm:text-lg font-bold tracking-tight whitespace-nowrap">
             Rave Safe<span className="text-aurora">,</span> have Fun
           </span>
-          <span className="hidden sm:inline-flex items-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider">
+          <span className="hidden sm:inline-flex items-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
             Open Beta
           </span>
         </Link>
