@@ -37,6 +37,8 @@ import {
   clearEmergencyInfo,
   type EmergencyInfo,
 } from "@/lib/emergencyInfo";
+import { loadEntries, type LogEntry } from "@/lib/log";
+import { SUBSTANCES } from "@/lib/substances";
 import { StepIllustration, ILLUSTRATION_LABEL, type IllusKey } from "@/components/EmergencyIllustrations";
 
 const SCENARIOS: { label: string; to: string; hint: string }[] = [
@@ -233,6 +235,10 @@ export function EmergencyButton() {
 
         {/* Medical ID — immer sichtbar, damit Ersthelfer:innen Infos finden */}
         <MedicalCard />
+
+        {/* Übergabe für Rettungsdienst — neutral, ohne Bewertung */}
+        <HandoverCard />
+
 
         {!guide && (
           <>
