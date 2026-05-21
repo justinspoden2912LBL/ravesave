@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles, GraduationCap } from "lucide-react";
+import { Trash2, Edit3, Sparkles, GraduationCap, Download } from "lucide-react";
+import { loadEntries } from "@/lib/log";
 import {
   clearProfile,
   loadProfile,
