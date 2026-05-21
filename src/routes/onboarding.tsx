@@ -44,8 +44,6 @@ import {
   type SuperCategory,
   type Substance,
 } from "@/lib/substances";
-import { ChevronRight } from "lucide-react";
-import { useMemo } from "react";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
