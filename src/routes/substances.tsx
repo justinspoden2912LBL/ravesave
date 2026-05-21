@@ -512,29 +512,44 @@ function PharmaTab({ s }: { s: Substance }) {
 
 /* ─────────── Atoms ─────────── */
 
-function FilterChip({
+const SUPER_ICON: Record<SuperCategory, typeof CircleDot> = {
+  hallucinogen: Sparkles,
+  stimulant_group: Zap,
+  depressant_group: Cloud,
+  opioid_group: Pill,
+  empathogen_group: Brain,
+  cannabinoid_group: Wind,
+  other_group: Beaker,
+};
+
+function SuperChip({
   active,
   onClick,
   label,
   count,
+  Icon,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   count: number;
+  Icon: typeof CircleDot;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition ${
+      className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition border ${
         active
-          ? "bg-primary text-primary-foreground"
-          : "bg-muted/40 text-foreground/80 hover:bg-muted/70"
+          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+          : "bg-muted/30 border-border/50 text-foreground/85 hover:bg-muted/60"
       }`}
     >
-      <span>{label}</span>
-      <span className="tabular-nums opacity-70">{count}</span>
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className="flex-1 text-left truncate font-medium">{label}</span>
+      <span className={`tabular-nums text-xs rounded-full px-1.5 py-0.5 ${
+        active ? "bg-primary-foreground/20" : "bg-muted/60"
+      }`}>{count}</span>
     </button>
   );
 }
