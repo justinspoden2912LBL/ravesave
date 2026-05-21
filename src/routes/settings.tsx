@@ -161,15 +161,37 @@ function SettingsPage() {
               </pre>
             </details>
 
-            <button
-              onClick={reset}
-              className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
-            >
-              <Trash2 className="h-4 w-4" /> Profil löschen
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={exportLog}
+                className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
+              >
+                <Download className="h-4 w-4" /> Daten exportieren (JSON)
+              </button>
+              <button
+                onClick={reset}
+                className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
+              >
+                <Trash2 className="h-4 w-4" /> Profil löschen
+              </button>
+            </div>
           </>
         )}
       </section>
+
+      {!p && (
+        <section className="rounded-3xl glass p-6">
+          <button
+            onClick={exportLog}
+            className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
+          >
+            <Download className="h-4 w-4" /> Konsum-Protokoll exportieren (JSON)
+          </button>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Lädt alle lokal gespeicherten Log-Einträge als Backup-Datei herunter.
+          </p>
+        </section>
+      )}
     </div>
   );
 }
