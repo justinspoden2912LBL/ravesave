@@ -36,10 +36,13 @@ function MixPage() {
   const [query, setQuery] = useState("");
   const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
   const [detail, setDetail] = useState<DetailLevel>("lay");
+  const searchRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const d = getDetailLevel(loadProfile());
     setProfileDetail(d);
     setDetail(d);
+    // Autofocus the picker so users can start typing immediately
+    searchRef.current?.focus({ preventScroll: true });
   }, []);
 
   const filtered = useMemo(() => {
