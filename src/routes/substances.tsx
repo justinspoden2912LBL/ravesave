@@ -228,7 +228,7 @@ function SubstancesPage() {
                                 s={s}
                                 open={openId === s.id}
                                 onToggle={() => setOpenId(openId === s.id ? null : s.id)}
-                                expert={expert}
+                                depth={depth}
                               />
                             ))}
                           </ul>
@@ -248,9 +248,23 @@ function SubstancesPage() {
           </div>
         )}
       </div>
+
+      <footer className="rounded-2xl glass p-4 flex items-center justify-between gap-3 flex-wrap text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Mail className="h-4 w-4 text-secondary" />
+          <span>Feedback, Korrekturen oder Anregungen?</span>
+        </div>
+        <a
+          href="mailto:ravesafe.live@gmail.com?subject=Rave%20Safe%20Feedback%20(Substanz-Wiki)"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 text-primary px-3 py-1.5 text-xs font-medium hover:bg-primary/25 transition"
+        >
+          <Mail className="h-3.5 w-3.5" /> ravesafe.live@gmail.com
+        </a>
+      </footer>
     </div>
   );
 }
+
 
 /* ─────────── Substance card with tabs ─────────── */
 
