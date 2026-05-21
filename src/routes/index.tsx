@@ -44,30 +44,33 @@ function Home() {
   return (
     <div className="mx-auto max-w-6xl px-4">
       {showPrompt && (
-        <div className="mt-6 rounded-2xl glass p-5 flex flex-col md:flex-row md:items-center gap-4 border border-primary/30">
-          <div className="flex-1">
+        <div className="mt-6 rounded-2xl glass p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5 border border-primary/30">
+          <div className="flex-1 space-y-2">
             <div className="inline-flex items-center gap-2 text-xs text-secondary">
               <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
             </div>
-            <h2 className="mt-1 text-lg font-semibold">Richte dein Profil ein — 2 Minuten.</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal, jederzeit löschbar.
+            <h2 className="text-lg md:text-xl font-semibold leading-snug">
+              Richte dein Profil ein — ca. 2 Minuten.
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-prose">
+              Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen.
+              Komplett lokal, jederzeit löschbar.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => navigate({ to: "/onboarding" })}
-              className="rounded-full bg-aurora animate-aurora px-5 py-2.5 text-sm font-semibold text-primary-foreground glow"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow ring-2 ring-primary/40 hover:scale-[1.02] transition"
             >
-              Starten
+              <Sparkles className="h-4 w-4" /> Jetzt starten
             </button>
             <button
               onClick={() => { dismissOnboarding(); setShowPrompt(false); }}
-              className="rounded-full p-2 text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center justify-center rounded-full p-3 min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition"
               title="Später"
               aria-label="Onboarding-Hinweis schließen"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
         </div>
