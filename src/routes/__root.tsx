@@ -73,10 +73,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Rave Safe, have Fun — Harm Reduction Companion" },
       { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
       { name: "author", content: "Rave Safe, have Fun" },
+      { name: "theme-color", content: "#0c0a1c" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Rave Safe" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { property: "og:site_name", content: "Rave Safe, have Fun" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -89,6 +94,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
     ],
     scripts: [
       {
