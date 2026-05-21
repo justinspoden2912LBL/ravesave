@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Heart, ShieldAlert, Sparkles } from "lucide-react";
+import { BookOpen, Heart, ShieldAlert, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -63,6 +63,21 @@ function AboutPage() {
           Mit Respekt und in der Hoffnung, dass niemand etwas Schlimmes erlebt, was sich
           mit ein bisschen Wissen hätte vermeiden lassen — <strong className="text-foreground">Justin</strong>
         </p>
+      </section>
+
+      <section className="rounded-2xl glass p-5 flex items-center justify-between gap-4 flex-wrap border border-secondary/30">
+        <div>
+          <h2 className="text-base font-semibold">Meine Erfahrungen</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Persönliche Berichte, Reflexionen und Safer-Use-Notizen.
+          </p>
+        </div>
+        <Link
+          to="/erfahrungen"
+          className="inline-flex items-center gap-2 rounded-full bg-secondary/20 text-secondary px-4 py-2 text-sm font-medium hover:bg-secondary/30 transition"
+        >
+          <BookOpen className="h-4 w-4" /> Beiträge lesen
+        </Link>
       </section>
 
       <div className="flex flex-wrap gap-2">
