@@ -193,7 +193,11 @@ export function EmergencyButton() {
       <DialogTrigger asChild>
         <button
           aria-label="Notfall-Hilfe öffnen"
-          className="fixed bottom-4 right-4 z-50 print:hidden inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground shadow-lg ring-2 ring-destructive/40 hover:brightness-110 transition motion-safe:animate-pulse motion-reduce:animate-none"
+          style={{
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)",
+            right: "calc(env(safe-area-inset-right, 0px) + 1rem)",
+          }}
+          className="fixed z-50 print:hidden inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground shadow-lg ring-2 ring-destructive/40 hover:brightness-110 transition motion-safe:animate-pulse motion-reduce:animate-none"
         >
           <Siren className="h-5 w-5" />
           <span>Notfall</span>

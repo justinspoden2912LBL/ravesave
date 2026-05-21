@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles, GraduationCap } from "lucide-react";
+import { Trash2, Edit3, Sparkles, GraduationCap, Download } from "lucide-react";
+import { loadEntries } from "@/lib/log";
 import {
   clearProfile,
   loadProfile,
@@ -50,6 +51,25 @@ function SettingsPage() {
     const next = { ...p, [k]: v };
     saveProfile(next);
     setP(next);
+  }
+
+  function exportLog() {
+    const entries = loadEntries();
+    const payload = {
+      app: "Rave Safe, have Fun",
+      exportedAt: new Date().toISOString(),
+      profile: p ?? null,
+      entries,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ravesafe-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   const detail = p ? getDetailLevel(p) : "lay";
@@ -141,15 +161,37 @@ function SettingsPage() {
               </pre>
             </details>
 
-            <button
-              onClick={reset}
-              className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
-            >
-              <Trash2 className="h-4 w-4" /> Profil löschen
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={exportLog}
+                className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
+              >
+                <Download className="h-4 w-4" /> Daten exportieren (JSON)
+              </button>
+              <button
+                onClick={reset}
+                className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
+              >
+                <Trash2 className="h-4 w-4" /> Profil löschen
+              </button>
+            </div>
           </>
         )}
       </section>
+
+      {!p && (
+        <section className="rounded-3xl glass p-6">
+          <button
+            onClick={exportLog}
+            className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
+          >
+            <Download className="h-4 w-4" /> Konsum-Protokoll exportieren (JSON)
+          </button>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Lädt alle lokal gespeicherten Log-Einträge als Backup-Datei herunter.
+          </p>
+        </section>
+      )}
     </div>
   );
 }

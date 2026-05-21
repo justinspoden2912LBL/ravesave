@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import {
   SUBSTANCES,
@@ -36,10 +36,13 @@ function MixPage() {
   const [query, setQuery] = useState("");
   const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
   const [detail, setDetail] = useState<DetailLevel>("lay");
+  const searchRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const d = getDetailLevel(loadProfile());
     setProfileDetail(d);
     setDetail(d);
+    // Autofocus the picker so users can start typing immediately
+    searchRef.current?.focus({ preventScroll: true });
   }, []);
 
   const filtered = useMemo(() => {
@@ -143,9 +146,12 @@ function MixPage() {
       {/* Picker — grouped by super category */}
       <div className="rounded-2xl glass p-5">
         <input
+          ref={searchRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Substanz suchen..."
+          aria-label="Substanz suchen"
+          autoFocus
           className="w-full rounded-lg bg-input px-3 py-2 text-sm mb-4"
         />
         <GroupedPicker
