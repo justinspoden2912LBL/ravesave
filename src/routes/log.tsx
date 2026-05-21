@@ -36,6 +36,7 @@ function LogPage() {
   const [notes, setNotes] = useState("");
   const [mood, setMood] = useState(3);
   const [when, setWhen] = useState(() => new Date().toISOString().slice(0, 16));
+  const [formOpenMobile, setFormOpenMobile] = useState(false);
 
   useEffect(() => {
     setEntries(loadEntries());
