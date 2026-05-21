@@ -168,7 +168,6 @@ function MixPage() {
           {(Object.keys(RISK_META) as Array<keyof typeof RISK_META>).map((k) => (
             <li key={k} className={`rounded-lg border px-3 py-2 ${RISK_META[k].bg}`}>
               <div className="flex items-center gap-2">
-                <span aria-hidden className={`h-2.5 w-2.5 rounded-full ${RISK_META[k].color.replace("text-", "bg-")}`} />
                 <span className={`font-semibold ${RISK_META[k].color}`}>{RISK_META[k].label}</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground leading-snug">
