@@ -23,6 +23,21 @@ export interface DoseRange {
   strong?: string;
   heavy?: string;
   notes?: string;
+  // Optional route-specific timing (overrides Substance.onset/duration when set)
+  onset?: string;
+  peak?: string;
+  total?: string;
+  afterglow?: string;
+  riskNotes?: string;
+}
+
+export interface ExpertData {
+  halfLife?: string;
+  bioavailability?: string;
+  receptorAffinities?: { target: string; ki?: string; ic50?: string; action?: string }[];
+  cyp?: string;
+  pharmacokinetics?: string;
+  notes?: string;
 }
 
 export interface Substance {
@@ -37,6 +52,8 @@ export interface Substance {
   doses: DoseRange[];
   evidence: { label: string; url: string }[];
   warnings: string[];
+  afterEffects?: string;
+  expert?: ExpertData;
 }
 
 export const SUBSTANCES: Substance[] = [
