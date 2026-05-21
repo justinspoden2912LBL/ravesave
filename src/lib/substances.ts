@@ -23,6 +23,21 @@ export interface DoseRange {
   strong?: string;
   heavy?: string;
   notes?: string;
+  // Optional route-specific timing (overrides Substance.onset/duration when set)
+  onset?: string;
+  peak?: string;
+  total?: string;
+  afterglow?: string;
+  riskNotes?: string;
+}
+
+export interface ExpertData {
+  halfLife?: string;
+  bioavailability?: string;
+  receptorAffinities?: { target: string; ki?: string; ic50?: string; action?: string }[];
+  cyp?: string;
+  pharmacokinetics?: string;
+  notes?: string;
 }
 
 export interface Substance {
@@ -37,6 +52,8 @@ export interface Substance {
   doses: DoseRange[];
   evidence: { label: string; url: string }[];
   warnings: string[];
+  afterEffects?: string;
+  expert?: ExpertData;
 }
 
 export const SUBSTANCES: Substance[] = [
@@ -2558,3 +2575,74 @@ export const SUPER_CATEGORY_ORDER: SuperCategory[] = [
   "cannabinoid_group",
   "other_group",
 ];
+
+// Mechanistisch-pharmakologische Harm-Reduction-Hinweise pro Substanzklasse.
+// Neutral formuliert, ohne moralische Wertung.
+export const CATEGORY_HR_TIPS: Record<SubstanceCategory, string[]> = {
+  psychedelic: [
+    "5-HT2A-Agonismus: Set & Setting modulieren Wirkung stark.",
+    "Kreuztoleranz zu anderen 5-HT2A-Agonisten — mind. 1–2 Wochen Abstand.",
+    "Keine Kombination mit Lithium oder Tramadol (Krampfschwelle/Serotonin-Risiko).",
+    "MAOI-Kombi nur mit Fachwissen — Serotonin-Syndrom möglich.",
+  ],
+  empathogen: [
+    "Serotonin-Freisetzer: Reuptake-Hemmer (SSRI/SNRI) blockieren Wirkung & erhöhen Risiko.",
+    "Nicht häufiger als alle 4–6 Wochen — Neurotoxizität & Tolleranz nehmen zu.",
+    "Elektrolyte/Temperatur überwachen, aber Wasser nicht überdosieren (Hyponatriämie).",
+    "Pre/Post-Load (Mg, Vit-C, ALA) wird diskutiert, Evidenz begrenzt.",
+  ],
+  stimulant: [
+    "Dopaminerg/noradrenerg: Herz-Kreislauf-Belastung steigt linear mit Dosis.",
+    "Re-Dosing verstärkt Crash und kardiovaskuläres Risiko überproportional.",
+    "Pausen für Schlaf & Nahrung einplanen — Defizite verstärken Toxizität.",
+    "Kombi mit anderen Stimulanzien oder MAOI vermeiden.",
+  ],
+  cathinone: [
+    "Hohe Dosis-Steilheit & ausgeprägtes Craving — Re-Dosing besonders riskant.",
+    "Vasokonstriktion ausgeprägt — kardiale Belastung beachten.",
+    "Reinheit oft unbekannt; Wirkprofile zwischen Cathinonen variieren stark.",
+  ],
+  depressant: [
+    "GABAerge Wirkung — Atemdepression bei Kombi mit Opioiden/Alkohol/Benzos.",
+    "Kein Mischen mit anderen ZNS-Dämpfern.",
+    "Toleranz baut sich schnell auf, Entzug kann lebensbedrohlich sein.",
+  ],
+  benzodiazepine: [
+    "GABA-A-Modulation — synergistische Atemdepression mit Opioiden/Alkohol/GHB.",
+    "Tagelange Halbwertszeit-Stapelung möglich (z. B. Desalkylgidazepam).",
+    "Abruptes Absetzen nach regelmäßigem Gebrauch kann Krampfanfälle auslösen — ausschleichen.",
+    "Anterograde Amnesie & Disinhibition — Konsens & Sicherheit vorab klären.",
+  ],
+  opioid: [
+    "μ-Opioid-Agonismus → dosisabhängige Atemdepression. Naloxon griffbereit halten.",
+    "Niemals allein konsumieren; keine Kombi mit Benzos/Alkohol/GHB.",
+    "Toleranz fällt nach Pause schnell — alte Dosis ist oft tödlich.",
+    "Nitazene & Fentanyl-Analoga: extreme Potenz, Volumendosierung ungeeignet.",
+  ],
+  dissociative: [
+    "NMDA-Antagonismus: dosisabhängige Anästhesie & Ataxie — Sturzgefahr.",
+    "Blasen-/Nierentoxizität bei chronischem Gebrauch (v. a. Ketamin-Klasse).",
+    "Dissoziation maskiert Verletzungen — Umgebung absichern.",
+    "Kombi mit Depressiva erhöht Atemdepressions-Risiko.",
+  ],
+  cannabinoid: [
+    "CB1-Agonismus: synthetische Cannabinoide oft Vollagonisten → unvorhersehbar.",
+    "Tachykardie, Angst, dissoziative Episoden möglich — niedrig dosieren.",
+    "Kombi mit anderen ZNS-Substanzen verstärkt Sedierung/Verwirrung.",
+  ],
+  neuroleptic: [
+    "D2-Antagonismus: kein Antidot für Psychedelika-Trips — kann Krise verschlimmern.",
+    "Risiko für QT-Verlängerung, EPS, Krampfschwelle senken.",
+    "Nicht für Notfälle ohne ärztliche Indikation einsetzen.",
+  ],
+  alcohol: [
+    "GABAerg + glutamaterg — Atemdepression bei Kombi mit Opioiden/Benzos.",
+    "Dehydration & Hypoglykämie verstärken Nachwirkungen.",
+    "Kombi mit Stimulanzien maskiert Intoxikationszeichen.",
+  ],
+  other: [
+    "Wirkprofil prüfen, niedrig dosieren, allein erst nach bekannter Verträglichkeit.",
+    "Wechselwirkungen recherchieren bevor kombiniert wird.",
+  ],
+};
+
