@@ -57,6 +57,7 @@ function LogPage() {
     setEntries(loadEntries());
     setDose("");
     setNotes("");
+    setFormOpenMobile(false);
   }
 
   function remove(id: string) {
