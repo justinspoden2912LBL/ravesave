@@ -75,13 +75,19 @@ export function Nav() {
 
 export function Footer() {
   return (
-    <footer className="mx-auto max-w-6xl px-4 py-10 text-xs text-muted-foreground">
+    <footer className="mx-auto max-w-6xl px-4 py-10 text-xs text-muted-foreground space-y-3">
       <p className="leading-relaxed">
-        <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein Harm-Reduction-Werkzeug.
+        <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein Harm-Reduction-Werkzeug — aktuell in der <strong className="text-secondary">Open Beta</strong>.
         Alle Daten bleiben lokal in deinem Browser. Dosis-Angaben sind grobe Orientierungswerte
         aus PsychonautWiki, TripSit, EMCDDA und Fachliteratur — keine medizinische Empfehlung.
         Reinheit und individuelle Verträglichkeit sind nicht abschätzbar; nutze Drug-Checking,
         beginne mit niedrigen Dosen, sei nicht allein. Im Notfall: <strong>112</strong>.
+      </p>
+      <p className="leading-relaxed">
+        Feedback, Bugs oder Verbesserungsvorschläge? →{" "}
+        <a className="text-secondary hover:underline" href="mailto:ravesafe.live@gmail.com?subject=Rave%20Safe%20Beta%20Feedback">
+          ravesafe.live@gmail.com
+        </a>
       </p>
     </footer>
   );
