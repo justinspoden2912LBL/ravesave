@@ -274,23 +274,25 @@ function SubstanceCard({
   s,
   open,
   onToggle,
-  expert,
+  depth,
 }: {
   s: Substance;
   open: boolean;
   onToggle: () => void;
-  expert: boolean;
+  depth: Depth;
 }) {
+  const expert = depth === "experte";
   const [tab, setTab] = useState<TabKey>("overview");
   const [routeIdx, setRouteIdx] = useState(0);
   const route = s.doses[routeIdx] ?? s.doses[0];
+  const labels = TAB_LABELS[depth];
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: "overview", label: "Übersicht" },
-    { key: "dose", label: "Dosis" },
-    { key: "duration", label: "Dauer" },
-    { key: "risks", label: "Risiken" },
-    ...(expert ? ([{ key: "pharma", label: "Pharma" }] as const) : []),
+    { key: "overview", label: labels.overview },
+    { key: "dose", label: labels.dose },
+    { key: "duration", label: labels.duration },
+    { key: "risks", label: labels.risks },
+    ...(expert ? ([{ key: "pharma" as const, label: labels.pharma }]) : []),
   ];
 
   return (
@@ -362,10 +364,10 @@ function SubstanceCard({
           )}
 
           <div className="px-3 pb-3 pt-2 text-sm">
-            {tab === "overview" && <OverviewTab s={s} expert={expert} />}
-            {tab === "dose" && <DoseTab s={s} d={route} expert={expert} />}
-            {tab === "duration" && <DurationTab s={s} d={route} expert={expert} />}
-            {tab === "risks" && <RisksTab s={s} d={route} expert={expert} />}
+            {tab === "overview" && <OverviewTab s={s} depth={depth} />}
+            {tab === "dose" && <DoseTab s={s} d={route} depth={depth} />}
+            {tab === "duration" && <DurationTab s={s} d={route} depth={depth} />}
+            {tab === "risks" && <RisksTab s={s} d={route} depth={depth} />}
             {tab === "pharma" && expert && <PharmaTab s={s} />}
           </div>
         </div>
@@ -373,6 +375,7 @@ function SubstanceCard({
     </li>
   );
 }
+
 
 function quickDose(d?: DoseRange) {
   if (!d) return "";
