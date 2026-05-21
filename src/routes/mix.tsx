@@ -182,7 +182,7 @@ function MixPage() {
 }
 
 const LEGEND_DESC: Record<keyof typeof RISK_META, string> = {
-  safe: "Keine bekannten kritischen Wechselwirkungen in unseren Quellen — heißt nicht „sicher". Restrisiko bleibt immer.",
+  safe: 'Keine bekannten kritischen Wechselwirkungen in unseren Quellen — heißt nicht "sicher". Restrisiko bleibt immer.',
   synergy: "Wirkungen verstärken sich gewollt — Dosis runter, Wirkung abwarten, nicht nachlegen.",
   caution: "Vorsicht — mögliche unangenehme oder riskante Wechselwirkungen. Niedrig dosieren, nicht allein konsumieren.",
   unsafe: "Riskant — erhöhte körperliche oder psychische Belastung möglich. Besser nicht kombinieren.",
