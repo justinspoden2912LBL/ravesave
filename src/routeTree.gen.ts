@@ -18,9 +18,12 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
+import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const SubstancesRoute = SubstancesRouteImport.update({
@@ -68,9 +71,19 @@ const KniggeRoute = KniggeRouteImport.update({
   path: '/knigge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErfahrungenRoute = ErfahrungenRouteImport.update({
+  id: '/erfahrungen',
+  path: '/erfahrungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -83,6 +96,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ErfahrungenRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -92,7 +110,9 @@ const ApiChatRoute = ApiChatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -103,11 +123,14 @@ export interface FileRoutesByFullPath {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -118,12 +141,15 @@ export interface FileRoutesByTo {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -134,13 +160,16 @@ export interface FileRoutesById {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -151,11 +180,14 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/erfahrungen/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -166,11 +198,14 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/erfahrungen/$slug'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -181,12 +216,15 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/erfahrungen/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   ChatRoute: typeof ChatRoute
+  ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
@@ -264,11 +302,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KniggeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/erfahrungen': {
+      id: '/erfahrungen'
+      path: '/erfahrungen'
+      fullPath: '/erfahrungen'
+      preLoaderRoute: typeof ErfahrungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -285,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/erfahrungen/$slug': {
+      id: '/erfahrungen/$slug'
+      path: '/$slug'
+      fullPath: '/erfahrungen/$slug'
+      preLoaderRoute: typeof ErfahrungenSlugRouteImport
+      parentRoute: typeof ErfahrungenRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -295,10 +354,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ErfahrungenRouteChildren {
+  ErfahrungenSlugRoute: typeof ErfahrungenSlugRoute
+}
+
+const ErfahrungenRouteChildren: ErfahrungenRouteChildren = {
+  ErfahrungenSlugRoute: ErfahrungenSlugRoute,
+}
+
+const ErfahrungenRouteWithChildren = ErfahrungenRoute._addFileChildren(
+  ErfahrungenRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   ChatRoute: ChatRoute,
+  ErfahrungenRoute: ErfahrungenRouteWithChildren,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
