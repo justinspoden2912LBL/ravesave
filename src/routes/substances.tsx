@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ChevronRight, ExternalLink, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronRight, ExternalLink, Search, FlaskConical } from "lucide-react";
 import {
   SUBSTANCES,
   CATEGORY_LABEL,
   CATEGORY_TO_SUPER,
+  CATEGORY_HR_TIPS,
   SUPER_CATEGORY_LABEL,
   SUPER_CATEGORY_ORDER,
+  type DoseRange,
   type SubstanceCategory,
   type SuperCategory,
   type Substance,
@@ -17,14 +19,16 @@ export const Route = createFileRoute("/substances")({
   head: () => ({
     meta: [
       { title: "Substanz-Wiki — Rave Safe, have Fun" },
-      { name: "description", content: "Evidenzbasierte Infos zu 80+ psychoaktiven Substanzen: Pharmakologie, Dosierung, Wirkdauer und Risiken." },
+      { name: "description", content: "Kompakte, scanbare Substanzinfos: Dosis, Wirkdauer und Risiken pro Applikationsweg. Expertenmodus für Pharmakologie." },
       { property: "og:title", content: "Substanz-Wiki — Rave Safe, have Fun" },
-      { property: "og:description", content: "Pharmakologie, Dosierung und Risiken zu 80+ Substanzen — gruppiert und durchsuchbar." },
+      { property: "og:description", content: "Kompakte, scanbare Substanzinfos: Dosis, Wirkdauer und Risiken pro Applikationsweg." },
       { property: "og:url", content: "https://ravesave.lovable.app/substances" },
     ],
     links: [{ rel: "canonical", href: "https://ravesave.lovable.app/substances" }],
   }),
 });
+
+const EXPERT_KEY = "rs.expertMode";
 
 function SubstancesPage() {
   const [query, setQuery] = useState("");
@@ -32,11 +36,23 @@ function SubstancesPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
   const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
+  const [expert, setExpert] = useState(false);
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(EXPERT_KEY);
+      if (v === "1") setExpert(true);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXPERT_KEY, expert ? "1" : "0");
+    } catch {}
+  }, [expert]);
 
   const q = query.toLowerCase().trim();
   const searching = q.length > 0 || filterSuper !== "all";
 
-  // Count per super-category across the full dataset for the filter chips.
   const superCounts = useMemo(() => {
     const counts: Partial<Record<SuperCategory, number>> = {};
     for (const s of SUBSTANCES) {
@@ -78,11 +94,26 @@ function SubstancesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
-        <p className="text-muted-foreground mt-1">
-          Erst Oberkategorie wählen — dann Klasse — dann Substanz. Kompakt bis ausführlich.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Substanz-Wiki</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Kompakt & scanbar. Wähle Substanz → Applikationsweg → Tab.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpert((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium border transition shrink-0 ${
+            expert
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-muted/30 border-border/60 text-foreground/80 hover:bg-muted/60"
+          }`}
+          title="Pharmakologie, Rezeptoraffinitäten, CYP, Halbwertszeit"
+        >
+          <FlaskConical className="h-3.5 w-3.5" />
+          Expertenmodus {expert ? "an" : "aus"}
+        </button>
       </header>
 
       <div className="rounded-2xl glass p-4 space-y-3">
@@ -153,102 +184,15 @@ function SubstancesPage() {
                         </button>
                         {catOpen && (
                           <ul className="px-2 pb-2 space-y-1.5">
-                            {list.map((s) => {
-                              const open = openId === s.id;
-                              return (
-                                <li
-                                  key={s.id}
-                                  className={`rounded-lg bg-background/60 border ${open ? "border-primary/50" : "border-border/40"}`}
-                                >
-                                  <button
-                                    onClick={() => setOpenId(open ? null : s.id)}
-                                    className="w-full text-left px-3 py-2"
-                                  >
-                                    <div className="flex items-start justify-between gap-2">
-                                      <div className="min-w-0">
-                                        <div className="font-medium text-sm truncate">{s.name}</div>
-                                        {s.aliases.length > 0 && (
-                                          <div className="text-[10px] text-muted-foreground truncate">
-                                            {s.aliases.join(", ")}
-                                          </div>
-                                        )}
-                                      </div>
-                                      <ChevronRight className={`h-4 w-4 mt-0.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`} />
-                                    </div>
-                                    {!open && (
-                                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                                        {s.shortDescription}
-                                      </p>
-                                    )}
-                                  </button>
-
-                                  {open && (
-                                    <div className="px-3 pb-3 space-y-3 border-t border-border/40 pt-3 text-sm">
-                                      <p className="text-muted-foreground">{s.shortDescription}</p>
-                                      <Row label="Mechanismus">{s.mechanism}</Row>
-                                      <Row label="Eintritt">{s.onset}</Row>
-                                      <Row label="Dauer">{s.duration}</Row>
-
-                                      <div>
-                                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                                          Dosis-Bereiche
-                                        </div>
-                                        {s.doses.map((d, i) => (
-                                          <div key={i} className="rounded-xl glass p-3 mb-2">
-                                            <div className="font-medium text-xs mb-2">{d.route}</div>
-                                            <div className="grid grid-cols-5 gap-1 text-[11px]">
-                                              <Dose label="Schwelle" v={d.threshold} />
-                                              <Dose label="Leicht" v={d.light} />
-                                              <Dose label="Üblich" v={d.common} />
-                                              <Dose label="Stark" v={d.strong} />
-                                              <Dose label="Heavy" v={d.heavy} />
-                                            </div>
-                                            {d.notes && (
-                                              <p className="text-xs text-muted-foreground mt-2">{d.notes}</p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-
-                                      {s.warnings.length > 0 && (
-                                        <div>
-                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                                            Warnungen
-                                          </div>
-                                          <ul className="list-disc pl-4 space-y-1">
-                                            {s.warnings.map((w, i) => (
-                                              <li key={i}>{w}</li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                      )}
-
-                                      {s.evidence.length > 0 && (
-                                        <div>
-                                          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                                            Quellen / Evidenz
-                                          </div>
-                                          <ul className="space-y-1">
-                                            {s.evidence.map((e, i) => (
-                                              <li key={i}>
-                                                <a
-                                                  href={e.url}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="inline-flex items-center gap-1 text-secondary hover:underline"
-                                                >
-                                                  {e.label} <ExternalLink className="h-3 w-3" />
-                                                </a>
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </li>
-                              );
-                            })}
+                            {list.map((s) => (
+                              <SubstanceCard
+                                key={s.id}
+                                s={s}
+                                open={openId === s.id}
+                                onToggle={() => setOpenId(openId === s.id ? null : s.id)}
+                                expert={expert}
+                              />
+                            ))}
                           </ul>
                         )}
                       </div>
@@ -269,6 +213,267 @@ function SubstancesPage() {
     </div>
   );
 }
+
+/* ─────────── Substance card with tabs ─────────── */
+
+type TabKey = "overview" | "dose" | "duration" | "risks" | "pharma";
+
+function SubstanceCard({
+  s,
+  open,
+  onToggle,
+  expert,
+}: {
+  s: Substance;
+  open: boolean;
+  onToggle: () => void;
+  expert: boolean;
+}) {
+  const [tab, setTab] = useState<TabKey>("overview");
+  const [routeIdx, setRouteIdx] = useState(0);
+  const route = s.doses[routeIdx] ?? s.doses[0];
+
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "overview", label: "Übersicht" },
+    { key: "dose", label: "Dosis" },
+    { key: "duration", label: "Dauer" },
+    { key: "risks", label: "Risiken" },
+    ...(expert ? ([{ key: "pharma", label: "Pharma" }] as const) : []),
+  ];
+
+  return (
+    <li className={`rounded-lg bg-background/60 border ${open ? "border-primary/50" : "border-border/40"}`}>
+      <button onClick={onToggle} className="w-full text-left px-3 py-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-sm truncate">{s.name}</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground rounded bg-muted/50 px-1.5 py-0.5">
+                {CATEGORY_LABEL[s.category]}
+              </span>
+            </div>
+            {s.aliases.length > 0 && (
+              <div className="text-[10px] text-muted-foreground truncate">{s.aliases.join(", ")}</div>
+            )}
+            {!open && (
+              <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+                <span className="font-mono">{s.onset}</span>
+                <span className="opacity-40">·</span>
+                <span className="font-mono">{s.duration}</span>
+                <span className="opacity-40">·</span>
+                <span className="truncate">{quickDose(s.doses[0])}</span>
+              </div>
+            )}
+          </div>
+          <ChevronRight
+            className={`h-4 w-4 mt-0.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`}
+          />
+        </div>
+      </button>
+
+      {open && (
+        <div className="border-t border-border/40">
+          {/* tabs */}
+          <div className="flex gap-1 px-2 pt-2 overflow-x-auto scrollbar-none">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`shrink-0 rounded-md px-2.5 py-1 text-xs transition ${
+                  tab === t.key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted/40"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* route selector (only on dose / duration / risks) */}
+          {(tab === "dose" || tab === "duration" || tab === "risks") && s.doses.length > 1 && (
+            <div className="flex flex-wrap gap-1 px-3 pt-2">
+              {s.doses.map((d, i) => (
+                <button
+                  key={i}
+                  onClick={() => setRouteIdx(i)}
+                  className={`text-[10px] rounded-full px-2 py-0.5 border transition ${
+                    routeIdx === i
+                      ? "border-primary/60 bg-primary/10 text-foreground"
+                      : "border-border/40 text-muted-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  {d.route}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="px-3 pb-3 pt-2 text-sm">
+            {tab === "overview" && <OverviewTab s={s} />}
+            {tab === "dose" && <DoseTab d={route} />}
+            {tab === "duration" && <DurationTab s={s} d={route} />}
+            {tab === "risks" && <RisksTab s={s} d={route} />}
+            {tab === "pharma" && expert && <PharmaTab s={s} />}
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function quickDose(d?: DoseRange) {
+  if (!d) return "";
+  const c = d.common ?? d.light ?? d.threshold;
+  return c ? `${d.route}: ${c}` : d.route;
+}
+
+/* ─────────── Tab bodies ─────────── */
+
+function OverviewTab({ s }: { s: Substance }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-muted-foreground">{s.shortDescription}</p>
+      <Row label="Klasse">{CATEGORY_LABEL[s.category]}</Row>
+      <Row label="Wirkung">{s.mechanism}</Row>
+      <Row label="Eintritt">{s.onset}</Row>
+      <Row label="Dauer">{s.duration}</Row>
+      {s.evidence.length > 0 && (
+        <div className="pt-1">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Quellen</div>
+          <ul className="space-y-0.5">
+            {s.evidence.map((e, i) => (
+              <li key={i}>
+                <a
+                  href={e.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-secondary hover:underline"
+                >
+                  {e.label} <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DoseTab({ d }: { d?: DoseRange }) {
+  if (!d) return <p className="text-muted-foreground text-xs">Keine Dosisdaten.</p>;
+  return (
+    <div className="space-y-2">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.route}</div>
+      <div className="grid grid-cols-5 gap-1 text-[11px]">
+        <Dose label="Schwelle" v={d.threshold} />
+        <Dose label="Leicht" v={d.light} />
+        <Dose label="Üblich" v={d.common} />
+        <Dose label="Stark" v={d.strong} />
+        <Dose label="Heavy" v={d.heavy} />
+      </div>
+      {d.notes && <p className="text-xs text-muted-foreground">{d.notes}</p>}
+    </div>
+  );
+}
+
+function DurationTab({ s, d }: { s: Substance; d?: DoseRange }) {
+  const onset = d?.onset ?? s.onset;
+  const total = d?.total ?? s.duration;
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <Stat label="Eintritt" v={onset} />
+      <Stat label="Peak" v={d?.peak ?? "—"} />
+      <Stat label="Gesamtdauer" v={total} />
+      <Stat label="Nachwirkung" v={d?.afterglow ?? s.afterEffects ?? "—"} />
+    </div>
+  );
+}
+
+function RisksTab({ s, d }: { s: Substance; d?: DoseRange }) {
+  const classTips = CATEGORY_HR_TIPS[s.category] ?? [];
+  return (
+    <div className="space-y-3">
+      {d?.riskNotes && (
+        <div className="rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs">
+          <span className="font-medium text-amber-300/90">{d.route}: </span>
+          {d.riskNotes}
+        </div>
+      )}
+      {s.warnings.length > 0 && (
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Substanzspezifisch</div>
+          <ul className="list-disc pl-4 space-y-0.5 text-xs">
+            {s.warnings.map((w, i) => (
+              <li key={i}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {classTips.length > 0 && (
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            Klasse: {CATEGORY_LABEL[s.category]}
+          </div>
+          <ul className="list-disc pl-4 space-y-0.5 text-xs text-muted-foreground">
+            {classTips.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PharmaTab({ s }: { s: Substance }) {
+  const e = s.expert;
+  return (
+    <div className="space-y-2 text-xs">
+      <Row label="Mechanismus">{s.mechanism}</Row>
+      {e?.halfLife && <Row label="Halbwertszeit">{e.halfLife}</Row>}
+      {e?.bioavailability && <Row label="Bioverfügbarkeit">{e.bioavailability}</Row>}
+      {e?.cyp && <Row label="CYP-Metabolismus">{e.cyp}</Row>}
+      {e?.pharmacokinetics && <Row label="Pharmakokinetik">{e.pharmacokinetics}</Row>}
+      {e?.receptorAffinities && e.receptorAffinities.length > 0 && (
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Rezeptor-Affinitäten</div>
+          <div className="rounded-md border border-border/40 overflow-hidden">
+            <table className="w-full text-[11px]">
+              <thead className="bg-muted/30 text-muted-foreground">
+                <tr>
+                  <th className="text-left px-2 py-1 font-medium">Target</th>
+                  <th className="text-left px-2 py-1 font-medium">Ki</th>
+                  <th className="text-left px-2 py-1 font-medium">IC50</th>
+                  <th className="text-left px-2 py-1 font-medium">Wirkung</th>
+                </tr>
+              </thead>
+              <tbody>
+                {e.receptorAffinities.map((r, i) => (
+                  <tr key={i} className="border-t border-border/30">
+                    <td className="px-2 py-1 font-mono">{r.target}</td>
+                    <td className="px-2 py-1 font-mono">{r.ki ?? "—"}</td>
+                    <td className="px-2 py-1 font-mono">{r.ic50 ?? "—"}</td>
+                    <td className="px-2 py-1 text-muted-foreground">{r.action ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {e?.notes && <p className="text-muted-foreground">{e.notes}</p>}
+      {!e && (
+        <p className="text-muted-foreground italic">
+          Detaillierte Pharmakologie für diese Substanz noch nicht eingepflegt. Siehe Quellen im Übersichts-Tab.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────── Atoms ─────────── */
 
 function FilterChip({
   active,
@@ -299,9 +504,20 @@ function FilterChip({
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex gap-3">
-      <span className="w-24 shrink-0 text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+    <div className="flex gap-3 text-xs">
+      <span className="w-28 shrink-0 uppercase tracking-wider text-[10px] text-muted-foreground pt-0.5">
+        {label}
+      </span>
       <span className="flex-1">{children}</span>
+    </div>
+  );
+}
+
+function Stat({ label, v }: { label: string; v: string }) {
+  return (
+    <div className="rounded-md bg-muted/30 px-2 py-1.5">
+      <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-mono text-xs mt-0.5">{v}</div>
     </div>
   );
 }
