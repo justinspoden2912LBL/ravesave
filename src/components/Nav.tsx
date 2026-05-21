@@ -35,6 +35,9 @@ export function Nav() {
           <span className="text-base sm:text-lg font-bold tracking-tight whitespace-nowrap">
             Rave Safe<span className="text-aurora">,</span> have Fun
           </span>
+          <span className="hidden sm:inline-flex items-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider">
+            Open Beta
+          </span>
         </Link>
 
         {/* Horizontal scrollable category row */}
