@@ -52,14 +52,24 @@ function ResetPasswordPage() {
     }
     setBusy(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password });
+      const { data: updated, error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
+      // Persist admin email locally so login only needs the key
+      const email = updated.user?.email;
+      if (email && typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem("ravesave_admin_email", email);
+        } catch {
+          /* ignore */
+        }
+      }
       setDone(true);
       // Sign out so the recovery session doesn't stay logged in implicitly
       setTimeout(async () => {
         await supabase.auth.signOut();
         navigate({ to: "/admin" });
       }, 1800);
+
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Aktualisierung fehlgeschlagen");
     } finally {
@@ -78,10 +88,11 @@ function ResetPasswordPage() {
           <div className="mx-auto h-12 w-12 rounded-full bg-secondary/15 flex items-center justify-center">
             <ShieldCheck className="h-6 w-6 text-secondary" />
           </div>
-          <h1 className="text-xl font-bold">Passwort aktualisiert</h1>
+          <h1 className="text-xl font-bold">Admin-Schlüssel aktualisiert</h1>
           <p className="text-sm text-muted-foreground">
-            Du wirst gleich zum Login weitergeleitet…
+            Du wirst gleich zum Admin-Login weitergeleitet…
           </p>
+
         </div>
       </div>
     );
@@ -111,15 +122,15 @@ function ResetPasswordPage() {
       <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
         <div className="flex items-center gap-2">
           <KeyRound className="h-5 w-5 text-secondary" />
-          <h1 className="text-xl font-bold">Neues Passwort setzen</h1>
+          <h1 className="text-xl font-bold">Neuen Admin-Schlüssel setzen</h1>
         </div>
         <p className="text-xs text-muted-foreground">
-          Wähle ein neues Passwort mit mindestens 8 Zeichen.
+          Wähle einen neuen Admin-Schlüssel mit mindestens 8 Zeichen. Bewahre ihn sicher auf.
         </p>
 
         <label className="block">
           <span className="block text-xs font-medium text-muted-foreground mb-1">
-            Neues Passwort
+            Neuer Admin-Schlüssel
           </span>
           <input
             type="password"
@@ -133,7 +144,7 @@ function ResetPasswordPage() {
         </label>
         <label className="block">
           <span className="block text-xs font-medium text-muted-foreground mb-1">
-            Passwort bestätigen
+            Schlüssel bestätigen
           </span>
           <input
             type="password"
@@ -145,6 +156,7 @@ function ResetPasswordPage() {
             autoComplete="new-password"
           />
         </label>
+
 
         {err && (
           <p className="text-xs text-destructive" role="alert">
