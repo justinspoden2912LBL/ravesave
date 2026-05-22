@@ -181,6 +181,14 @@ export function EmergencyButton() {
   const [active, setActive] = useState<SymptomId | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
 
+  // KI-Kontext: Notfall-UI offen → KI priorisiert 112 & Notfallzeichen
+  useEffect(() => {
+    if (open) {
+      setAiContext({ emergencyActive: true });
+      return () => clearAiContextKeys(["emergencyActive"]);
+    }
+  }, [open]);
+
   function reset() {
     setActive(null);
     setExpanded(null);
@@ -189,6 +197,7 @@ export function EmergencyButton() {
     setOpen(false);
     setTimeout(reset, 200);
   }
+
 
   const guide = active ? GUIDES[active] : null;
 
