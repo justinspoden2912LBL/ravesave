@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ravesave.lovable.app/sitemap.xml
+Sitemap: https://ravesave.de/sitemap.xml

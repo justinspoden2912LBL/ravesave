@@ -1,15 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { listPublishedPosts } from "@/lib/posts";
 
-const BASE_URL = "https://ravesave.lovable.app";
+const BASE_URL = "https://ravesave.de";
 
 interface SitemapEntry {
   path: string;
+  lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
 }
 
-const ENTRIES: SitemapEntry[] = [
+const STATIC_ENTRIES: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/log", changefreq: "monthly", priority: "0.8" },
   { path: "/mix", changefreq: "monthly", priority: "0.9" },
@@ -28,10 +30,27 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const urls = ENTRIES.map((e) =>
+        const entries: SitemapEntry[] = [...STATIC_ENTRIES];
+
+        try {
+          const posts = await listPublishedPosts();
+          for (const p of posts) {
+            entries.push({
+              path: `/erfahrungen/${p.slug}`,
+              lastmod: (p.updated_at ?? p.published_at ?? p.created_at)?.slice(0, 10),
+              changefreq: "monthly",
+              priority: "0.6",
+            });
+          }
+        } catch {
+          // If posts can't be fetched, fall back to static entries only.
+        }
+
+        const urls = entries.map((e) =>
           [
             `  <url>`,
             `    <loc>${BASE_URL}${e.path}</loc>`,
+            e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,
