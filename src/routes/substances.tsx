@@ -67,6 +67,16 @@ function SubstancesPage() {
 
   const expert = depth === "experte";
 
+  // KI-Kontext: aktuell geöffnetes Wiki-Item
+  const openSubstance = openId ? SUBSTANCES.find((s) => s.id === openId) : undefined;
+  useRegisterAiContext({
+    route: "/substances",
+    wikiSubstance: openSubstance
+      ? { id: openSubstance.id, name: openSubstance.name, category: CATEGORY_LABEL[openSubstance.category] }
+      : undefined,
+  });
+
+
   const q = query.toLowerCase().trim();
   const searching = q.length > 0 || filterSuper !== "all";
 
