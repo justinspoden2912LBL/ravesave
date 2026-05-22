@@ -41,6 +41,13 @@ function writeLs(key: string, value: string | null) {
   }
 }
 import { listAllPostsAdmin, slugify, type Post } from "@/lib/posts";
+import {
+  readAdminAudit,
+  logAdminAudit,
+  clearAdminAudit,
+  labelFor as auditLabel,
+  type AdminAuditEntry,
+} from "@/lib/adminAudit";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
