@@ -111,15 +111,15 @@ function ResetPasswordPage() {
       <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
         <div className="flex items-center gap-2">
           <KeyRound className="h-5 w-5 text-secondary" />
-          <h1 className="text-xl font-bold">Neues Passwort setzen</h1>
+          <h1 className="text-xl font-bold">Neuen Admin-Schlüssel setzen</h1>
         </div>
         <p className="text-xs text-muted-foreground">
-          Wähle ein neues Passwort mit mindestens 8 Zeichen.
+          Wähle einen neuen Admin-Schlüssel mit mindestens 8 Zeichen. Bewahre ihn sicher auf.
         </p>
 
         <label className="block">
           <span className="block text-xs font-medium text-muted-foreground mb-1">
-            Neues Passwort
+            Neuer Admin-Schlüssel
           </span>
           <input
             type="password"
@@ -133,7 +133,7 @@ function ResetPasswordPage() {
         </label>
         <label className="block">
           <span className="block text-xs font-medium text-muted-foreground mb-1">
-            Passwort bestätigen
+            Schlüssel bestätigen
           </span>
           <input
             type="password"
@@ -145,6 +145,7 @@ function ResetPasswordPage() {
             autoComplete="new-password"
           />
         </label>
+
 
         {err && (
           <p className="text-xs text-destructive" role="alert">
