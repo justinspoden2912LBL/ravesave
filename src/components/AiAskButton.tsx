@@ -151,6 +151,7 @@ function AiPanel({
 
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
+  const [easterEgg, setEasterEgg] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
