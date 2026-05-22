@@ -11,8 +11,35 @@ import {
   EyeOff,
   ShieldCheck,
   ArrowLeft,
+  KeyRound,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+const ADMIN_EMAIL_KEY = "ravesave_admin_email";
+const ADMIN_SESSION_STARTED_KEY = "ravesave_admin_session_started_at";
+const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
+const ADMIN_LOCKOUT_KEY = "ravesave_admin_lockout_until";
+const ADMIN_SESSION_MAX_MS = 24 * 60 * 60 * 1000; // 24h
+const ADMIN_LOCKOUT_MS = 15 * 60 * 1000; // 15min
+const ADMIN_MAX_ATTEMPTS = 5;
+
+function readLs(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+function writeLs(key: string, value: string | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (value === null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, value);
+  } catch {
+    /* ignore */
+  }
+}
 import { listAllPostsAdmin, slugify, type Post } from "@/lib/posts";
 
 export const Route = createFileRoute("/admin")({
