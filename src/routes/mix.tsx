@@ -68,6 +68,20 @@ function MixPage() {
 
   const overall = overallRisk(selected);
 
+  // KI-Kontext: gewählte Substanzen + höchstes Risiko-Level
+  useRegisterAiContext({
+    route: "/mix",
+    mixSelected:
+      selected.length > 0
+        ? selected
+            .map((id) => SUBSTANCES.find((x) => x.id === id))
+            .filter((s): s is Substance => !!s)
+            .map((s) => ({ id: s.id, name: s.name }))
+        : undefined,
+    mixRisk: selected.length >= 2 ? { level: overall.level } : undefined,
+  });
+
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
       <header>
