@@ -16,6 +16,8 @@ import {
   type SuperCategory,
 } from "@/lib/substances";
 import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
+import { useRegisterAiContext } from "@/lib/aiContext";
+
 
 export const Route = createFileRoute("/mix")({
   component: MixPage,
