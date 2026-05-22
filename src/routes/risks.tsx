@@ -112,6 +112,7 @@ function RisksPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Substanz suchen..."
+              aria-label="Substanz suchen"
               className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
             />
           </div>

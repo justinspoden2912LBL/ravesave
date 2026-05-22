@@ -164,9 +164,9 @@ function Home() {
 
       {/* Principles */}
       <section className="mt-12 rounded-3xl glass p-8">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <h2 className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
           <Sparkles className="h-4 w-4 text-accent" /> Grundprinzipien
-        </div>
+        </h2>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           <Principle title="Start low, go slow.">
             Beginne immer mit der niedrigsten Dosis — besonders bei neuen Substanzen oder Chargen.

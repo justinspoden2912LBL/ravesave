@@ -159,6 +159,7 @@ function SubstancesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Suche (Name, Alias, Klasse, Wirkung)…"
+            aria-label="Substanzen durchsuchen"
             className="w-full rounded-lg bg-input pl-9 pr-3 py-2 text-sm"
           />
         </div>
@@ -197,7 +198,7 @@ function SubstancesPage() {
               >
                 <div className="flex items-center gap-2">
                   <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`} />
-                  <span className="font-semibold">{SUPER_CATEGORY_LABEL[sup]}</span>
+                  <h2 className="font-semibold text-base m-0">{SUPER_CATEGORY_LABEL[sup]}</h2>
                 </div>
                 <span className="text-[11px] tabular-nums text-muted-foreground rounded-full bg-muted/50 px-2 py-0.5">
                   {count}

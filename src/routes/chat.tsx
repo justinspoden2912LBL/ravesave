@@ -525,6 +525,7 @@ function ChatPage() {
               <span className="max-w-[180px] truncate">{a.name}</span>
               <button
                 onClick={() => setAttachments(attachments.filter((_, j) => j !== i))}
+                aria-label={`Anhang ${a.name} entfernen`}
                 className="text-muted-foreground hover:text-destructive"
               >
                 <X className="h-3 w-3" />
@@ -544,17 +545,19 @@ function ChatPage() {
             if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
           }}
           placeholder={listening ? "Spricht… (Mikro tippen zum Stoppen)" : "Frag etwas oder lade eine Datei hoch…"}
+          aria-label="Nachricht an die KI schreiben"
           rows={2}
           className="w-full resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
         />
         <div className="flex items-center justify-between gap-2 px-1 pt-1">
           <div className="flex items-center gap-1">
-            <label className="cursor-pointer rounded-full p-2 hover:bg-muted/40" title="Datei anhängen">
+            <label className="cursor-pointer rounded-full p-2 hover:bg-muted/40" title="Datei anhängen" aria-label="Datei anhängen">
               <Paperclip className="h-4 w-4" />
               <input
                 type="file"
                 multiple
                 onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }}
+                aria-label="Datei auswählen"
                 className="hidden"
               />
             </label>
@@ -563,6 +566,8 @@ function ChatPage() {
               onClick={toggleVoice}
               className={`rounded-full p-2 transition ${listening ? "bg-risk-danger/30 text-risk-danger" : "hover:bg-muted/40"}`}
               title={listening ? "Aufnahme stoppen" : "Sprache → Text"}
+              aria-label={listening ? "Sprachaufnahme stoppen" : "Sprache in Text aufnehmen"}
+              aria-pressed={listening}
             >
               {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </button>
@@ -571,13 +576,15 @@ function ChatPage() {
               onClick={() => { setSpeak(!speak); if (speak) window.speechSynthesis.cancel(); }}
               className={`rounded-full p-2 transition ${speak ? "bg-secondary/30 text-secondary" : "hover:bg-muted/40"}`}
               title={speak ? "Sprachausgabe an (klicken zum Ausschalten)" : "Antworten vorlesen"}
+              aria-label={speak ? "Sprachausgabe ausschalten" : "Antworten vorlesen"}
+              aria-pressed={speak}
             >
               {speak ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
           </div>
 
           {isLoading ? (
-            <button type="button" onClick={() => stop()} className="rounded-full bg-destructive/80 p-2 text-destructive-foreground" title="Stoppen">
+            <button type="button" onClick={() => stop()} className="rounded-full bg-destructive/80 p-2 text-destructive-foreground" title="Stoppen" aria-label="Antwort stoppen">
               <Square className="h-4 w-4" />
             </button>
           ) : (
@@ -586,6 +593,7 @@ function ChatPage() {
               disabled={!input.trim() && attachments.length === 0}
               className="rounded-full bg-aurora animate-aurora p-2 text-primary-foreground glow disabled:opacity-40 disabled:bg-none"
               title="Senden"
+              aria-label="Nachricht senden"
             >
               <Send className="h-4 w-4" />
             </button>
