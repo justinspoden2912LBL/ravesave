@@ -62,9 +62,26 @@ function AdminPage() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUserId(session?.user?.id ?? null);
+      if (session?.user) {
+        if (!readLs(ADMIN_SESSION_STARTED_KEY)) {
+          writeLs(ADMIN_SESSION_STARTED_KEY, String(Date.now()));
+        }
+      } else {
+        writeLs(ADMIN_SESSION_STARTED_KEY, null);
+      }
     });
     supabase.auth.getSession().then(({ data }) => {
-      setUserId(data.session?.user?.id ?? null);
+      const uid = data.session?.user?.id ?? null;
+      setUserId(uid);
+      if (uid) {
+        // Enforce 24h max session
+        const started = Number(readLs(ADMIN_SESSION_STARTED_KEY) ?? "0");
+        if (!started) {
+          writeLs(ADMIN_SESSION_STARTED_KEY, String(Date.now()));
+        } else if (Date.now() - started > ADMIN_SESSION_MAX_MS) {
+          supabase.auth.signOut();
+        }
+      }
       setLoading(false);
     });
     return () => subscription.unsubscribe();
