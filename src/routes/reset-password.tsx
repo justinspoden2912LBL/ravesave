@@ -52,14 +52,24 @@ function ResetPasswordPage() {
     }
     setBusy(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password });
+      const { data: updated, error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
+      // Persist admin email locally so login only needs the key
+      const email = updated.user?.email;
+      if (email && typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem("ravesave_admin_email", email);
+        } catch {
+          /* ignore */
+        }
+      }
       setDone(true);
       // Sign out so the recovery session doesn't stay logged in implicitly
       setTimeout(async () => {
         await supabase.auth.signOut();
         navigate({ to: "/admin" });
       }, 1800);
+
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Aktualisierung fehlgeschlagen");
     } finally {
