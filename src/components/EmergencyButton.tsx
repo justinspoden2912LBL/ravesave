@@ -38,6 +38,8 @@ import {
   type EmergencyInfo,
 } from "@/lib/emergencyInfo";
 import { loadEntries, type LogEntry } from "@/lib/log";
+import { setAiContext, clearAiContextKeys } from "@/lib/aiContext";
+
 import { SUBSTANCES } from "@/lib/substances";
 import { StepIllustration, ILLUSTRATION_LABEL, type IllusKey } from "@/components/EmergencyIllustrations";
 
