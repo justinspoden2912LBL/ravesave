@@ -235,6 +235,7 @@ function LoginCard() {
           throw new Error("Admin-Schlüssel ungültig.");
         }
         writeLs(ADMIN_SESSION_STARTED_KEY, String(Date.now()));
+        logAdminAudit("login_success");
         clearFailures();
       } else {
         // recovery
@@ -243,6 +244,7 @@ function LoginCard() {
           redirectTo: `${window.location.origin}/reset-password`,
         });
         if (error) throw error;
+        logAdminAudit("recovery_request", email);
         setResetSent(true);
       }
     } catch (e: unknown) {
