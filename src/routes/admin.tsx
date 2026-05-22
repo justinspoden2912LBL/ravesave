@@ -663,7 +663,135 @@ function Dashboard() {
           ))}
         </ul>
       )}
+
+      <AuditLogSection />
     </div>
+  );
+}
+
+function AuditLogSection() {
+  const [entries, setEntries] = useState<AdminAuditEntry[]>([]);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    setEntries(readAdminAudit());
+  }, [tick]);
+
+  const counts = useMemo(() => {
+    const c = { login_success: 0, login_failure: 0, logout: 0, session_expired: 0 } as Record<
+      string,
+      number
+    >;
+    for (const e of entries) c[e.type] = (c[e.type] ?? 0) + 1;
+    return c;
+  }, [entries]);
+
+  function styleFor(type: AdminAuditEntry["type"]) {
+    switch (type) {
+      case "login_success":
+        return "bg-secondary/15 text-secondary";
+      case "login_failure":
+      case "lockout":
+        return "bg-destructive/15 text-destructive";
+      case "session_expired":
+        return "bg-amber-500/15 text-amber-500";
+      case "logout":
+        return "bg-muted/40 text-muted-foreground";
+      case "setup":
+      case "recovery_request":
+        return "bg-primary/15 text-primary";
+    }
+  }
+
+  return (
+    <section className="rounded-2xl glass p-5 space-y-4" aria-labelledby="audit-log-heading">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 id="audit-log-heading" className="text-lg font-semibold">
+            Admin-Audit-Log
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Lokales Protokoll (nur dieses Gerät) – letzte {entries.length} Einträge.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setTick((n) => n + 1)}
+            className="rounded-full glass px-3 py-1.5 text-xs"
+          >
+            Aktualisieren
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!confirm("Audit-Log wirklich löschen?")) return;
+              clearAdminAudit();
+              setTick((n) => n + 1);
+            }}
+            className="rounded-full glass px-3 py-1.5 text-xs text-muted-foreground hover:text-destructive"
+          >
+            Leeren
+          </button>
+        </div>
+      </div>
+
+      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+        <div className="rounded-xl bg-secondary/10 p-2">
+          <dt className="text-muted-foreground">Logins</dt>
+          <dd className="font-semibold text-secondary">{counts.login_success ?? 0}</dd>
+        </div>
+        <div className="rounded-xl bg-destructive/10 p-2">
+          <dt className="text-muted-foreground">Fehlversuche</dt>
+          <dd className="font-semibold text-destructive">{counts.login_failure ?? 0}</dd>
+        </div>
+        <div className="rounded-xl bg-muted/30 p-2">
+          <dt className="text-muted-foreground">Abmeldungen</dt>
+          <dd className="font-semibold">{counts.logout ?? 0}</dd>
+        </div>
+        <div className="rounded-xl bg-amber-500/10 p-2">
+          <dt className="text-muted-foreground">Session-Ende</dt>
+          <dd className="font-semibold text-amber-500">{counts.session_expired ?? 0}</dd>
+        </div>
+      </dl>
+
+      {entries.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-6">
+          Noch keine Ereignisse aufgezeichnet.
+        </p>
+      ) : (
+        <ul className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
+          {entries.map((e, i) => (
+            <li
+              key={i}
+              className="flex items-center justify-between gap-3 rounded-lg bg-muted/20 px-3 py-2 text-xs"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${styleFor(
+                    e.type,
+                  )}`}
+                >
+                  {auditLabel(e.type)}
+                </span>
+                {e.detail && (
+                  <span className="truncate text-muted-foreground">{e.detail}</span>
+                )}
+              </div>
+              <time className="shrink-0 text-muted-foreground tabular-nums">
+                {new Date(e.ts).toLocaleString("de-DE")}
+              </time>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p className="text-[11px] text-muted-foreground">
+        Hinweis: Das Log wird ausschließlich lokal in diesem Browser gespeichert. Es geht
+        verloren, wenn du den Browser-Speicher leerst, und enthält keine Daten von anderen
+        Geräten.
+      </p>
+    </section>
   );
 }
 
