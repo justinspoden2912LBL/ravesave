@@ -44,6 +44,25 @@ function LogPage() {
     setEntries(loadEntries());
   }, []);
 
+  // KI-Kontext: aktuelle Form-Werte + Kurz-Summary der letzten Einträge.
+  const sName = SUBSTANCES.find((s) => s.id === substanceId)?.name;
+  const recentSummary =
+    entries.length > 0
+      ? entries
+          .slice(0, 3)
+          .map((e) => {
+            const n = SUBSTANCES.find((s) => s.id === e.substanceId)?.name ?? e.substanceId;
+            return `${n} ${e.dose}${e.unit} ${e.route}`;
+          })
+          .join("; ")
+      : undefined;
+  useRegisterAiContext({
+    route: "/log",
+    logForm: { substance: sName, dose: dose || undefined, unit, route, mood },
+    recentLogSummary: recentSummary,
+  });
+
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!dose.trim()) return;
