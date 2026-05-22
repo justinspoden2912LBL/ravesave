@@ -131,7 +131,7 @@ function AdminPage() {
           Dein Account ist eingeloggt, aber nicht als Admin freigeschaltet.
         </p>
         <button
-          onClick={() => supabase.auth.signOut()}
+          onClick={() => { logAdminAudit("logout", "kein Admin"); supabase.auth.signOut(); }}
           className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm"
         >
           <LogOut className="h-4 w-4" /> Abmelden
