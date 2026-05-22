@@ -586,7 +586,7 @@ function Dashboard() {
             <Plus className="h-4 w-4" /> Neuer Beitrag
           </button>
           <button
-            onClick={() => supabase.auth.signOut()}
+            onClick={() => { logAdminAudit("logout"); supabase.auth.signOut(); }}
             className="inline-flex items-center gap-2 rounded-full glass px-3 py-2 text-xs"
           >
             <LogOut className="h-3.5 w-3.5" /> Abmelden
