@@ -92,7 +92,7 @@ function AdminPage() {
 }
 
 function LoginCard() {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -100,6 +100,7 @@ function LoginCard() {
   const [signupDone, setSignupDone] = useState<{ email: string; needsConfirm: boolean } | null>(
     null,
   );
+  const [resetSent, setResetSent] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -109,22 +110,59 @@ function LoginCard() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-      } else {
+      } else if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
         if (error) throw error;
-        // If a session is returned, email confirmation is disabled and the user is already signed in.
         const needsConfirm = !data.session;
         setSignupDone({ email, needsConfirm });
+      } else {
+        // forgot password
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(email);
       }
     } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : "Login fehlgeschlagen");
+      setErr(e instanceof Error ? e.message : "Aktion fehlgeschlagen");
     } finally {
       setBusy(false);
     }
+  }
+
+  if (resetSent) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-2xl glass p-6 space-y-4 text-center">
+          <div className="mx-auto h-12 w-12 rounded-full bg-secondary/15 flex items-center justify-center">
+            <ShieldCheck className="h-6 w-6 text-secondary" />
+          </div>
+          <h1 className="text-xl font-bold">E-Mail unterwegs</h1>
+          <p className="text-sm text-muted-foreground">
+            Falls ein Account für <strong className="text-foreground">{resetSent}</strong>{" "}
+            existiert, haben wir dir einen Link zum Zurücksetzen des Passworts geschickt.
+          </p>
+          <p className="text-[11px] text-muted-foreground">
+            Schau auch im Spam-Ordner nach. Der Link ist nur kurze Zeit gültig.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("signin");
+              setResetSent(null);
+              setErr(null);
+            }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
+          >
+            <LogIn className="h-4 w-4" /> Zurück zum Login
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (signupDone) {
@@ -160,7 +198,7 @@ function LoginCard() {
               setErr(null);
               setSignupDone(null);
             }}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
           >
             <LogIn className="h-4 w-4" /> Zum Login
           </button>
@@ -169,15 +207,20 @@ function LoginCard() {
     );
   }
 
+  const title =
+    mode === "signin" ? "Admin-Bereich" : mode === "signup" ? "Account anlegen" : "Passwort zurücksetzen";
+
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <form onSubmit={submit} className="rounded-2xl glass p-6 space-y-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-secondary" />
-          <h1 className="text-xl font-bold">Admin-Bereich</h1>
+          <h1 className="text-xl font-bold">{title}</h1>
         </div>
         <p className="text-xs text-muted-foreground">
-          Nur für autorisierte Redaktion. Normale Nutzer:innen brauchen keinen Login.
+          {mode === "forgot"
+            ? "Gib deine E-Mail ein. Wir schicken dir einen Link, um ein neues Passwort zu setzen."
+            : "Nur für autorisierte Redaktion. Normale Nutzer:innen brauchen keinen Login."}
         </p>
 
         <label className="block">
@@ -191,39 +234,62 @@ function LoginCard() {
             autoComplete="email"
           />
         </label>
-        <label className="block">
-          <span className="block text-xs font-medium text-muted-foreground mb-1">Passwort</span>
-          <input
-            type="password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg bg-input px-3 py-2 text-sm"
-            autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          />
-        </label>
+        {mode !== "forgot" && (
+          <label className="block">
+            <span className="block text-xs font-medium text-muted-foreground mb-1">Passwort</span>
+            <input
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg bg-input px-3 py-2 text-sm"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+            />
+          </label>
+        )}
 
-        {err && <p className="text-xs text-destructive">{err}</p>}
+        {err && <p className="text-xs text-destructive" role="alert">{err}</p>}
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow disabled:opacity-50"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 min-h-11"
         >
           <LogIn className="h-4 w-4" />
-          {mode === "signin" ? "Einloggen" : "Account anlegen"}
+          {mode === "signin"
+            ? "Einloggen"
+            : mode === "signup"
+              ? "Account anlegen"
+              : "Reset-Link senden"}
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === "signin" ? "signup" : "signin");
-            setErr(null);
-          }}
-          className="w-full text-xs text-muted-foreground hover:text-foreground"
-        >
-          {mode === "signin" ? "Erst-Setup: Account anlegen" : "Schon registriert? Einloggen"}
-        </button>
+
+        <div className="flex flex-col gap-1.5">
+          {mode === "signin" && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("forgot");
+                setErr(null);
+              }}
+              className="w-full text-xs text-muted-foreground hover:text-foreground min-h-9"
+            >
+              Passwort vergessen?
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === "signin" ? "signup" : "signin");
+              setErr(null);
+            }}
+            className="w-full text-xs text-muted-foreground hover:text-foreground min-h-9"
+          >
+            {mode === "signin"
+              ? "Erst-Setup: Account anlegen"
+              : "Zurück zum Login"}
+          </button>
+        </div>
       </form>
     </div>
   );

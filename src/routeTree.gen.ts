@@ -14,6 +14,7 @@ import { Route as StatsRouteImport } from './routes/stats'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RisksRouteImport } from './routes/risks'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
@@ -49,6 +50,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const RisksRoute = RisksRouteImport.update({
   id: '/risks',
   path: '/risks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/onboarding': typeof OnboardingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/reset-password'
     | '/risks'
     | '/settings'
     | '/sitemap.xml'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/reset-password'
     | '/risks'
     | '/settings'
     | '/sitemap.xml'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/log'
     | '/mix'
     | '/onboarding'
+    | '/reset-password'
     | '/risks'
     | '/settings'
     | '/sitemap.xml'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
   OnboardingRoute: typeof OnboardingRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RisksRoute: typeof RisksRoute
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/risks'
       fullPath: '/risks'
       preLoaderRoute: typeof RisksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -376,6 +396,7 @@ const rootRouteChildren: RootRouteChildren = {
   LogRoute: LogRoute,
   MixRoute: MixRoute,
   OnboardingRoute: OnboardingRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RisksRoute: RisksRoute,
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
