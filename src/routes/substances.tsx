@@ -13,6 +13,8 @@ import {
   type SuperCategory,
   type Substance,
 } from "@/lib/substances";
+import { useRegisterAiContext } from "@/lib/aiContext";
+
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
@@ -64,6 +66,16 @@ function SubstancesPage() {
   }, [depth]);
 
   const expert = depth === "experte";
+
+  // KI-Kontext: aktuell geöffnetes Wiki-Item
+  const openSubstance = openId ? SUBSTANCES.find((s) => s.id === openId) : undefined;
+  useRegisterAiContext({
+    route: "/substances",
+    wikiSubstance: openSubstance
+      ? { id: openSubstance.id, name: openSubstance.name, category: CATEGORY_LABEL[openSubstance.category] }
+      : undefined,
+  });
+
 
   const q = query.toLowerCase().trim();
   const searching = q.length > 0 || filterSuper !== "all";

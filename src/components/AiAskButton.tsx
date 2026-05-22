@@ -6,25 +6,26 @@ import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
 import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
+import {
+  useAiContext,
+  useAiMode,
+  setAiMode,
+  serializeAiContext,
+  quickActionsFor,
+  MODE_LABEL,
+  type AiMode,
+} from "@/lib/aiContext";
 
 /**
  * Globaler "KI fragen"-Button — unten links als FAB.
  * - Versteckt auf /admin* und /reset-password
- * - Verdeckt den Notfall-Button (unten rechts) bewusst nicht.
- * - Datenschutz-Hinweis vor erster Nutzung.
- * - Opt-in für lokales Profil als Antwort-Kontext.
+ * - Sendet App-Kontext (aktuelle Seite, Substanz, Mix, Log, Notfall) an die KI
+ * - Modus Einfach / Normal / Experte steuert Antwortstil
+ * - Kontextuelle Quick-Actions je nach Seite/Inhalt
  */
 
 const PRIVACY_ACK_KEY = "ravesave_ai_panel_privacy_ack";
 const PROFILE_OPTIN_KEY = "ravesave_ai_panel_profile_optin";
-
-const SUGGESTIONS = [
-  "Erklär mir diese Substanz einfacher",
-  "Was bedeutet diese Risikostufe?",
-  "Wie nutze ich den Mix-Check?",
-  "Was soll ich im Notfall sagen?",
-  "Wo finde ich mein Protokoll?",
-];
 
 const EMERGENCY_REGEX =
   /\b(bewusstlos|krampf|krampfanfall|atemnot|atem stockt|nicht ansprechbar|brustschmerz|herzrasen|kollaps|überhitz|hyperthermie|reagiert nicht|suizid|umkippen|umgekippt)\b/i;
@@ -32,9 +33,7 @@ const EMERGENCY_REGEX =
 export function AiAskButton() {
   const router = useRouterState();
   const path = router.location.pathname;
-  const hidden =
-    path.startsWith("/admin") ||
-    path.startsWith("/reset-password");
+  const hidden = path.startsWith("/admin") || path.startsWith("/reset-password");
 
   const [open, setOpen] = useState(false);
   const [privacyAck, setPrivacyAck] = useState<boolean>(() => {
@@ -96,6 +95,7 @@ export function AiAskButton() {
           onAck={ack}
           profileOptIn={profileOptIn}
           onToggleProfile={toggleProfile}
+          currentPath={path}
         />
       )}
     </>
@@ -108,13 +108,22 @@ function AiPanel({
   onAck,
   profileOptIn,
   onToggleProfile,
+  currentPath,
 }: {
   onClose: () => void;
   privacyAck: boolean;
   onAck: () => void;
   profileOptIn: boolean;
   onToggleProfile: (v: boolean) => void;
+  currentPath: string;
 }) {
+  const mode = useAiMode();
+  const ctx = useAiContext();
+  // route immer mitgeben, auch wenn keine Seite es explizit registriert hat
+  const effectiveCtx = useMemo(() => ({ ...ctx, route: ctx.route ?? currentPath }), [ctx, currentPath]);
+  const appContextStr = useMemo(() => serializeAiContext(effectiveCtx), [effectiveCtx]);
+  const quickActions = useMemo(() => quickActionsFor(effectiveCtx), [effectiveCtx]);
+
   const [profileSummary, setProfileSummary] = useState("");
   useEffect(() => {
     if (!profileOptIn) {
@@ -129,9 +138,13 @@ function AiPanel({
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        body: () => ({ profile: profileSummary || undefined }),
+        body: () => ({
+          profile: profileSummary || undefined,
+          appContext: appContextStr || undefined,
+          mode,
+        }),
       }),
-    [profileSummary],
+    [profileSummary, appContextStr, mode],
   );
   const { messages, sendMessage, status, stop, error } = useChat({ transport });
   const isLoading = status === "submitted" || status === "streaming";
@@ -144,7 +157,6 @@ function AiPanel({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, emergencyWarn]);
 
-  // Lock body scroll while panel open
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -153,7 +165,6 @@ function AiPanel({
     };
   }, []);
 
-  // ESC to close
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -165,12 +176,20 @@ function AiPanel({
   function send(text: string) {
     const t = text.trim();
     if (!t || isLoading) return;
-    if (EMERGENCY_REGEX.test(t)) {
+    if (EMERGENCY_REGEX.test(t) || effectiveCtx.emergencyActive) {
       setEmergencyWarn(true);
     }
     sendMessage({ text: t });
     setInput("");
   }
+
+  // kompakter Kontext-Chip, der zeigt was die KI gerade sieht
+  const ctxChips: string[] = [];
+  if (effectiveCtx.wikiSubstance) ctxChips.push(`Substanz: ${effectiveCtx.wikiSubstance.name}`);
+  if (effectiveCtx.mixSelected?.length) ctxChips.push(`Mix: ${effectiveCtx.mixSelected.map((s) => s.name).join(" + ")}`);
+  if (effectiveCtx.mixRisk) ctxChips.push(`Risiko: ${effectiveCtx.mixRisk.level}`);
+  if (effectiveCtx.logForm?.substance) ctxChips.push(`Log: ${effectiveCtx.logForm.substance}`);
+  if (effectiveCtx.emergencyActive) ctxChips.push("Notfall-Modus");
 
   return (
     <div
@@ -187,7 +206,7 @@ function AiPanel({
       <div className="relative w-full sm:max-w-lg sm:m-4 max-h-[88dvh] sm:max-h-[80vh] flex flex-col rounded-t-2xl sm:rounded-2xl glass border border-border shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-2 p-4 border-b border-border/60">
-          <div>
+          <div className="min-w-0">
             <h2 className="text-base font-bold flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-secondary" /> KI fragen
             </h2>
@@ -203,11 +222,52 @@ function AiPanel({
             type="button"
             onClick={onClose}
             aria-label="Schließen"
-            className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center"
+            className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        {/* Mode toggle + Context preview */}
+        {privacyAck && (
+          <div className="px-4 py-2 border-b border-border/60 flex flex-wrap items-center gap-2">
+            <div
+              role="radiogroup"
+              aria-label="Antwortmodus"
+              className="inline-flex rounded-full bg-muted/40 p-0.5"
+            >
+              {(["einfach", "normal", "experte"] as AiMode[]).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  role="radio"
+                  aria-checked={mode === m}
+                  onClick={() => setAiMode(m)}
+                  className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${
+                    mode === m
+                      ? "bg-secondary text-secondary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {MODE_LABEL[m]}
+                </button>
+              ))}
+            </div>
+            {ctxChips.length > 0 && (
+              <div className="flex flex-wrap gap-1 min-w-0">
+                {ctxChips.map((c) => (
+                  <span
+                    key={c}
+                    className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary/90 ring-1 ring-primary/20 truncate max-w-[12rem]"
+                    title={c}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Privacy gate */}
         {!privacyAck ? (
@@ -221,6 +281,8 @@ function AiPanel({
             </div>
             <p className="text-xs text-muted-foreground">
               Lokale Profil- und Protokolldaten werden nur einbezogen, wenn du das unten ausdrücklich aktivierst.
+              Die KI sieht außerdem, auf welcher Seite du gerade bist (z.B. „Mix-Checker mit MDMA + Alkohol"), um
+              passend zu antworten — keine personenbezogenen Daten.
             </p>
             <button
               type="button"
@@ -236,16 +298,16 @@ function AiPanel({
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 && !emergencyWarn && (
                 <div className="text-xs text-muted-foreground space-y-2">
-                  <p>Stell eine Frage oder wähle einen Vorschlag:</p>
+                  <p>Stell eine Frage oder wähle einen passenden Vorschlag:</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {SUGGESTIONS.map((s) => (
+                    {quickActions.map((s) => (
                       <button
-                        key={s}
+                        key={s.label}
                         type="button"
-                        onClick={() => send(s)}
+                        onClick={() => send(s.prompt)}
                         className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/30 min-h-9"
                       >
-                        {s}
+                        {s.label}
                       </button>
                     ))}
                   </div>
@@ -297,6 +359,23 @@ function AiPanel({
                 </p>
               )}
             </div>
+
+            {/* Quick chips above input — auch nach erster Nachricht erreichbar */}
+            {messages.length > 0 && (
+              <div className="px-3 py-2 border-t border-border/60 flex flex-wrap gap-1.5">
+                {quickActions.slice(0, 4).map((s) => (
+                  <button
+                    key={s.label}
+                    type="button"
+                    onClick={() => send(s.prompt)}
+                    disabled={isLoading}
+                    className="rounded-full glass px-2.5 py-1 text-[11px] hover:bg-muted/30 disabled:opacity-50"
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Opt-in profile */}
             <div className="px-4 py-2 border-t border-border/60 flex items-center gap-2 text-[11px] text-muted-foreground">

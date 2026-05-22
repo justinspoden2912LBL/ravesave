@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Trash2, Plus, Clock, AlertTriangle, RotateCcw, Info } from "lucide-react";
 import { SUBSTANCES, assessPair, RISK_META } from "@/lib/substances";
 import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
+import { useRegisterAiContext } from "@/lib/aiContext";
+
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
@@ -41,6 +43,25 @@ function LogPage() {
   useEffect(() => {
     setEntries(loadEntries());
   }, []);
+
+  // KI-Kontext: aktuelle Form-Werte + Kurz-Summary der letzten Einträge.
+  const sName = SUBSTANCES.find((s) => s.id === substanceId)?.name;
+  const recentSummary =
+    entries.length > 0
+      ? entries
+          .slice(0, 3)
+          .map((e) => {
+            const n = SUBSTANCES.find((s) => s.id === e.substanceId)?.name ?? e.substanceId;
+            return `${n} ${e.dose}${e.unit} ${e.route}`;
+          })
+          .join("; ")
+      : undefined;
+  useRegisterAiContext({
+    route: "/log",
+    logForm: { substance: sName, dose: dose || undefined, unit, route, mood },
+    recentLogSummary: recentSummary,
+  });
+
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
