@@ -86,6 +86,7 @@ function AdminPage() {
         if (!started) {
           writeLs(ADMIN_SESSION_STARTED_KEY, String(Date.now()));
         } else if (Date.now() - started > ADMIN_SESSION_MAX_MS) {
+          logAdminAudit("session_expired");
           supabase.auth.signOut();
         }
       }
