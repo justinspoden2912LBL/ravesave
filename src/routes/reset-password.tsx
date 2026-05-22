@@ -78,10 +78,11 @@ function ResetPasswordPage() {
           <div className="mx-auto h-12 w-12 rounded-full bg-secondary/15 flex items-center justify-center">
             <ShieldCheck className="h-6 w-6 text-secondary" />
           </div>
-          <h1 className="text-xl font-bold">Passwort aktualisiert</h1>
+          <h1 className="text-xl font-bold">Admin-Schlüssel aktualisiert</h1>
           <p className="text-sm text-muted-foreground">
-            Du wirst gleich zum Login weitergeleitet…
+            Du wirst gleich zum Admin-Login weitergeleitet…
           </p>
+
         </div>
       </div>
     );
