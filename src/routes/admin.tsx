@@ -178,10 +178,12 @@ function LoginCard() {
   function registerFailure() {
     const next = Number(readLs(ADMIN_FAILED_KEY) ?? "0") + 1;
     writeLs(ADMIN_FAILED_KEY, String(next));
+    logAdminAudit("login_failure", `Versuch ${next}/${ADMIN_MAX_ATTEMPTS}`);
     if (next >= ADMIN_MAX_ATTEMPTS) {
       const until = Date.now() + ADMIN_LOCKOUT_MS;
       writeLs(ADMIN_LOCKOUT_KEY, String(until));
       setLockedUntil(until);
+      logAdminAudit("lockout", `${Math.round(ADMIN_LOCKOUT_MS / 60000)} min`);
     }
   }
   function clearFailures() {
