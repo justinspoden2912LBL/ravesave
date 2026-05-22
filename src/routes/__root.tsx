@@ -157,6 +157,8 @@ function RootComponent() {
         </main>
         <Footer />
         <EmergencyButton />
+        <AiAskButton />
+        <WelcomeOnboarding />
       </div>
     </QueryClientProvider>
   );
