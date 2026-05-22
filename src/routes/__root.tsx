@@ -11,6 +11,8 @@ import {
 import appCss from "../styles.css?url";
 import { Nav, Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
+import { AiAskButton } from "../components/AiAskButton";
+import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 
 function NotFoundComponent() {
   return (
