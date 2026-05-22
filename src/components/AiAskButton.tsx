@@ -177,6 +177,12 @@ function AiPanel({
   function send(text: string) {
     const t = text.trim();
     if (!t || isLoading) return;
+    // 🐯 Easter Egg — kleine Liebesnachricht des Entwicklers
+    if (/🐯/.test(t)) {
+      setEasterEgg(true);
+      setInput("");
+      return;
+    }
     if (EMERGENCY_REGEX.test(t) || effectiveCtx.emergencyActive) {
       setEmergencyWarn(true);
     }
