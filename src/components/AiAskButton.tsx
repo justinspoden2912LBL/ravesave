@@ -151,6 +151,7 @@ function AiPanel({
 
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
+  const [easterEgg, setEasterEgg] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -176,6 +177,12 @@ function AiPanel({
   function send(text: string) {
     const t = text.trim();
     if (!t || isLoading) return;
+    // 🐯 Easter Egg — kleine Liebesnachricht des Entwicklers
+    if (/🐯/.test(t)) {
+      setEasterEgg(true);
+      setInput("");
+      return;
+    }
     if (EMERGENCY_REGEX.test(t) || effectiveCtx.emergencyActive) {
       setEmergencyWarn(true);
     }
@@ -198,6 +205,34 @@ function AiPanel({
       aria-label="KI fragen"
       className="fixed inset-0 z-[90] print:hidden flex items-end sm:items-center justify-center"
     >
+      {easterEgg && (
+        <div
+          className="absolute inset-0 z-10 flex items-center justify-center bg-background/85 backdrop-blur-md p-6"
+          onClick={() => setEasterEgg(false)}
+          role="dialog"
+          aria-label="Nachricht des Entwicklers"
+        >
+          <div className="relative max-w-sm w-full rounded-2xl border border-secondary/40 bg-card/90 p-6 text-center shadow-2xl glow animate-in fade-in zoom-in duration-500">
+            <div className="text-5xl mb-3 animate-bounce">🐯❤️</div>
+            <p className="text-xs uppercase tracking-widest text-secondary mb-2">
+              Nachricht des Entwicklers
+            </p>
+            <p className="text-lg font-semibold leading-snug">
+              Du bist für mich die schönste Droge <span className="text-destructive">❤️</span>
+            </p>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEasterEgg(false);
+              }}
+              className="mt-5 rounded-full bg-aurora animate-aurora px-4 py-2 text-sm font-semibold text-primary-foreground glow min-h-11"
+            >
+              ❤️
+            </button>
+          </div>
+        </div>
+      )}
       <div
         className="absolute inset-0 bg-background/70 backdrop-blur-sm"
         onClick={onClose}
