@@ -13,6 +13,8 @@ import {
   type SuperCategory,
   type Substance,
 } from "@/lib/substances";
+import { useRegisterAiContext } from "@/lib/aiContext";
+
 
 export const Route = createFileRoute("/substances")({
   component: SubstancesPage,
