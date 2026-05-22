@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Trash2, Plus, Clock, AlertTriangle, RotateCcw, Info } from "lucide-react";
 import { SUBSTANCES, assessPair, RISK_META } from "@/lib/substances";
 import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
+import { useRegisterAiContext } from "@/lib/aiContext";
+
 
 export const Route = createFileRoute("/log")({
   component: LogPage,
