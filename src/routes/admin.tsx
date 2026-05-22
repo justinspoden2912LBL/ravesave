@@ -217,6 +217,7 @@ function LoginCard() {
           writeLs(ADMIN_SESSION_STARTED_KEY, String(Date.now()));
         }
         setSetupDone({ needsConfirm });
+        logAdminAudit("setup", needsConfirm ? "E-Mail-Bestätigung ausstehend" : "aktiv");
         clearFailures();
       } else if (mode === "login") {
         const storedEmail = readLs(ADMIN_EMAIL_KEY);
