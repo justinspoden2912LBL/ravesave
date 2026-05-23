@@ -365,6 +365,7 @@ function AiPanel({
             audioUrlRef.current = null;
           }
           setSpeakingAudio(false);
+          sfx.speakDone();
           // Voice-Convo: nach Marleens Antwort wieder zuhören
           if (voiceConvo && sttSupported) {
             setTimeout(() => startListening(true), 250);
