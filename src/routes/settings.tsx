@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles, GraduationCap, Download } from "lucide-react";
+import { Trash2, Edit3, Sparkles, GraduationCap, Download, Volume2, BookOpen, History as HistoryIcon } from "lucide-react";
+import { isSoundEnabled, setSoundEnabled } from "@/lib/sound";
+import { clearAllSessions, listSessions } from "@/lib/chatHistory";
 import { loadEntries } from "@/lib/log";
 import {
   clearProfile,
