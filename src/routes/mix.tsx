@@ -117,6 +117,22 @@ function MixPage() {
               {RISK_META[overall.level].label}
             </div>
             <p className="mt-1 text-sm">{overall.reason}</p>
+            <button
+              type="button"
+              onClick={() => {
+                const names = selected
+                  .map((id) => SUBSTANCES.find((x) => x.id === id)?.name)
+                  .filter(Boolean)
+                  .join(" + ");
+                const prompt = `Im Mischkonsum-Check habe ich gerade ${names} ausgewählt (Ampel: ${RISK_META[overall.level].label}). Erklär mir kurz, worauf ich hier konkret achten muss — keine Dosis-Empfehlung, sondern Mechanismus, Warnzeichen und Safer-Use-Punkte.`;
+                window.dispatchEvent(
+                  new CustomEvent("ravesave:open-marlene", { detail: { prompt } }),
+                );
+              }}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/95 px-3.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:brightness-110 shine"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> Marleen dazu fragen
+            </button>
           </div>
         )}
       </div>
