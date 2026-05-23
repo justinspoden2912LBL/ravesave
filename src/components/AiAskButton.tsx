@@ -85,16 +85,16 @@ export function AiAskButton() {
     <>
       <button
         type="button"
-        aria-label="Marlene fragen — KI-Assistentin"
+        aria-label="Marleen fragen — KI-Assistentin"
         onClick={() => setOpen(true)}
         style={{
           bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)",
           left: "calc(env(safe-area-inset-left, 0px) + 1rem)",
         }}
-        className="fixed z-40 print:hidden hidden md:inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 hover:scale-[1.03] active:scale-95 transition min-h-11"
+        className="fixed z-40 print:hidden hidden md:inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 hover:scale-[1.03] active:scale-95 transition min-h-11 shine"
       >
         <Sparkles className="h-4 w-4" />
-        <span>Marlene fragen</span>
+        <span>Marleen fragen</span>
       </button>
 
       {open && (
@@ -175,28 +175,43 @@ function AiPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const recogRef = useRef<any>(null);
   const [listening, setListening] = useState(false);
+  const [speakingAudio, setSpeakingAudio] = useState(false);
+  const [ttsError, setTtsError] = useState(false);
+  // Voice-Conversation-Modus: nach Marleens Antwort automatisch wieder zuhören
+  const [voiceConvo, setVoiceConvo] = useState(false);
+  // signalisiert, dass beim nächsten STT-onend automatisch gesendet wird
+  const autoSendRef = useRef(false);
   const sttSupported =
     typeof window !== "undefined" &&
     !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
 
-  function toggleListening() {
-    if (!sttSupported) return;
-    if (listening) {
-      recogRef.current?.stop();
-      return;
-    }
+  function startListening(autoSend = true) {
+    if (!sttSupported || listening) return;
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
     rec.lang = "de-DE";
     rec.interimResults = true;
     rec.continuous = false;
+    autoSendRef.current = autoSend;
+    let finalText = "";
     rec.onresult = (e: any) => {
       let txt = "";
       for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript;
-      setInput((prev) => (prev ? prev + " " : "") + txt.trim());
+      finalText = txt.trim();
+      setInput((prev) => {
+        // Live-Update des Inputs nur bei autoSend-Flow (sonst klassisches Diktat)
+        if (!autoSendRef.current) return (prev ? prev + " " : "") + finalText;
+        return finalText;
+      });
     };
     rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      if (autoSendRef.current && finalText) {
+        send(finalText);
+      }
+      autoSendRef.current = false;
+    };
     recogRef.current = rec;
     setListening(true);
     try {
@@ -206,6 +221,33 @@ function AiPanel({
     }
   }
 
+  function toggleListening() {
+    if (!sttSupported) return;
+    if (listening) {
+      recogRef.current?.stop();
+      return;
+    }
+    // Manuelles Diktat in Textarea, ohne Auto-Send
+    startListening(false);
+  }
+
+  function toggleVoiceConvo() {
+    if (!sttSupported) {
+      setVoiceConvo(false);
+      return;
+    }
+    setVoiceConvo((v) => {
+      const next = !v;
+      if (next) {
+        if (!voiceOn) toggleVoice(); // Stimme an, wenn Voice-Convo gestartet wird
+        startListening(true);
+      } else {
+        recogRef.current?.stop();
+        stopSpeaking();
+      }
+      return next;
+    });
+  }
 
   function stopSpeaking() {
     try {
@@ -214,6 +256,7 @@ function AiPanel({
       /* ignore */
     }
     audioRef.current = null;
+    setSpeakingAudio(false);
     if (audioUrlRef.current) {
       URL.revokeObjectURL(audioUrlRef.current);
       audioUrlRef.current = null;
@@ -261,34 +304,52 @@ function AiPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
         });
-        if (!res.ok || cancelled) return;
+        if (!res.ok || cancelled) {
+          if (!cancelled) setTtsError(true);
+          return;
+        }
+        setTtsError(false);
         const blob = await res.blob();
         if (cancelled) return;
         const url = URL.createObjectURL(blob);
         audioUrlRef.current = url;
         const audio = new Audio(url);
         audioRef.current = audio;
+        setSpeakingAudio(true);
         audio.onended = () => {
           if (audioUrlRef.current === url) {
             URL.revokeObjectURL(url);
             audioUrlRef.current = null;
           }
+          setSpeakingAudio(false);
+          // Voice-Convo: nach Marleens Antwort wieder zuhören
+          if (voiceConvo && sttSupported) {
+            setTimeout(() => startListening(true), 250);
+          }
         };
         await audio.play().catch(() => {
-          /* autoplay block etc. */
+          setSpeakingAudio(false);
         });
       } catch {
-        /* ignore TTS errors – Stimme ist optional */
+        setTtsError(true);
       }
     })();
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, status, voiceOn]);
 
-  // Beim Schließen Stimme stoppen
+  // Beim Schließen Stimme & Mic stoppen
   useEffect(() => {
-    return () => stopSpeaking();
+    return () => {
+      stopSpeaking();
+      try {
+        recogRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -339,7 +400,7 @@ function AiPanel({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Marlene fragen"
+      aria-label="Marleen fragen"
       className="fixed inset-0 z-[90] print:hidden flex items-end sm:items-center justify-center"
     >
       {easterEgg && (
@@ -375,18 +436,19 @@ function AiPanel({
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full sm:max-w-lg sm:m-4 max-h-[88dvh] sm:max-h-[80vh] flex flex-col rounded-t-2xl sm:rounded-2xl glass border border-border shadow-2xl">
+      <div className="relative w-full sm:max-w-lg sm:m-4 max-h-[88dvh] sm:max-h-[80vh] flex flex-col rounded-t-2xl sm:rounded-2xl glass glass-shine border border-border shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-2 p-4 border-b border-border/60">
           <div className="min-w-0">
             <h2 className="text-base font-bold flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-secondary" /> Marlene
+              <Sparkles className="h-4 w-4 text-secondary" /> Marleen
               <span className="ml-1 rounded-full bg-secondary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary ring-1 ring-secondary/30">
                 KI-Begleiterin
               </span>
+              <StatusPill listening={listening} thinking={isLoading} speaking={speakingAudio} />
             </h2>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              Marlene kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
+              Marleen kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
               <a href="tel:112" className="font-semibold text-destructive hover:underline">
                 112
               </a>{" "}
@@ -394,10 +456,26 @@ function AiPanel({
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            {sttSupported && (
+              <button
+                type="button"
+                onClick={toggleVoiceConvo}
+                aria-label={voiceConvo ? "Voice-Chat beenden" : "Voice-Chat starten"}
+                aria-pressed={voiceConvo}
+                title={voiceConvo ? "Voice-Chat beenden" : "Voice-Chat (sprich, Marleen antwortet als Stimme)"}
+                className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                  voiceConvo
+                    ? "bg-aurora animate-aurora text-primary-foreground glow ring-1 ring-secondary/40"
+                    : "hover:bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                {voiceConvo ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+            )}
             <button
               type="button"
               onClick={toggleVoice}
-              aria-label={voiceOn ? "Marlenes Stimme ausschalten" : "Marlenes Stimme einschalten"}
+              aria-label={voiceOn ? "Marleens Stimme ausschalten" : "Marleens Stimme einschalten"}
               aria-pressed={voiceOn}
               title={voiceOn ? "Stimme aus" : "Stimme an (weiblich, Deutsch)"}
               className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
@@ -478,13 +556,26 @@ function AiPanel({
             <button
               type="button"
               onClick={onAck}
-              className="w-full rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
+              className="w-full rounded-full bg-aurora animate-aurora shine py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
             >
               Verstanden — KI nutzen
             </button>
           </div>
         ) : (
           <>
+            {ttsError && voiceOn && (
+              <div className="px-4 py-2 border-b border-border/60 text-[11px] text-muted-foreground bg-muted/20 flex items-center justify-between gap-2">
+                <span>Stimme gerade nicht verfügbar — du bekommst die Antwort als Text.</span>
+                <button
+                  type="button"
+                  onClick={() => setTtsError(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Hinweis schließen"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 && !emergencyWarn && (
@@ -558,7 +649,7 @@ function AiPanel({
                         )}
                       </div>
                       <span className="mt-0.5 px-1 text-[10px] text-muted-foreground/70">
-                        {isUser ? "Du" : "Marlene"} · {time}
+                        {isUser ? "Du" : "Marleen"} · {time}
                       </span>
                     </div>
                   </div>
@@ -685,7 +776,7 @@ function AiPanel({
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Senden"
-                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
+                  className="rounded-full bg-aurora animate-aurora shine px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
                 >
                   <Send className="h-4 w-4" />
                 </button>
@@ -703,5 +794,39 @@ function AiPanel({
         )}
       </div>
     </div>
+  );
+}
+
+function StatusPill({
+  listening,
+  thinking,
+  speaking,
+}: {
+  listening: boolean;
+  thinking: boolean;
+  speaking: boolean;
+}) {
+  let label = "";
+  let tone = "";
+  if (listening) {
+    label = "hört zu";
+    tone = "bg-destructive/15 text-destructive ring-destructive/30";
+  } else if (thinking) {
+    label = "denkt nach";
+    tone = "bg-primary/15 text-primary ring-primary/30";
+  } else if (speaking) {
+    label = "spricht";
+    tone = "bg-secondary/20 text-secondary ring-secondary/40";
+  } else {
+    return null;
+  }
+  return (
+    <span
+      className={`ml-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider ring-1 ${tone}`}
+      aria-live="polite"
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+      {label}
+    </span>
   );
 }

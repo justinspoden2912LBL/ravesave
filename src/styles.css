@@ -174,6 +174,28 @@
   .glow {
     box-shadow: var(--shadow-glow);
   }
+  /* Subtiler Shine: feiner Top-Light + sanftes Inner-Glow für Buttons/Cards */
+  .shine {
+    position: relative;
+    background-image: linear-gradient(
+      180deg,
+      oklch(1 0 0 / 0.12) 0%,
+      oklch(1 0 0 / 0.04) 35%,
+      transparent 70%
+    );
+    background-blend-mode: overlay;
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.18),
+      inset 0 -1px 0 oklch(0 0 0 / 0.25),
+      0 1px 2px oklch(0 0 0 / 0.25);
+  }
+  /* Glasflächen mit feinem Lichtsaum */
+  .glass-shine {
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.12),
+      inset 0 0 0 1px oklch(1 0 0 / 0.04),
+      0 20px 60px -20px oklch(0 0 0 / 0.55);
+  }
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;
