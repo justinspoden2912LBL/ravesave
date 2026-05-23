@@ -175,28 +175,43 @@ function AiPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const recogRef = useRef<any>(null);
   const [listening, setListening] = useState(false);
+  const [speakingAudio, setSpeakingAudio] = useState(false);
+  const [ttsError, setTtsError] = useState(false);
+  // Voice-Conversation-Modus: nach Marleens Antwort automatisch wieder zuhören
+  const [voiceConvo, setVoiceConvo] = useState(false);
+  // signalisiert, dass beim nächsten STT-onend automatisch gesendet wird
+  const autoSendRef = useRef(false);
   const sttSupported =
     typeof window !== "undefined" &&
     !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
 
-  function toggleListening() {
-    if (!sttSupported) return;
-    if (listening) {
-      recogRef.current?.stop();
-      return;
-    }
+  function startListening(autoSend = true) {
+    if (!sttSupported || listening) return;
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
     rec.lang = "de-DE";
     rec.interimResults = true;
     rec.continuous = false;
+    autoSendRef.current = autoSend;
+    let finalText = "";
     rec.onresult = (e: any) => {
       let txt = "";
       for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript;
-      setInput((prev) => (prev ? prev + " " : "") + txt.trim());
+      finalText = txt.trim();
+      setInput((prev) => {
+        // Live-Update des Inputs nur bei autoSend-Flow (sonst klassisches Diktat)
+        if (!autoSendRef.current) return (prev ? prev + " " : "") + finalText;
+        return finalText;
+      });
     };
     rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      if (autoSendRef.current && finalText) {
+        send(finalText);
+      }
+      autoSendRef.current = false;
+    };
     recogRef.current = rec;
     setListening(true);
     try {
@@ -206,6 +221,33 @@ function AiPanel({
     }
   }
 
+  function toggleListening() {
+    if (!sttSupported) return;
+    if (listening) {
+      recogRef.current?.stop();
+      return;
+    }
+    // Manuelles Diktat in Textarea, ohne Auto-Send
+    startListening(false);
+  }
+
+  function toggleVoiceConvo() {
+    if (!sttSupported) {
+      setVoiceConvo(false);
+      return;
+    }
+    setVoiceConvo((v) => {
+      const next = !v;
+      if (next) {
+        if (!voiceOn) toggleVoice(); // Stimme an, wenn Voice-Convo gestartet wird
+        startListening(true);
+      } else {
+        recogRef.current?.stop();
+        stopSpeaking();
+      }
+      return next;
+    });
+  }
 
   function stopSpeaking() {
     try {
@@ -214,6 +256,7 @@ function AiPanel({
       /* ignore */
     }
     audioRef.current = null;
+    setSpeakingAudio(false);
     if (audioUrlRef.current) {
       URL.revokeObjectURL(audioUrlRef.current);
       audioUrlRef.current = null;
@@ -261,34 +304,52 @@ function AiPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
         });
-        if (!res.ok || cancelled) return;
+        if (!res.ok || cancelled) {
+          if (!cancelled) setTtsError(true);
+          return;
+        }
+        setTtsError(false);
         const blob = await res.blob();
         if (cancelled) return;
         const url = URL.createObjectURL(blob);
         audioUrlRef.current = url;
         const audio = new Audio(url);
         audioRef.current = audio;
+        setSpeakingAudio(true);
         audio.onended = () => {
           if (audioUrlRef.current === url) {
             URL.revokeObjectURL(url);
             audioUrlRef.current = null;
           }
+          setSpeakingAudio(false);
+          // Voice-Convo: nach Marleens Antwort wieder zuhören
+          if (voiceConvo && sttSupported) {
+            setTimeout(() => startListening(true), 250);
+          }
         };
         await audio.play().catch(() => {
-          /* autoplay block etc. */
+          setSpeakingAudio(false);
         });
       } catch {
-        /* ignore TTS errors – Stimme ist optional */
+        setTtsError(true);
       }
     })();
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, status, voiceOn]);
 
-  // Beim Schließen Stimme stoppen
+  // Beim Schließen Stimme & Mic stoppen
   useEffect(() => {
-    return () => stopSpeaking();
+    return () => {
+      stopSpeaking();
+      try {
+        recogRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+    };
   }, []);
 
   useEffect(() => {
