@@ -631,11 +631,18 @@ function AiPanel({
               Verstanden — KI nutzen
             </button>
           </div>
+        ) : view === "history" ? (
+          <HistoryView
+            tick={historyTick}
+            currentId={sessionId}
+            onOpen={openSession}
+            onBack={() => setView("chat")}
+          />
         ) : (
           <>
             {ttsError && voiceOn && (
               <div className="px-4 py-2 border-b border-border/60 text-[11px] text-muted-foreground bg-muted/20 flex items-center justify-between gap-2">
-                <span>Stimme gerade nicht verfügbar — du bekommst die Antwort als Text.</span>
+                <span>Stimme gerade nicht verfügbar — ich antworte dir als Text. Du kannst mich trotzdem weiter fragen.</span>
                 <button
                   type="button"
                   onClick={() => setTtsError(false)}
