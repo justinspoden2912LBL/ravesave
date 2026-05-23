@@ -4,7 +4,7 @@ import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
@@ -26,6 +26,7 @@ import {
 
 const PRIVACY_ACK_KEY = "ravesave_ai_panel_privacy_ack";
 const PROFILE_OPTIN_KEY = "ravesave_ai_panel_profile_optin";
+const VOICE_OPTIN_KEY = "ravesave_ai_panel_voice_optin";
 
 const EMERGENCY_REGEX =
   /\b(bewusstlos|krampf|krampfanfall|atemnot|atem stockt|nicht ansprechbar|brustschmerz|herzrasen|kollaps|überhitz|hyperthermie|reagiert nicht|suizid|umkippen|umgekippt)\b/i;
@@ -76,7 +77,7 @@ export function AiAskButton() {
     <>
       <button
         type="button"
-        aria-label="KI fragen"
+        aria-label="Marlene fragen — KI-Assistentin"
         onClick={() => setOpen(true)}
         style={{
           bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)",
@@ -85,7 +86,7 @@ export function AiAskButton() {
         className="fixed z-40 print:hidden inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 transition min-h-11"
       >
         <Sparkles className="h-4 w-4" />
-        <span>KI fragen</span>
+        <span>Marlene fragen</span>
       </button>
 
       {open && (
@@ -152,7 +153,93 @@ function AiPanel({
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
   const [easterEgg, setEasterEgg] = useState(false);
+  const [voiceOn, setVoiceOn] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.localStorage.getItem(VOICE_OPTIN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const lastSpokenIdRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  function toggleVoice() {
+    setVoiceOn((v) => {
+      const next = !v;
+      try {
+        window.localStorage.setItem(VOICE_OPTIN_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      return next;
+    });
+  }
+
+  // Marlenes Stimme: bevorzugt deutsche, weibliche Systemstimme
+  function pickGermanFemaleVoice(): SpeechSynthesisVoice | null {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+    const de = voices.filter((v) => v.lang?.toLowerCase().startsWith("de"));
+    const femaleHints = /(female|frau|weib|anna|marlene|petra|katja|hedda|vicki|helena)/i;
+    return (
+      de.find((v) => femaleHints.test(v.name)) ??
+      de.find((v) => !/male|mann|stefan|markus|yannick/i.test(v.name)) ??
+      de[0] ??
+      voices[0] ??
+      null
+    );
+  }
+
+  // Spricht die letzte abgeschlossene Assistant-Nachricht vor
+  useEffect(() => {
+    if (!voiceOn) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (status !== "ready") return;
+    const last = [...messages].reverse().find((m) => m.role === "assistant");
+    if (!last || lastSpokenIdRef.current === last.id) return;
+    const text =
+      last.parts
+        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join("")
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/[*_`#>]/g, "")
+        .trim() ?? "";
+    if (!text) return;
+    lastSpokenIdRef.current = last.id;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "de-DE";
+    utter.rate = 1;
+    utter.pitch = 1.05;
+    const v = pickGermanFemaleVoice();
+    if (v) utter.voice = v;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }, [messages, status, voiceOn]);
+
+  // Stimmen werden async geladen — Re-render triggern, sobald verfügbar
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const handler = () => {
+      /* noop, nur damit pickGermanFemaleVoice frische Liste sieht */
+    };
+    window.speechSynthesis.addEventListener?.("voiceschanged", handler);
+    return () => window.speechSynthesis.removeEventListener?.("voiceschanged", handler);
+  }, []);
+
+  // Beim Schließen Stimme stoppen
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -202,7 +289,7 @@ function AiPanel({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="KI fragen"
+      aria-label="Marlene fragen"
       className="fixed inset-0 z-[90] print:hidden flex items-end sm:items-center justify-center"
     >
       {easterEgg && (
@@ -243,24 +330,43 @@ function AiPanel({
         <div className="flex items-start justify-between gap-2 p-4 border-b border-border/60">
           <div className="min-w-0">
             <h2 className="text-base font-bold flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-secondary" /> KI fragen
+              <Sparkles className="h-4 w-4 text-secondary" /> Marlene
+              <span className="ml-1 rounded-full bg-secondary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary ring-1 ring-secondary/30">
+                KI-Begleiterin
+              </span>
             </h2>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              KI kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
+              Marlene kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
               <a href="tel:112" className="font-semibold text-destructive hover:underline">
                 112
               </a>{" "}
               rufen.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Schließen"
-            className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center shrink-0"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={toggleVoice}
+              aria-label={voiceOn ? "Marlenes Stimme ausschalten" : "Marlenes Stimme einschalten"}
+              aria-pressed={voiceOn}
+              title={voiceOn ? "Stimme aus" : "Stimme an (weiblich, Deutsch)"}
+              className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                voiceOn
+                  ? "bg-secondary/20 text-secondary ring-1 ring-secondary/40"
+                  : "hover:bg-muted/40 text-muted-foreground"
+              }`}
+            >
+              {voiceOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Schließen"
+              className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Mode toggle + Context preview */}
