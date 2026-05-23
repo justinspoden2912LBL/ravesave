@@ -45,8 +45,9 @@ export const Route = createFileRoute("/api/tts")({
         );
 
         if (!r.ok) {
-          const err = await r.text();
-          return new Response(err || `TTS failed: ${r.status}`, { status: r.status });
+          const err = await r.text().catch(() => "");
+          console.error("[TTS] ElevenLabs error", r.status, err);
+          return new Response("TTS unavailable", { status: 502 });
         }
         const buf = await r.arrayBuffer();
         return new Response(buf, {
