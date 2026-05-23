@@ -110,6 +110,48 @@
     background-image: var(--gradient-trip);
     background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Lava-lamp ambient blobs — purely decorative, no color shift */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(80px) saturate(140%);
+    opacity: 0.45;
+    will-change: transform, border-radius;
+  }
+  body::before {
+    top: -10%;
+    left: -10%;
+    width: 55vw;
+    height: 55vw;
+    max-width: 720px;
+    max-height: 720px;
+    background: radial-gradient(circle at 30% 30%, var(--aurora-1), transparent 70%);
+    animation: lava-drift-a 22s ease-in-out infinite;
+  }
+  body::after {
+    bottom: -15%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 760px;
+    max-height: 760px;
+    background: radial-gradient(circle at 60% 60%, var(--aurora-3), transparent 70%);
+    animation: lava-drift-b 28s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+      animation: none;
+    }
   }
 }
 
@@ -164,4 +206,34 @@
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 30px -10px oklch(0.7 0.27 320 / 0.4); }
   50% { box-shadow: 0 0 60px -5px oklch(0.7 0.27 320 / 0.7); }
+}
+
+@keyframes lava-drift-a {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    border-radius: 50% 45% 55% 50% / 50% 55% 45% 50%;
+  }
+  33% {
+    transform: translate(8vw, 6vh) scale(1.08);
+    border-radius: 60% 40% 55% 45% / 45% 60% 40% 55%;
+  }
+  66% {
+    transform: translate(-4vw, 10vh) scale(0.95);
+    border-radius: 45% 60% 40% 55% / 55% 45% 60% 40%;
+  }
+}
+
+@keyframes lava-drift-b {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    border-radius: 55% 45% 50% 50% / 45% 55% 45% 55%;
+  }
+  40% {
+    transform: translate(-10vw, -8vh) scale(1.12);
+    border-radius: 40% 60% 55% 45% / 60% 40% 55% 45%;
+  }
+  75% {
+    transform: translate(6vw, -4vh) scale(0.92);
+    border-radius: 55% 45% 60% 40% / 50% 55% 45% 50%;
+  }
 }
