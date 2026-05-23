@@ -153,7 +153,93 @@ function AiPanel({
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
   const [easterEgg, setEasterEgg] = useState(false);
+  const [voiceOn, setVoiceOn] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.localStorage.getItem(VOICE_OPTIN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const lastSpokenIdRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  function toggleVoice() {
+    setVoiceOn((v) => {
+      const next = !v;
+      try {
+        window.localStorage.setItem(VOICE_OPTIN_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      return next;
+    });
+  }
+
+  // Marlenes Stimme: bevorzugt deutsche, weibliche Systemstimme
+  function pickGermanFemaleVoice(): SpeechSynthesisVoice | null {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+    const de = voices.filter((v) => v.lang?.toLowerCase().startsWith("de"));
+    const femaleHints = /(female|frau|weib|anna|marlene|petra|katja|hedda|vicki|helena)/i;
+    return (
+      de.find((v) => femaleHints.test(v.name)) ??
+      de.find((v) => !/male|mann|stefan|markus|yannick/i.test(v.name)) ??
+      de[0] ??
+      voices[0] ??
+      null
+    );
+  }
+
+  // Spricht die letzte abgeschlossene Assistant-Nachricht vor
+  useEffect(() => {
+    if (!voiceOn) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (status !== "ready") return;
+    const last = [...messages].reverse().find((m) => m.role === "assistant");
+    if (!last || lastSpokenIdRef.current === last.id) return;
+    const text =
+      last.parts
+        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join("")
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/[*_`#>]/g, "")
+        .trim() ?? "";
+    if (!text) return;
+    lastSpokenIdRef.current = last.id;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "de-DE";
+    utter.rate = 1;
+    utter.pitch = 1.05;
+    const v = pickGermanFemaleVoice();
+    if (v) utter.voice = v;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }, [messages, status, voiceOn]);
+
+  // Stimmen werden async geladen — Re-render triggern, sobald verfügbar
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const handler = () => {
+      /* noop, nur damit pickGermanFemaleVoice frische Liste sieht */
+    };
+    window.speechSynthesis.addEventListener?.("voiceschanged", handler);
+    return () => window.speechSynthesis.removeEventListener?.("voiceschanged", handler);
+  }, []);
+
+  // Beim Schließen Stimme stoppen
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
