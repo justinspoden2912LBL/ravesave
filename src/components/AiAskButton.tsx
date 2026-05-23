@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff, History, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
@@ -15,7 +15,16 @@ import {
   MODE_LABEL,
   type AiMode,
 } from "@/lib/aiContext";
-import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER } from "@/lib/aiConfig";
+import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER, CORE_QUICK_ACTIONS } from "@/lib/aiConfig";
+import {
+  listSessions,
+  loadSession,
+  saveSession,
+  deleteSession,
+  clearAllSessions,
+  newSessionId,
+} from "@/lib/chatHistory";
+import { sfx } from "@/lib/sound";
 
 /**
  * Globaler "KI fragen"-Button — unten links als FAB.
