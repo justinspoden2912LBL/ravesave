@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff, History, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
@@ -15,7 +15,16 @@ import {
   MODE_LABEL,
   type AiMode,
 } from "@/lib/aiContext";
-import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER } from "@/lib/aiConfig";
+import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER, CORE_QUICK_ACTIONS } from "@/lib/aiConfig";
+import {
+  listSessions,
+  loadSession,
+  saveSession,
+  deleteSession,
+  clearAllSessions,
+  newSessionId,
+} from "@/lib/chatHistory";
+import { sfx } from "@/lib/sound";
 
 /**
  * Globaler "KI fragen"-Button — unten links als FAB.
@@ -155,8 +164,37 @@ function AiPanel({
       }),
     [profileSummary, appContextStr, mode],
   );
-  const { messages, sendMessage, status, stop, error } = useChat({ transport });
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+  const [view, setView] = useState<"chat" | "history">("chat");
+  const [historyTick, setHistoryTick] = useState(0);
+  const { messages, sendMessage, setMessages, status, stop, error } = useChat({
+    transport,
+    id: sessionId,
+  });
   const isLoading = status === "submitted" || status === "streaming";
+
+  // Persist current session locally whenever messages change
+  useEffect(() => {
+    if (messages.length === 0) return;
+    try {
+      saveSession(sessionId, messages as UIMessage[]);
+    } catch {
+      /* ignore */
+    }
+  }, [messages, sessionId]);
+
+  function startNewChat() {
+    setMessages([]);
+    setSessionId(newSessionId());
+    setView("chat");
+  }
+  function openSession(id: string) {
+    const s = loadSession(id);
+    if (!s) return;
+    setSessionId(id);
+    setMessages(s.messages as UIMessage[]);
+    setView("chat");
+  }
 
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
@@ -204,9 +242,13 @@ function AiPanel({
         return finalText;
       });
     };
-    rec.onerror = () => setListening(false);
+    rec.onerror = () => {
+      setListening(false);
+      sfx.listenEnd();
+    };
     rec.onend = () => {
       setListening(false);
+      sfx.listenEnd();
       if (autoSendRef.current && finalText) {
         send(finalText);
       }
@@ -214,6 +256,7 @@ function AiPanel({
     };
     recogRef.current = rec;
     setListening(true);
+    sfx.listenStart();
     try {
       rec.start();
     } catch {
@@ -322,6 +365,7 @@ function AiPanel({
             audioUrlRef.current = null;
           }
           setSpeakingAudio(false);
+          sfx.speakDone();
           // Voice-Convo: nach Marleens Antwort wieder zuhören
           if (voiceConvo && sttSupported) {
             setTimeout(() => startListening(true), 250);
@@ -488,6 +532,32 @@ function AiPanel({
             </button>
             <button
               type="button"
+              onClick={() => {
+                setHistoryTick((t) => t + 1);
+                setView((v) => (v === "history" ? "chat" : "history"));
+              }}
+              aria-label="Verlauf"
+              aria-pressed={view === "history"}
+              title="Verlauf (lokal gespeichert)"
+              className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                view === "history"
+                  ? "bg-secondary/20 text-secondary ring-1 ring-secondary/40"
+                  : "hover:bg-muted/40 text-muted-foreground"
+              }`}
+            >
+              <History className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={startNewChat}
+              aria-label="Neuer Chat"
+              title="Neuer Chat"
+              className="rounded-full p-1.5 hover:bg-muted/40 text-muted-foreground min-h-9 min-w-9 inline-flex items-center justify-center"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
               onClick={onClose}
               aria-label="Schließen"
               className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center"
@@ -561,11 +631,18 @@ function AiPanel({
               Verstanden — KI nutzen
             </button>
           </div>
+        ) : view === "history" ? (
+          <HistoryView
+            tick={historyTick}
+            currentId={sessionId}
+            onOpen={openSession}
+            onBack={() => setView("chat")}
+          />
         ) : (
           <>
             {ttsError && voiceOn && (
               <div className="px-4 py-2 border-b border-border/60 text-[11px] text-muted-foreground bg-muted/20 flex items-center justify-between gap-2">
-                <span>Stimme gerade nicht verfügbar — du bekommst die Antwort als Text.</span>
+                <span>Stimme gerade nicht verfügbar — ich antworte dir als Text. Du kannst mich trotzdem weiter fragen.</span>
                 <button
                   type="button"
                   onClick={() => setTtsError(false)}
@@ -579,20 +656,45 @@ function AiPanel({
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 && !emergencyWarn && (
-                <div className="text-xs text-muted-foreground space-y-2">
-                  <p>Stell eine Frage oder wähle einen passenden Vorschlag:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {quickActions.map((s) => (
+                <div className="text-xs text-muted-foreground space-y-3">
+                  <p className="text-sm text-foreground">Hi, ich bin Marleen. Womit kann ich dich begleiten?</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {CORE_QUICK_ACTIONS.map((s) => (
                       <button
                         key={s.label}
                         type="button"
                         onClick={() => send(s.prompt)}
-                        className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/30 min-h-9"
+                        className={`text-left rounded-xl px-3 py-2 text-xs ring-1 transition min-h-11 ${
+                          s.tone === "warning"
+                            ? "bg-destructive/10 text-destructive ring-destructive/30 hover:bg-destructive/20"
+                            : "glass ring-border/40 hover:bg-muted/30"
+                        }`}
                       >
                         {s.label}
                       </button>
                     ))}
                   </div>
+                  {quickActions.length > 0 && (
+                    <>
+                      <p className="pt-1">Passend zu dieser Seite:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {quickActions.map((s) => (
+                          <button
+                            key={s.label}
+                            type="button"
+                            onClick={() => send(s.prompt)}
+                            className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/30 min-h-9"
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <p className="pt-1 text-[10px] text-muted-foreground/80">
+                    Verlauf bleibt lokal auf deinem Gerät. Im Notfall immer{" "}
+                    <a href="tel:112" className="font-semibold text-destructive hover:underline">112</a>.
+                  </p>
                 </div>
               )}
 
@@ -828,5 +930,97 @@ function StatusPill({
       <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
       {label}
     </span>
+  );
+}
+
+function HistoryView({
+  tick,
+  currentId,
+  onOpen,
+  onBack,
+}: {
+  tick: number;
+  currentId: string;
+  onOpen: (id: string) => void;
+  onBack: () => void;
+}) {
+  const [items, setItems] = useState(() => listSessions());
+  useEffect(() => {
+    setItems(listSessions());
+  }, [tick]);
+
+  function refresh() {
+    setItems(listSessions());
+  }
+
+  function fmt(iso: string) {
+    try {
+      return new Date(iso).toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground min-h-9"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Zurück
+        </button>
+        <span className="text-[11px] text-muted-foreground">Lokal auf deinem Gerät</span>
+        <button
+          type="button"
+          onClick={() => {
+            if (!confirm("Wirklich alle Marleen-Verläufe löschen? Das lässt sich nicht rückgängig machen.")) return;
+            clearAllSessions();
+            refresh();
+          }}
+          className="inline-flex items-center gap-1 rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/30 px-2.5 py-1 text-[11px] font-medium hover:bg-destructive/20 min-h-9"
+          aria-label="Alle Verläufe löschen"
+        >
+          <Trash2 className="h-3 w-3" /> Alles löschen
+        </button>
+      </div>
+      {items.length === 0 ? (
+        <div className="p-6 text-center text-xs text-muted-foreground">
+          Noch keine gespeicherten Verläufe.
+        </div>
+      ) : (
+        <ul className="divide-y divide-border/40">
+          {items.map((it) => (
+            <li key={it.id} className={`flex items-center gap-2 px-4 py-2.5 ${it.id === currentId ? "bg-muted/20" : ""}`}>
+              <button
+                type="button"
+                onClick={() => onOpen(it.id)}
+                className="flex-1 min-w-0 text-left"
+              >
+                <p className="text-sm truncate">{it.title}</p>
+                <p className="text-[10px] text-muted-foreground">{fmt(it.updatedAt)}{it.id === currentId ? " · aktuell" : ""}</p>
+              </button>
+              <button
+                type="button"
+                aria-label="Verlauf löschen"
+                onClick={() => {
+                  deleteSession(it.id);
+                  refresh();
+                }}
+                className="rounded-full p-1.5 hover:bg-muted/40 text-muted-foreground min-h-9 min-w-9 inline-flex items-center justify-center"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
