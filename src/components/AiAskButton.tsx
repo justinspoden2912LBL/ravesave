@@ -15,6 +15,7 @@ import {
   MODE_LABEL,
   type AiMode,
 } from "@/lib/aiContext";
+import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER } from "@/lib/aiConfig";
 
 /**
  * Globaler "KI fragen"-Button — unten links als FAB.
