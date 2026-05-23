@@ -656,20 +656,45 @@ function AiPanel({
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 && !emergencyWarn && (
-                <div className="text-xs text-muted-foreground space-y-2">
-                  <p>Stell eine Frage oder wähle einen passenden Vorschlag:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {quickActions.map((s) => (
+                <div className="text-xs text-muted-foreground space-y-3">
+                  <p className="text-sm text-foreground">Hi, ich bin Marleen. Womit kann ich dich begleiten?</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {CORE_QUICK_ACTIONS.map((s) => (
                       <button
                         key={s.label}
                         type="button"
                         onClick={() => send(s.prompt)}
-                        className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/30 min-h-9"
+                        className={`text-left rounded-xl px-3 py-2 text-xs ring-1 transition min-h-11 ${
+                          s.tone === "warning"
+                            ? "bg-destructive/10 text-destructive ring-destructive/30 hover:bg-destructive/20"
+                            : "glass ring-border/40 hover:bg-muted/30"
+                        }`}
                       >
                         {s.label}
                       </button>
                     ))}
                   </div>
+                  {quickActions.length > 0 && (
+                    <>
+                      <p className="pt-1">Passend zu dieser Seite:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {quickActions.map((s) => (
+                          <button
+                            key={s.label}
+                            type="button"
+                            onClick={() => send(s.prompt)}
+                            className="rounded-full glass px-3 py-1.5 text-xs hover:bg-muted/30 min-h-9"
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <p className="pt-1 text-[10px] text-muted-foreground/80">
+                    Verlauf bleibt lokal auf deinem Gerät. Im Notfall immer{" "}
+                    <a href="tel:112" className="font-semibold text-destructive hover:underline">112</a>.
+                  </p>
                 </div>
               )}
 
