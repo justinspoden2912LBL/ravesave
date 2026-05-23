@@ -33,7 +33,32 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const [p, setP] = useState<UserProfile | null>(null);
-  useEffect(() => setP(loadProfile()), []);
+  const [sounds, setSounds] = useState(false);
+  const [historyCount, setHistoryCount] = useState(0);
+  useEffect(() => {
+    setP(loadProfile());
+    setSounds(isSoundEnabled());
+    setHistoryCount(listSessions().length);
+  }, []);
+
+  function toggleSounds(v: boolean) {
+    setSoundEnabled(v);
+    setSounds(v);
+  }
+  function clearHistory() {
+    if (!confirm("Alle Marleen-Verläufe löschen? Das lässt sich nicht rückgängig machen.")) return;
+    clearAllSessions();
+    setHistoryCount(0);
+  }
+  function replayOnboarding() {
+    try {
+      window.localStorage.removeItem("ravesave_welcome_seen");
+    } catch {
+      /* ignore */
+    }
+    location.reload();
+  }
+
 
   function reset() {
     if (!confirm("Profil wirklich löschen? Diese Aktion ist nicht rückgängig zu machen.")) return;
