@@ -191,6 +191,53 @@
   .animate-pulse-glow {
     animation: pulse-glow 4s ease-in-out infinite;
   }
+
+  /* Scroll-Reveal: pair with useReveal() hook → setzt data-revealed="true" */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* Subtile Lift-Microstate für interaktive Cards/Buttons */
+  .hover-lift {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -12px oklch(0.7 0.27 320 / 0.45);
+  }
+  .hover-lift:active {
+    transform: translateY(0);
+    transition-duration: 0.05s;
+  }
+
+  /* Mobile Bottom-Nav-Abstand: bottom-safe Klasse für Floating-Elemente */
+  .pb-bottomnav {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem);
+  }
+  @media (min-width: 768px) {
+    .pb-bottomnav {
+      padding-bottom: 0;
+    }
+  }
 }
 
 @keyframes aurora-shift {
