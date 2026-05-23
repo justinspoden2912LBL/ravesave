@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { listPublishedPosts } from "@/lib/posts";
 
-const BASE_URL = "https://ravesave.de";
+const BASE_URL = "https://ravesave.fun";
 
 interface SitemapEntry {
   path: string;
@@ -21,6 +21,8 @@ const STATIC_ENTRIES: SitemapEntry[] = [
   { path: "/chat", changefreq: "monthly", priority: "0.6" },
   { path: "/stats", changefreq: "monthly", priority: "0.5" },
   { path: "/about", changefreq: "yearly", priority: "0.5" },
+  { path: "/notfall", changefreq: "yearly", priority: "0.7" },
+  { path: "/safety-plan", changefreq: "monthly", priority: "0.6" },
   { path: "/erfahrungen", changefreq: "weekly", priority: "0.6" },
   { path: "/onboarding", changefreq: "yearly", priority: "0.4" },
   { path: "/settings", changefreq: "yearly", priority: "0.3" },

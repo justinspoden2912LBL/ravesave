@@ -7,6 +7,14 @@ import { getPostBySlug, formatDate, type Post } from "@/lib/posts";
 
 export const Route = createFileRoute("/erfahrungen/$slug")({
   component: PostDetailPage,
+  loader: async ({ params }) => {
+    try {
+      const post = await getPostBySlug(params.slug);
+      return { post: post && post.published ? post : null };
+    } catch {
+      return { post: null };
+    }
+  },
   notFoundComponent: () => (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center space-y-4">
       <h1 className="text-2xl font-bold">Beitrag nicht gefunden</h1>
@@ -30,12 +38,53 @@ export const Route = createFileRoute("/erfahrungen/$slug")({
       </button>
     </div>
   ),
-  head: ({ params }) => ({
-    meta: [
-      { title: `Erfahrungsbericht — ${params.slug} — Rave Safe, have Fun` },
-      { name: "description", content: "Persönlicher Erfahrungsbericht von Justin." },
-    ],
-  }),
+  head: ({ params, loaderData }) => {
+    const post = loaderData?.post;
+    const url = `https://ravesave.fun/erfahrungen/${params.slug}`;
+    const title = post
+      ? `${post.title} — Erfahrungsbericht — Rave Safe, have Fun`
+      : `Erfahrungsbericht — Rave Safe, have Fun`;
+    const rawDesc =
+      post?.excerpt ||
+      (post?.content
+        ? post.content.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 200)
+        : "");
+    const description = rawDesc
+      ? rawDesc.length > 160
+        ? rawDesc.slice(0, 157).trimEnd() + "…"
+        : rawDesc.length < 50
+          ? `${rawDesc} — Persönlicher Erfahrungsbericht zu Rave, Konsum und Harm Reduction auf Ravesave.`
+          : rawDesc
+      : "Persönlicher Erfahrungsbericht zu Rave, Konsum und Harm Reduction — geteilt auf Ravesave.";
+
+    const meta = [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: post?.title ?? "Erfahrungsbericht" },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "article" },
+      { property: "og:url", content: url },
+    ];
+    const links = [{ rel: "canonical", href: url }];
+    const scripts = post
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: post.title,
+              description,
+              datePublished: post.published_at ?? post.created_at,
+              dateModified: post.updated_at ?? post.published_at ?? post.created_at,
+              author: { "@type": "Person", name: "Justin" },
+              mainEntityOfPage: url,
+            }),
+          },
+        ]
+      : [];
+    return { meta, links, scripts };
+  },
 });
 
 function PostDetailPage() {
