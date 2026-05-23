@@ -1,5 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, HeartPulse, Siren, ShieldAlert, Wind, Brain, Zap, Thermometer } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Phone,
+  HeartPulse,
+  Siren,
+  ShieldAlert,
+  Wind,
+  Brain,
+  Zap,
+  Thermometer,
+  Volume2,
+  Square,
+} from "lucide-react";
 import { SaferUseCallout } from "@/components/SaferUseCallout";
 
 export const Route = createFileRoute("/notfall")({
@@ -23,7 +35,58 @@ export const Route = createFileRoute("/notfall")({
   }),
 });
 
+const RECOVERY_STEPS = [
+  "Naheliegenden Arm im 90-Grad-Winkel nach oben anwinkeln.",
+  "Anderen Arm über die Brust, Handrücken an die Wange.",
+  "Fernes Bein anwinkeln, am Knie zur Seite ziehen.",
+  "Kopf leicht überstrecken, Mund öffnen — Atemweg frei.",
+];
+
+const EMERGENCY_COPY_TEXT =
+  "Notfall: 112 rufen. Person ansprechen, Atmung prüfen. Atmet nicht: 30 Herzdruckmassagen + 2 Atemstöße im Wechsel. Atmet noch, bewusstlos: stabile Seitenlage, dabeibleiben. Konsum offen sagen — keine Polizei automatisch.";
+
 function NotfallPage() {
+  // Double-Tap-Schutz für 112
+  const [calling, setCalling] = useState(false);
+  const callTimer = useRef<number | null>(null);
+  useEffect(() => () => { if (callTimer.current) window.clearTimeout(callTimer.current); }, []);
+
+  function onCall112(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (calling) {
+      e.preventDefault();
+      return;
+    }
+    setCalling(true);
+    callTimer.current = window.setTimeout(() => setCalling(false), 4000);
+  }
+
+  // Vorlesen der stabilen Seitenlage via SpeechSynthesis
+  const [reading, setReading] = useState(false);
+  const ttsAvailable = typeof window !== "undefined" && "speechSynthesis" in window;
+
+  function speakRecovery() {
+    if (!ttsAvailable) return;
+    if (reading) {
+      window.speechSynthesis.cancel();
+      setReading(false);
+      return;
+    }
+    const text = "Stabile Seitenlage in vier Schritten. " + RECOVERY_STEPS.join(" ");
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "de-DE";
+    utter.rate = 0.95;
+    utter.pitch = 1.05;
+    utter.onend = () => setReading(false);
+    utter.onerror = () => setReading(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+    setReading(true);
+  }
+
+  useEffect(() => () => {
+    if (ttsAvailable) window.speechSynthesis.cancel();
+  }, [ttsAvailable]);
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
       <header className="space-y-2">
@@ -36,15 +99,32 @@ function NotfallPage() {
         </p>
       </header>
 
-      <a
-        href="tel:112"
-        aria-label="Notruf 112 anrufen"
-        className="flex items-center justify-center gap-3 rounded-2xl bg-destructive px-4 py-5 text-xl font-bold text-destructive-foreground shadow-lg ring-2 ring-destructive/40 hover:brightness-110 active:scale-[0.98] transition"
-      >
-        <Phone className="h-6 w-6" /> 112 anrufen
-      </a>
+      <div className="space-y-1.5">
+        <a
+          href="tel:112"
+          onClick={onCall112}
+          aria-label="Notruf 112 anrufen"
+          aria-disabled={calling}
+          className={`flex items-center justify-center gap-3 rounded-2xl px-4 py-5 text-xl font-bold text-destructive-foreground shadow-lg ring-2 transition ${
+            calling
+              ? "bg-destructive/70 ring-destructive/30 pointer-events-none opacity-80"
+              : "bg-destructive ring-destructive/40 hover:brightness-110 active:scale-[0.98]"
+          }`}
+        >
+          <Phone className={`h-6 w-6 ${calling ? "animate-pulse" : ""}`} />
+          {calling ? "Anruf wird gestartet…" : "112 anrufen"}
+        </a>
+        <p className="text-[11px] text-muted-foreground text-center">
+          Tippt nur den Anruf an — RaveSave speichert dabei keine Daten und sendet keine Standortinfos.
+        </p>
+      </div>
 
-      <SaferUseCallout variant="emergency" title="Polizei kommt nicht automatisch mit.">
+      <SaferUseCallout
+        variant="emergency"
+        title="Polizei kommt nicht automatisch mit."
+        collapsible
+        copyText={EMERGENCY_COPY_TEXT}
+      >
         Beim Notruf gilt Schweigepflicht. Sag offen, was konsumiert wurde — die Sanitäter brauchen das, um zu helfen.
         Es gibt in DE/AT/CH keine automatische Anzeige bei der Polizei.
       </SaferUseCallout>
@@ -69,15 +149,31 @@ function NotfallPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl glass p-5 space-y-2">
-        <h2 className="flex items-center gap-2 text-lg font-semibold">
-          <HeartPulse className="h-4 w-4 text-destructive" /> Stabile Seitenlage in 4 Schritten
-        </h2>
+      <section className="rounded-2xl glass p-5 space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <HeartPulse className="h-4 w-4 text-destructive" /> Stabile Seitenlage in 4 Schritten
+          </h2>
+          {ttsAvailable && (
+            <button
+              type="button"
+              onClick={speakRecovery}
+              aria-pressed={reading}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition min-h-9 ${
+                reading
+                  ? "bg-secondary/25 text-secondary ring-secondary/40"
+                  : "bg-background/60 text-foreground/80 ring-border/60 hover:bg-background/80"
+              }`}
+            >
+              {reading ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+              {reading ? "Stop" : "Vorlesen"}
+            </button>
+          )}
+        </div>
         <ol className="list-decimal pl-5 text-sm leading-relaxed space-y-1">
-          <li>Naheliegenden Arm im 90°-Winkel nach oben anwinkeln.</li>
-          <li>Anderen Arm über die Brust, Handrücken an die Wange.</li>
-          <li>Fernes Bein anwinkeln, am Knie zur Seite ziehen.</li>
-          <li>Kopf leicht überstrecken, Mund öffnen — Atemweg frei.</li>
+          {RECOVERY_STEPS.map((s) => (
+            <li key={s}>{s}</li>
+          ))}
         </ol>
       </section>
 

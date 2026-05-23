@@ -15,6 +15,7 @@ import {
   MODE_LABEL,
   type AiMode,
 } from "@/lib/aiContext";
+import { SAFER_USE_QUICK_PROMPTS, AI_SAFETY_FOOTER } from "@/lib/aiConfig";
 
 /**
  * Globaler "KI fragen"-Button — unten links als FAB.
@@ -608,13 +609,28 @@ function AiPanel({
               </label>
             </div>
 
+            {/* Fixe Safer-Use-Quick-Prompts — immer sichtbar, akute Notfall-Trigger */}
+            <div className="px-3 pt-2 border-t border-border/60 flex flex-wrap gap-1.5">
+              {SAFER_USE_QUICK_PROMPTS.map((q) => (
+                <button
+                  key={q.label}
+                  type="button"
+                  onClick={() => send(q.prompt)}
+                  disabled={isLoading}
+                  className="rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/30 px-2.5 py-1 text-[11px] font-medium hover:bg-destructive/20 disabled:opacity-50 transition"
+                >
+                  {q.label}
+                </button>
+              ))}
+            </div>
+
             {/* Input */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 send(input);
               }}
-              className="p-3 border-t border-border/60 flex items-end gap-2"
+              className="px-3 pt-2 flex items-end gap-2"
             >
               <textarea
                 value={input}
@@ -666,6 +682,14 @@ function AiPanel({
                 </button>
               )}
             </form>
+
+            {/* Fixer Safety-Disclaimer */}
+            <p className="px-4 pb-3 pt-1.5 text-[10px] leading-snug text-muted-foreground text-center">
+              {AI_SAFETY_FOOTER}{" "}
+              <a href="tel:112" className="font-semibold text-destructive hover:underline">
+                112 anrufen
+              </a>
+            </p>
           </>
         )}
       </div>
