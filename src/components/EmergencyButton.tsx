@@ -189,6 +189,13 @@ export function EmergencyButton() {
     }
   }, [open]);
 
+  // BottomNav → öffnet Notfall-Dialog via globales Event
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("ravesave:open-emergency", onOpen);
+    return () => window.removeEventListener("ravesave:open-emergency", onOpen);
+  }, []);
+
   function reset() {
     setActive(null);
     setExpanded(null);
