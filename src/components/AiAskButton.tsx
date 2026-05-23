@@ -532,6 +532,31 @@ function AiPanel({
             </button>
             <button
               type="button"
+              onClick={() => {
+                setHistoryTick((t) => t + 1);
+                setView((v) => (v === "history" ? "chat" : "history"));
+              }}
+              aria-label="Verlauf"
+              aria-pressed={view === "history"}
+              title="Verlauf (lokal gespeichert)"
+              className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                view === "history"
+                  ? "bg-secondary/20 text-secondary ring-1 ring-secondary/40"
+                  : "hover:bg-muted/40 text-muted-foreground"
+              }`}
+            >
+              <History className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={startNewChat}
+              aria-label="Neuer Chat"
+              title="Neuer Chat"
+              className="rounded-full p-1.5 hover:bg-muted/40 text-muted-foreground min-h-9 min-w-9 inline-flex items-center justify-center"
+            >
+              <Plus className="h-4 w-4" />
+            <button
+              type="button"
               onClick={onClose}
               aria-label="Schließen"
               className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center"
