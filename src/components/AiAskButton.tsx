@@ -140,8 +140,28 @@ function AiPanel({
   const ctx = useAiContext();
   // route immer mitgeben, auch wenn keine Seite es explizit registriert hat
   const effectiveCtx = useMemo(() => ({ ...ctx, route: ctx.route ?? currentPath }), [ctx, currentPath]);
-  const appContextStr = useMemo(() => serializeAiContext(effectiveCtx), [effectiveCtx]);
+  const baseCtxStr = useMemo(() => serializeAiContext(effectiveCtx), [effectiveCtx]);
   const quickActions = useMemo(() => quickActionsFor(effectiveCtx), [effectiveCtx]);
+
+  // Aktiver Safety-Plan (lokal). Wird beim Öffnen geladen und reagiert auf
+  // Storage-Events, damit Änderungen aus /safety-plan sofort sichtbar sind.
+  const [activePlan, setActivePlan] = useState<SafetyPlan | null>(() => getActivePlan());
+  useEffect(() => {
+    function refresh() {
+      setActivePlan(getActivePlan());
+    }
+    window.addEventListener("storage", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
+  const planBlock = activePlan ? summarizePlanForAI(activePlan) : "";
+  const appContextStr = useMemo(
+    () => (planBlock ? (baseCtxStr ? baseCtxStr + "\n\n" + planBlock : planBlock) : baseCtxStr),
+    [baseCtxStr, planBlock],
+  );
 
   const [profileSummary, setProfileSummary] = useState("");
   useEffect(() => {
