@@ -16,6 +16,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RisksRouteImport } from './routes/risks'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as NotfallRouteImport } from './routes/notfall'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
@@ -60,6 +61,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotfallRoute = NotfallRouteImport.update({
+  id: '/notfall',
+  path: '/notfall',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MixRoute = MixRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
+  '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/knigge'
     | '/log'
     | '/mix'
+    | '/notfall'
     | '/onboarding'
     | '/reset-password'
     | '/risks'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/knigge'
     | '/log'
     | '/mix'
+    | '/notfall'
     | '/onboarding'
     | '/reset-password'
     | '/risks'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/knigge'
     | '/log'
     | '/mix'
+    | '/notfall'
     | '/onboarding'
     | '/reset-password'
     | '/risks'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
+  NotfallRoute: typeof NotfallRoute
   OnboardingRoute: typeof OnboardingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RisksRoute: typeof RisksRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notfall': {
+      id: '/notfall'
+      path: '/notfall'
+      fullPath: '/notfall'
+      preLoaderRoute: typeof NotfallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mix': {
@@ -395,6 +415,7 @@ const rootRouteChildren: RootRouteChildren = {
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
+  NotfallRoute: NotfallRoute,
   OnboardingRoute: OnboardingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RisksRoute: RisksRoute,

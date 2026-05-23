@@ -13,6 +13,7 @@ import { Nav, Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
+import { BottomNav } from "../components/BottomNav";
 
 function NotFoundComponent() {
   return (
@@ -152,12 +153,13 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Nav />
-        <main className="flex-1">
+        <main className="flex-1 pb-bottomnav">
           <Outlet />
         </main>
         <Footer />
         <EmergencyButton />
         <AiAskButton />
+        <BottomNav />
         <WelcomeOnboarding />
       </div>
     </QueryClientProvider>

@@ -4,7 +4,7 @@ import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
@@ -54,6 +54,13 @@ export function AiAskButton() {
     }
   });
 
+  // BottomNav → öffnet das Marlene-Panel via globales Event
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("ravesave:open-marlene", onOpen);
+    return () => window.removeEventListener("ravesave:open-marlene", onOpen);
+  }, []);
+
   if (hidden) return null;
 
   function ack() {
@@ -83,7 +90,7 @@ export function AiAskButton() {
           bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)",
           left: "calc(env(safe-area-inset-left, 0px) + 1rem)",
         }}
-        className="fixed z-40 print:hidden inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 transition min-h-11"
+        className="fixed z-40 print:hidden hidden md:inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 hover:scale-[1.03] active:scale-95 transition min-h-11"
       >
         <Sparkles className="h-4 w-4" />
         <span>Marlene fragen</span>
@@ -163,6 +170,39 @@ function AiPanel({
   });
   const lastSpokenIdRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recogRef = useRef<any>(null);
+  const [listening, setListening] = useState(false);
+  const sttSupported =
+    typeof window !== "undefined" &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+
+  function toggleListening() {
+    if (!sttSupported) return;
+    if (listening) {
+      recogRef.current?.stop();
+      return;
+    }
+    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const rec = new SR();
+    rec.lang = "de-DE";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      let txt = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      setInput((prev) => (prev ? prev + " " : "") + txt.trim());
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recogRef.current = rec;
+    setListening(true);
+    try {
+      rec.start();
+    } catch {
+      setListening(false);
+    }
+  }
+
 
   function toggleVoice() {
     setVoiceOn((v) => {
@@ -476,23 +516,59 @@ function AiPanel({
                   ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
                   .map((p) => p.text)
                   .join("") ?? "";
+                const isUser = m.role === "user";
+                const time = new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
                 return (
                   <div
                     key={m.id}
-                    className={
-                      m.role === "user"
-                        ? "rounded-2xl rounded-br-sm bg-primary/15 px-3 py-2 text-sm ml-6"
-                        : "rounded-2xl rounded-bl-sm bg-muted/40 px-3 py-2 text-sm mr-6 prose prose-sm prose-invert max-w-none"
-                    }
+                    className={`flex gap-2 ${isUser ? "flex-row-reverse" : "flex-row"} animate-in fade-in slide-in-from-bottom-1 duration-300`}
                   >
-                    {m.role === "user" ? (
-                      <p className="whitespace-pre-wrap">{text}</p>
-                    ) : (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
-                    )}
+                    <div
+                      className={`shrink-0 grid h-7 w-7 place-items-center rounded-full text-[11px] font-bold ${
+                        isUser
+                          ? "bg-primary/20 text-primary ring-1 ring-primary/30"
+                          : "bg-secondary/20 text-secondary ring-1 ring-secondary/30"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {isUser ? "Du" : <Sparkles className="h-3.5 w-3.5" />}
+                    </div>
+                    <div className={`min-w-0 max-w-[85%] ${isUser ? "items-end" : "items-start"} flex flex-col`}>
+                      <div
+                        className={
+                          isUser
+                            ? "rounded-2xl rounded-br-sm bg-primary/15 px-3 py-2 text-sm ring-1 ring-primary/20"
+                            : "rounded-2xl rounded-bl-sm bg-muted/40 px-3 py-2 text-sm ring-1 ring-border/40 prose prose-sm prose-invert max-w-none"
+                        }
+                      >
+                        {isUser ? (
+                          <p className="whitespace-pre-wrap">{text}</p>
+                        ) : (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+                        )}
+                      </div>
+                      <span className="mt-0.5 px-1 text-[10px] text-muted-foreground/70">
+                        {isUser ? "Du" : "Marlene"} · {time}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
+
+              {isLoading && (
+                <div className="flex gap-2 animate-in fade-in duration-200">
+                  <div className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-secondary/20 text-secondary ring-1 ring-secondary/30">
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="rounded-2xl rounded-bl-sm bg-muted/40 px-3 py-2.5 ring-1 ring-border/40">
+                    <span className="inline-flex gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-secondary/70 animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="h-1.5 w-1.5 rounded-full bg-secondary/70 animate-bounce" style={{ animationDelay: "120ms" }} />
+                      <span className="h-1.5 w-1.5 rounded-full bg-secondary/70 animate-bounce" style={{ animationDelay: "240ms" }} />
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <p className="text-xs text-destructive" role="alert">
@@ -554,6 +630,22 @@ function AiPanel({
                 aria-label="Nachricht an die KI"
                 className="flex-1 resize-none rounded-xl bg-input px-3 py-2 text-sm max-h-32 min-h-11"
               />
+              {sttSupported && (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  aria-label={listening ? "Diktat stoppen" : "Mit Stimme diktieren"}
+                  aria-pressed={listening}
+                  title={listening ? "Diktat stoppen" : "Diktieren"}
+                  className={`rounded-full px-3 py-2 min-h-11 inline-flex items-center justify-center transition ${
+                    listening
+                      ? "bg-destructive/20 text-destructive ring-1 ring-destructive/40 animate-pulse"
+                      : "bg-muted/40 hover:bg-muted/60 text-muted-foreground"
+                  }`}
+                >
+                  {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </button>
+              )}
               {isLoading ? (
                 <button
                   type="button"
@@ -568,7 +660,7 @@ function AiPanel({
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Senden"
-                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 min-h-11"
+                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
                 >
                   <Send className="h-4 w-4" />
                 </button>
