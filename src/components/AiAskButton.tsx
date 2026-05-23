@@ -65,11 +65,23 @@ export function AiAskButton() {
     }
   });
 
-  // BottomNav → öffnet das Marlene-Panel via globales Event
+  // BottomNav / Mix-Page → öffnet das Marlene-Panel via globales Event.
+  // Optionales detail.prompt wird in einen Storage-Slot gelegt, den AiPanel
+  // beim Mount liest und automatisch sendet.
   useEffect(() => {
-    const onOpen = () => setOpen(true);
-    window.addEventListener("ravesave:open-marlene", onOpen);
-    return () => window.removeEventListener("ravesave:open-marlene", onOpen);
+    const onOpen = (e: Event) => {
+      const detail = (e as CustomEvent<{ prompt?: string }>).detail;
+      if (detail?.prompt) {
+        try {
+          window.sessionStorage.setItem("ravesave_marlene_prefill", detail.prompt);
+        } catch {
+          /* ignore */
+        }
+      }
+      setOpen(true);
+    };
+    window.addEventListener("ravesave:open-marlene", onOpen as EventListener);
+    return () => window.removeEventListener("ravesave:open-marlene", onOpen as EventListener);
   }, []);
 
   if (hidden) return null;
