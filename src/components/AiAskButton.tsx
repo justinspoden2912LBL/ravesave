@@ -170,6 +170,39 @@ function AiPanel({
   });
   const lastSpokenIdRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recogRef = useRef<any>(null);
+  const [listening, setListening] = useState(false);
+  const sttSupported =
+    typeof window !== "undefined" &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+
+  function toggleListening() {
+    if (!sttSupported) return;
+    if (listening) {
+      recogRef.current?.stop();
+      return;
+    }
+    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const rec = new SR();
+    rec.lang = "de-DE";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      let txt = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      setInput((prev) => (prev ? prev + " " : "") + txt.trim());
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recogRef.current = rec;
+    setListening(true);
+    try {
+      rec.start();
+    } catch {
+      setListening(false);
+    }
+  }
+
 
   function toggleVoice() {
     setVoiceOn((v) => {
