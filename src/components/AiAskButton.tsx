@@ -330,24 +330,43 @@ function AiPanel({
         <div className="flex items-start justify-between gap-2 p-4 border-b border-border/60">
           <div className="min-w-0">
             <h2 className="text-base font-bold flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-secondary" /> KI fragen
+              <Sparkles className="h-4 w-4 text-secondary" /> Marlene
+              <span className="ml-1 rounded-full bg-secondary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary ring-1 ring-secondary/30">
+                KI-Begleiterin
+              </span>
             </h2>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              KI kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
+              Marlene kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
               <a href="tel:112" className="font-semibold text-destructive hover:underline">
                 112
               </a>{" "}
               rufen.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Schließen"
-            className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center shrink-0"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={toggleVoice}
+              aria-label={voiceOn ? "Marlenes Stimme ausschalten" : "Marlenes Stimme einschalten"}
+              aria-pressed={voiceOn}
+              title={voiceOn ? "Stimme aus" : "Stimme an (weiblich, Deutsch)"}
+              className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                voiceOn
+                  ? "bg-secondary/20 text-secondary ring-1 ring-secondary/40"
+                  : "hover:bg-muted/40 text-muted-foreground"
+              }`}
+            >
+              {voiceOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Schließen"
+              className="rounded-full p-1.5 hover:bg-muted/40 min-h-9 min-w-9 inline-flex items-center justify-center"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Mode toggle + Context preview */}
