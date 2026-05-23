@@ -242,9 +242,13 @@ function AiPanel({
         return finalText;
       });
     };
-    rec.onerror = () => setListening(false);
+    rec.onerror = () => {
+      setListening(false);
+      sfx.listenEnd();
+    };
     rec.onend = () => {
       setListening(false);
+      sfx.listenEnd();
       if (autoSendRef.current && finalText) {
         send(finalText);
       }
@@ -252,6 +256,7 @@ function AiPanel({
     };
     recogRef.current = rec;
     setListening(true);
+    sfx.listenStart();
     try {
       rec.start();
     } catch {
