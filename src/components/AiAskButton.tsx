@@ -170,6 +170,8 @@ function AiPanel({
     }
   });
   const lastSpokenIdRef = useRef<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recogRef = useRef<any>(null);
   const [listening, setListening] = useState(false);
@@ -205,6 +207,19 @@ function AiPanel({
   }
 
 
+  function stopSpeaking() {
+    try {
+      audioRef.current?.pause();
+    } catch {
+      /* ignore */
+    }
+    audioRef.current = null;
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+  }
+
   function toggleVoice() {
     setVoiceOn((v) => {
       const next = !v;
@@ -213,33 +228,15 @@ function AiPanel({
       } catch {
         /* ignore */
       }
-      if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+      if (!next) stopSpeaking();
       return next;
     });
   }
 
-  // Marlenes Stimme: bevorzugt deutsche, weibliche Systemstimme
-  function pickGermanFemaleVoice(): SpeechSynthesisVoice | null {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
-    const voices = window.speechSynthesis.getVoices();
-    if (!voices.length) return null;
-    const de = voices.filter((v) => v.lang?.toLowerCase().startsWith("de"));
-    const femaleHints = /(female|frau|weib|anna|marlene|petra|katja|hedda|vicki|helena)/i;
-    return (
-      de.find((v) => femaleHints.test(v.name)) ??
-      de.find((v) => !/male|mann|stefan|markus|yannick/i.test(v.name)) ??
-      de[0] ??
-      voices[0] ??
-      null
-    );
-  }
-
-  // Spricht die letzte abgeschlossene Assistant-Nachricht vor
+  // Spricht die letzte abgeschlossene Assistant-Nachricht via ElevenLabs (weibliche, realistische Stimme)
   useEffect(() => {
     if (!voiceOn) return;
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (typeof window === "undefined") return;
     if (status !== "ready") return;
     const last = [...messages].reverse().find((m) => m.role === "assistant");
     if (!last || lastSpokenIdRef.current === last.id) return;
@@ -249,37 +246,49 @@ function AiPanel({
         .map((p) => p.text)
         .join("")
         .replace(/```[\s\S]*?```/g, "")
+        .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
         .replace(/[*_`#>]/g, "")
         .trim() ?? "";
     if (!text) return;
     lastSpokenIdRef.current = last.id;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "de-DE";
-    utter.rate = 1;
-    utter.pitch = 1.05;
-    const v = pickGermanFemaleVoice();
-    if (v) utter.voice = v;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
-  }, [messages, status, voiceOn]);
 
-  // Stimmen werden async geladen — Re-render triggern, sobald verfügbar
-  useEffect(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    const handler = () => {
-      /* noop, nur damit pickGermanFemaleVoice frische Liste sieht */
+    let cancelled = false;
+    stopSpeaking();
+    (async () => {
+      try {
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        if (!res.ok || cancelled) return;
+        const blob = await res.blob();
+        if (cancelled) return;
+        const url = URL.createObjectURL(blob);
+        audioUrlRef.current = url;
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        audio.onended = () => {
+          if (audioUrlRef.current === url) {
+            URL.revokeObjectURL(url);
+            audioUrlRef.current = null;
+          }
+        };
+        await audio.play().catch(() => {
+          /* autoplay block etc. */
+        });
+      } catch {
+        /* ignore TTS errors – Stimme ist optional */
+      }
+    })();
+    return () => {
+      cancelled = true;
     };
-    window.speechSynthesis.addEventListener?.("voiceschanged", handler);
-    return () => window.speechSynthesis.removeEventListener?.("voiceschanged", handler);
-  }, []);
+  }, [messages, status, voiceOn]);
 
   // Beim Schließen Stimme stoppen
   useEffect(() => {
-    return () => {
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
+    return () => stopSpeaking();
   }, []);
 
   useEffect(() => {
