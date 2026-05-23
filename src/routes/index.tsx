@@ -203,7 +203,7 @@ function CategoryCard({
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`rounded-2xl glass overflow-hidden transition-all hover:ring-1 hover:ring-primary/30 ${
+      className={`rounded-2xl glass overflow-hidden transition-all hover-lift hover:ring-1 hover:ring-primary/30 ${
         open ? "ring-1 ring-primary/40" : ""
       }`}
     >
