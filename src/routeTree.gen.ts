@@ -26,6 +26,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
+import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const SubstancesRoute = SubstancesRouteImport.update({
@@ -113,6 +114,11 @@ const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ErfahrungenRoute,
 } as any)
+const ApiTtsRoute = ApiTtsRouteImport.update({
+  id: '/api/tts',
+  path: '/api/tts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRoutesByTo {
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRoutesById {
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
 }
 export interface FileRouteTypes {
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/api/tts'
     | '/erfahrungen/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/api/tts'
     | '/erfahrungen/$slug'
   id:
     | '__root__'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/api/chat'
+    | '/api/tts'
     | '/erfahrungen/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiTtsRoute: typeof ApiTtsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -384,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErfahrungenSlugRouteImport
       parentRoute: typeof ErfahrungenRoute
     }
+    '/api/tts': {
+      id: '/api/tts'
+      path: '/api/tts'
+      fullPath: '/api/tts'
+      preLoaderRoute: typeof ApiTtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -424,6 +444,7 @@ const rootRouteChildren: RootRouteChildren = {
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiTtsRoute: ApiTtsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
