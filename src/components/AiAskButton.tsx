@@ -3,8 +3,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff, History, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { useRouterState, Link } from "@tanstack/react-router";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff, History, Plus, Trash2, ArrowLeft, ShieldCheck } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
@@ -24,6 +24,7 @@ import {
   clearAllSessions,
   newSessionId,
 } from "@/lib/chatHistory";
+import { getActivePlan, summarizePlanForAI, type SafetyPlan } from "@/lib/safetyPlan";
 import { sfx } from "@/lib/sound";
 
 /**
