@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, X, Sparkles } from "lucide-react";
+import { ChevronRight, X, Sparkles, AlertTriangle, Phone, Syringe, ShieldCheck, Siren } from "lucide-react";
 import {
   SUBSTANCES,
   assessPair,
@@ -110,31 +110,109 @@ function MixPage() {
           })}
         </div>
 
-        {selected.length >= 2 && (
-          <div className={`mt-5 rounded-xl border p-4 ${RISK_META[overall.level].bg}`}>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Höchstes Risiko</div>
-            <div className={`mt-1 text-2xl font-bold ${RISK_META[overall.level].color}`}>
-              {RISK_META[overall.level].label}
+        {selected.length >= 2 && (() => {
+          const selectedSubs = selected
+            .map((id) => SUBSTANCES.find((x) => x.id === id))
+            .filter((s): s is Substance => !!s);
+          const hasOpioid = selectedSubs.some((s) => s.category === "opioid");
+          const isCritical = overall.level === "danger" || overall.level === "unsafe";
+          const isDeadly = overall.level === "danger";
+          const ringColor =
+            overall.level === "danger"
+              ? "ring-risk-danger"
+              : overall.level === "unsafe"
+              ? "ring-risk-unsafe"
+              : overall.level === "caution"
+              ? "ring-risk-caution"
+              : overall.level === "synergy"
+              ? "ring-secondary"
+              : overall.level === "safe"
+              ? "ring-risk-safe"
+              : "ring-muted-foreground";
+          const dotColor =
+            overall.level === "danger"
+              ? "bg-risk-danger"
+              : overall.level === "unsafe"
+              ? "bg-risk-unsafe"
+              : overall.level === "caution"
+              ? "bg-risk-caution"
+              : overall.level === "synergy"
+              ? "bg-secondary"
+              : overall.level === "safe"
+              ? "bg-risk-safe"
+              : "bg-muted-foreground";
+          const RiskIcon = isDeadly ? Siren : isCritical ? AlertTriangle : ShieldCheck;
+          return (
+            <div className={`mt-5 rounded-2xl border p-5 ${RISK_META[overall.level].bg}`}>
+              {/* Großer visueller Ampel-Kreis */}
+              <div className="flex items-center gap-4">
+                <div
+                  className={`relative grid h-20 w-20 shrink-0 place-items-center rounded-full ring-4 ${ringColor}/40 ${
+                    isDeadly ? "animate-pulse" : ""
+                  }`}
+                  aria-hidden="true"
+                >
+                  <span className={`absolute inset-2 rounded-full ${dotColor}/30 blur-sm`} />
+                  <span className={`relative grid h-12 w-12 place-items-center rounded-full ${dotColor}/90 shadow-lg`}>
+                    <RiskIcon className="h-6 w-6 text-background" />
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Höchstes Risiko</div>
+                  <div className={`text-2xl md:text-3xl font-bold leading-tight ${RISK_META[overall.level].color}`}>
+                    {RISK_META[overall.level].label}
+                  </div>
+                  <p className="mt-1 text-sm text-foreground/90">{overall.reason}</p>
+                </div>
+              </div>
+
+              {/* Naloxon/112-Banner bei lebensgefährlicher Opioid-Kombination */}
+              {isDeadly && hasOpioid && (
+                <div className="mt-4 rounded-xl bg-destructive/15 ring-1 ring-destructive/40 p-3 flex items-start gap-2">
+                  <Syringe className="h-4 w-4 mt-0.5 text-destructive shrink-0" />
+                  <div className="text-xs leading-relaxed">
+                    <div className="font-semibold text-destructive">Opioid-beteiligte Hochrisiko-Kombi.</div>
+                    <p className="mt-0.5 text-foreground/90">
+                      Atemstillstand möglich. <strong>Naloxon-Nasenspray</strong> bereithalten, niemals allein konsumieren.
+                      Bei flacher/aussetzender Atmung sofort{" "}
+                      <a href="tel:112" className="underline font-semibold text-destructive">112</a> rufen — Sanitäter:innen
+                      die Kombi offen mitteilen.{" "}
+                      <Link to="/notfall" className="underline font-medium">Erste Hilfe ansehen</Link>.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {isDeadly && !hasOpioid && (
+                <div className="mt-4 rounded-xl bg-destructive/15 ring-1 ring-destructive/40 p-3 flex items-start gap-2">
+                  <Phone className="h-4 w-4 mt-0.5 text-destructive shrink-0" />
+                  <div className="text-xs leading-relaxed">
+                    <div className="font-semibold text-destructive">Lebensgefährliche Kombination.</div>
+                    <p className="mt-0.5 text-foreground/90">
+                      Bei Bewusstlosigkeit, Krampf, blauen Lippen, Brustschmerz oder schwerer Verwirrung sofort{" "}
+                      <a href="tel:112" className="underline font-semibold text-destructive">112</a>. Erkläre dem
+                      Rettungsdienst die Kombi — Schweigepflicht gilt, keine automatische Polizei.{" "}
+                      <Link to="/notfall" className="underline font-medium">Erste Hilfe</Link>.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const names = selectedSubs.map((s) => s.name).join(" + ");
+                  const prompt = `Im Mischkonsum-Check habe ich gerade ${names} ausgewählt (Ampel: ${RISK_META[overall.level].label}). Erklär mir kurz, worauf ich hier konkret achten muss — keine Dosis-Empfehlung, sondern Mechanismus, Warnzeichen und Safer-Use-Punkte.`;
+                  window.dispatchEvent(
+                    new CustomEvent("ravesave:open-marlene", { detail: { prompt } }),
+                  );
+                }}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-secondary/95 px-3.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:brightness-110 shine"
+              >
+                <Sparkles className="h-3.5 w-3.5" /> Marleen dazu fragen
+              </button>
             </div>
-            <p className="mt-1 text-sm">{overall.reason}</p>
-            <button
-              type="button"
-              onClick={() => {
-                const names = selected
-                  .map((id) => SUBSTANCES.find((x) => x.id === id)?.name)
-                  .filter(Boolean)
-                  .join(" + ");
-                const prompt = `Im Mischkonsum-Check habe ich gerade ${names} ausgewählt (Ampel: ${RISK_META[overall.level].label}). Erklär mir kurz, worauf ich hier konkret achten muss — keine Dosis-Empfehlung, sondern Mechanismus, Warnzeichen und Safer-Use-Punkte.`;
-                window.dispatchEvent(
-                  new CustomEvent("ravesave:open-marlene", { detail: { prompt } }),
-                );
-              }}
-              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/95 px-3.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:brightness-110 shine"
-            >
-              <Sparkles className="h-3.5 w-3.5" /> Marleen dazu fragen
-            </button>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Pair breakdown */}
