@@ -271,7 +271,7 @@ function SubstancesPage() {
           href="mailto:ravesafe.live@gmail.com?subject=Rave%20Safe%20Feedback%20(Substanz-Wiki)"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 text-primary px-3 py-1.5 text-xs font-medium hover:bg-primary/25 transition"
         >
-          <Mail className="h-3.5 w-3.5" /> ravesafe.live@gmail.com
+          <Mail className="h-3.5 w-3.5" /><span>ravesafe.live@gmail.com</span>
         </a>
       </footer>
     </div>
