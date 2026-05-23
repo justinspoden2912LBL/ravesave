@@ -110,6 +110,48 @@
     background-image: var(--gradient-trip);
     background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Lava-lamp ambient blobs — purely decorative, no color shift */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(80px) saturate(140%);
+    opacity: 0.45;
+    will-change: transform, border-radius;
+  }
+  body::before {
+    top: -10%;
+    left: -10%;
+    width: 55vw;
+    height: 55vw;
+    max-width: 720px;
+    max-height: 720px;
+    background: radial-gradient(circle at 30% 30%, var(--aurora-1), transparent 70%);
+    animation: lava-drift-a 22s ease-in-out infinite;
+  }
+  body::after {
+    bottom: -15%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 760px;
+    max-height: 760px;
+    background: radial-gradient(circle at 60% 60%, var(--aurora-3), transparent 70%);
+    animation: lava-drift-b 28s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+      animation: none;
+    }
   }
 }
 
