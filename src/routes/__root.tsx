@@ -13,6 +13,7 @@ import { Nav, Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
+import { BottomNav } from "../components/BottomNav";
 
 function NotFoundComponent() {
   return (
