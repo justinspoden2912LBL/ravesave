@@ -13,7 +13,7 @@ import { Home, BookOpen, Sparkles, ShieldAlert } from "lucide-react";
 const tabs = [
   { id: "home", to: "/", label: "Home", icon: Home, kind: "link" as const },
   { id: "wissen", to: "/substances", label: "Wissen", icon: BookOpen, kind: "link" as const },
-  { id: "marlene", label: "Marlene", icon: Sparkles, kind: "event" as const, event: "ravesave:open-marlene" },
+  { id: "marlene", label: "Marleen", icon: Sparkles, kind: "event" as const, event: "ravesave:open-marlene" },
   { id: "notfall", label: "Notfall", icon: ShieldAlert, kind: "event" as const, event: "ravesave:open-emergency" },
 ];
 
