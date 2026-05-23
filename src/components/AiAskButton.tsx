@@ -289,7 +289,7 @@ function AiPanel({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="KI fragen"
+      aria-label="Marlene fragen"
       className="fixed inset-0 z-[90] print:hidden flex items-end sm:items-center justify-center"
     >
       {easterEgg && (
