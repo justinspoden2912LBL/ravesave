@@ -66,23 +66,7 @@ export const Route = createFileRoute("/admin")({
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
 function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    adminWhoami()
-      .then((r) => setIsAdmin(r.isAdmin))
-      .catch(() => setIsAdmin(false));
-  }, []);
-
-  if (isAdmin === null) {
-    return <div className="p-10 text-center text-muted-foreground text-sm">Lade…</div>;
-  }
-
-  if (!isAdmin) {
-    return <LoginCard onSuccess={() => setIsAdmin(true)} />;
-  }
-
-  return <Dashboard onLogout={() => setIsAdmin(false)} />;
+  return <Dashboard onLogout={() => {}} />;
 }
 
 function LoginCard({ onSuccess }: { onSuccess: () => void }) {
