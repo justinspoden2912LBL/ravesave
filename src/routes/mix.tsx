@@ -152,7 +152,11 @@ function MixPage() {
               return (
                 <li key={a + b} className={`rounded-xl border p-3 ${RISK_META[risk.level].bg}`}>
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <span className="font-medium">{sa.name} + {sb.name}</span>
+                    <div className="font-medium">
+                      <Link to="/substances" className="hover:underline">{sa.name}</Link>
+                      <span className="text-muted-foreground"> + </span>
+                      <Link to="/substances" className="hover:underline">{sb.name}</Link>
+                    </div>
                     <span className={`text-xs font-semibold ${RISK_META[risk.level].color}`}>
                       {RISK_META[risk.level].label}
                     </span>
