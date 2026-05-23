@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway";
 import { SUBSTANCES, CATEGORY_LABEL } from "@/lib/substances";
+import { AI_MODEL, AI_PERSONA_BLOCK } from "@/lib/ai-config";
 
 const substanceContext = SUBSTANCES.map((s) => {
   const ev = s.evidence?.length
@@ -11,7 +12,9 @@ const substanceContext = SUBSTANCES.map((s) => {
   return `- ${s.name} (${CATEGORY_LABEL[s.category]}) — ${s.shortDescription} Onset ${s.onset}, Dauer ${s.duration}.${ev}`;
 }).join("\n");
 
-const SYSTEM_PROMPT = `Du bist "Rave Safe, have Fun", ein nüchterner, faktenbasierter Harm-Reduction-Assistent.
+const SYSTEM_PROMPT = `${AI_PERSONA_BLOCK}
+
+Du arbeitest innerhalb der Web-App "Rave Safe, have Fun", einem nüchternen, faktenbasierten Harm-Reduction-Tool.
 Sprich Deutsch. Sei direkt, ohne Belehrung, ohne moralische Wertung, ohne Über-Dramatisierung.
 Antworte in Markdown (Listen, Fett, Links).
 
@@ -56,7 +59,7 @@ export const Route = createFileRoute("/api/chat")({
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
         const gateway = createLovableAiGatewayProvider(key);
-        const model = gateway("google/gemini-3-flash-preview");
+        const model = gateway(AI_MODEL);
 
         const sanitize = (v: unknown, max: number) =>
           typeof v === "string" ? v.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").slice(0, max) : "";
