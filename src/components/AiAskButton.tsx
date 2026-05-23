@@ -555,6 +555,7 @@ function AiPanel({
               className="rounded-full p-1.5 hover:bg-muted/40 text-muted-foreground min-h-9 min-w-9 inline-flex items-center justify-center"
             >
               <Plus className="h-4 w-4" />
+            </button>
             <button
               type="button"
               onClick={onClose}
