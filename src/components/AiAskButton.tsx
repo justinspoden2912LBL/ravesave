@@ -88,13 +88,6 @@ export function AiAskButton() {
         <Sparkles className="h-4 w-4" />
         <span>Marlene fragen</span>
       </button>
-          left: "calc(env(safe-area-inset-left, 0px) + 1rem)",
-        }}
-        className="fixed z-40 print:hidden inline-flex items-center gap-2 rounded-full bg-secondary/95 px-3.5 py-2.5 text-sm font-semibold text-secondary-foreground shadow-lg ring-1 ring-secondary/40 hover:brightness-110 transition min-h-11"
-      >
-        <Sparkles className="h-4 w-4" />
-        <span>KI fragen</span>
-      </button>
 
       {open && (
         <AiPanel
