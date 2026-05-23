@@ -4,7 +4,7 @@ import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouterState } from "@tanstack/react-router";
-import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, Send, Square, X, AlertTriangle, ShieldAlert, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
   useAiContext,
