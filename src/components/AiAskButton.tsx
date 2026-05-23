@@ -783,3 +783,37 @@ function AiPanel({
     </div>
   );
 }
+
+function StatusPill({
+  listening,
+  thinking,
+  speaking,
+}: {
+  listening: boolean;
+  thinking: boolean;
+  speaking: boolean;
+}) {
+  let label = "";
+  let tone = "";
+  if (listening) {
+    label = "hört zu";
+    tone = "bg-destructive/15 text-destructive ring-destructive/30";
+  } else if (thinking) {
+    label = "denkt nach";
+    tone = "bg-primary/15 text-primary ring-primary/30";
+  } else if (speaking) {
+    label = "spricht";
+    tone = "bg-secondary/20 text-secondary ring-secondary/40";
+  } else {
+    return null;
+  }
+  return (
+    <span
+      className={`ml-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider ring-1 ${tone}`}
+      aria-live="polite"
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+      {label}
+    </span>
+  );
+}
