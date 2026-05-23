@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, X, Sparkles } from "lucide-react";
 import {
   SUBSTANCES,
   assessPair,
@@ -117,6 +117,22 @@ function MixPage() {
               {RISK_META[overall.level].label}
             </div>
             <p className="mt-1 text-sm">{overall.reason}</p>
+            <button
+              type="button"
+              onClick={() => {
+                const names = selected
+                  .map((id) => SUBSTANCES.find((x) => x.id === id)?.name)
+                  .filter(Boolean)
+                  .join(" + ");
+                const prompt = `Im Mischkonsum-Check habe ich gerade ${names} ausgewählt (Ampel: ${RISK_META[overall.level].label}). Erklär mir kurz, worauf ich hier konkret achten muss — keine Dosis-Empfehlung, sondern Mechanismus, Warnzeichen und Safer-Use-Punkte.`;
+                window.dispatchEvent(
+                  new CustomEvent("ravesave:open-marlene", { detail: { prompt } }),
+                );
+              }}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary/95 px-3.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:brightness-110 shine"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> Marleen dazu fragen
+            </button>
           </div>
         )}
       </div>
@@ -136,7 +152,11 @@ function MixPage() {
               return (
                 <li key={a + b} className={`rounded-xl border p-3 ${RISK_META[risk.level].bg}`}>
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <span className="font-medium">{sa.name} + {sb.name}</span>
+                    <div className="font-medium">
+                      <Link to="/substances" className="hover:underline">{sa.name}</Link>
+                      <span className="text-muted-foreground"> + </span>
+                      <Link to="/substances" className="hover:underline">{sb.name}</Link>
+                    </div>
                     <span className={`text-xs font-semibold ${RISK_META[risk.level].color}`}>
                       {RISK_META[risk.level].label}
                     </span>
