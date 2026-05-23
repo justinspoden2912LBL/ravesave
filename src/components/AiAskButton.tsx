@@ -556,7 +556,7 @@ function AiPanel({
             <button
               type="button"
               onClick={onAck}
-              className="w-full rounded-full bg-aurora animate-aurora py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
+              className="w-full rounded-full bg-aurora animate-aurora shine py-2.5 text-sm font-semibold text-primary-foreground glow min-h-11"
             >
               Verstanden — KI nutzen
             </button>
