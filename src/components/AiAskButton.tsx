@@ -164,8 +164,37 @@ function AiPanel({
       }),
     [profileSummary, appContextStr, mode],
   );
-  const { messages, sendMessage, status, stop, error } = useChat({ transport });
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+  const [view, setView] = useState<"chat" | "history">("chat");
+  const [historyTick, setHistoryTick] = useState(0);
+  const { messages, sendMessage, setMessages, status, stop, error } = useChat({
+    transport,
+    id: sessionId,
+  });
   const isLoading = status === "submitted" || status === "streaming";
+
+  // Persist current session locally whenever messages change
+  useEffect(() => {
+    if (messages.length === 0) return;
+    try {
+      saveSession(sessionId, messages as UIMessage[]);
+    } catch {
+      /* ignore */
+    }
+  }, [messages, sessionId]);
+
+  function startNewChat() {
+    setMessages([]);
+    setSessionId(newSessionId());
+    setView("chat");
+  }
+  function openSession(id: string) {
+    const s = loadSession(id);
+    if (!s) return;
+    setSessionId(id);
+    setMessages(s.messages as UIMessage[]);
+    setView("chat");
+  }
 
   const [input, setInput] = useState("");
   const [emergencyWarn, setEmergencyWarn] = useState(false);
