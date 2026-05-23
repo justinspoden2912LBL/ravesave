@@ -630,6 +630,22 @@ function AiPanel({
                 aria-label="Nachricht an die KI"
                 className="flex-1 resize-none rounded-xl bg-input px-3 py-2 text-sm max-h-32 min-h-11"
               />
+              {sttSupported && (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  aria-label={listening ? "Diktat stoppen" : "Mit Stimme diktieren"}
+                  aria-pressed={listening}
+                  title={listening ? "Diktat stoppen" : "Diktieren"}
+                  className={`rounded-full px-3 py-2 min-h-11 inline-flex items-center justify-center transition ${
+                    listening
+                      ? "bg-destructive/20 text-destructive ring-1 ring-destructive/40 animate-pulse"
+                      : "bg-muted/40 hover:bg-muted/60 text-muted-foreground"
+                  }`}
+                >
+                  {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </button>
+              )}
               {isLoading ? (
                 <button
                   type="button"
@@ -644,7 +660,7 @@ function AiPanel({
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Senden"
-                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 min-h-11"
+                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
                 >
                   <Send className="h-4 w-4" />
                 </button>
