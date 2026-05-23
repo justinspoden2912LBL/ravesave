@@ -636,7 +636,7 @@ function AiPanel({
                         )}
                       </div>
                       <span className="mt-0.5 px-1 text-[10px] text-muted-foreground/70">
-                        {isUser ? "Du" : "Marlene"} · {time}
+                        {isUser ? "Du" : "Marleen"} · {time}
                       </span>
                     </div>
                   </div>
