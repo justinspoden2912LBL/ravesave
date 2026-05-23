@@ -563,6 +563,19 @@ function AiPanel({
           </div>
         ) : (
           <>
+            {ttsError && voiceOn && (
+              <div className="px-4 py-2 border-b border-border/60 text-[11px] text-muted-foreground bg-muted/20 flex items-center justify-between gap-2">
+                <span>Stimme gerade nicht verfügbar — du bekommst die Antwort als Text.</span>
+                <button
+                  type="button"
+                  onClick={() => setTtsError(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Hinweis schließen"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 && !emergencyWarn && (
