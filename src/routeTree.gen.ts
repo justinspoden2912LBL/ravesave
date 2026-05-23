@@ -13,6 +13,7 @@ import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SafetyPlanRouteImport } from './routes/safety-plan'
 import { Route as RisksRouteImport } from './routes/risks'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -47,6 +48,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyPlanRoute = SafetyPlanRouteImport.update({
+  id: '/safety-plan',
+  path: '/safety-plan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RisksRoute = RisksRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
+  '/safety-plan': typeof SafetyPlanRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
+  '/safety-plan': typeof SafetyPlanRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
+  '/safety-plan': typeof SafetyPlanRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reset-password'
     | '/risks'
+    | '/safety-plan'
     | '/settings'
     | '/sitemap.xml'
     | '/stats'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reset-password'
     | '/risks'
+    | '/safety-plan'
     | '/settings'
     | '/sitemap.xml'
     | '/stats'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reset-password'
     | '/risks'
+    | '/safety-plan'
     | '/settings'
     | '/sitemap.xml'
     | '/stats'
@@ -268,6 +280,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RisksRoute: typeof RisksRoute
+  SafetyPlanRoute: typeof SafetyPlanRoute
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
@@ -304,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety-plan': {
+      id: '/safety-plan'
+      path: '/safety-plan'
+      fullPath: '/safety-plan'
+      preLoaderRoute: typeof SafetyPlanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risks': {
@@ -439,6 +459,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RisksRoute: RisksRoute,
+  SafetyPlanRoute: SafetyPlanRoute,
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
