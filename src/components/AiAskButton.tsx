@@ -465,6 +465,20 @@ function AiPanel({
     setInput("");
   }
 
+  // Prefill via globales Event (z.B. "Marleen dazu fragen" auf /mix)
+  useEffect(() => {
+    if (!privacyAck) return;
+    let prefill = "";
+    try {
+      prefill = window.sessionStorage.getItem("ravesave_marlene_prefill") ?? "";
+      if (prefill) window.sessionStorage.removeItem("ravesave_marlene_prefill");
+    } catch {
+      /* ignore */
+    }
+    if (prefill) send(prefill);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [privacyAck]);
+
   // kompakter Kontext-Chip, der zeigt was die KI gerade sieht
   const ctxChips: string[] = [];
   if (effectiveCtx.wikiSubstance) ctxChips.push(`Substanz: ${effectiveCtx.wikiSubstance.name}`);
