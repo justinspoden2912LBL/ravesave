@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, X, Sparkles } from "lucide-react";
 import {
   SUBSTANCES,
   assessPair,
