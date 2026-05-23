@@ -95,16 +95,21 @@ function Home() {
             <Sparkles className="h-3.5 w-3.5" /> Wissen statt Bauchgefühl.
           </p>
           <p className="mt-5 max-w-2xl text-muted-foreground text-lg">
-            Protokolliere deinen Konsum, prüfe Mischkonsum-Risiken in Echtzeit
-            und greife auf evidenzbasierte Informationen zu {SUBSTANCES.length}+ Substanzen zu.
-            Ohne Belehrung, ohne Drama — nur Fakten.
+            Safer-Use-Wissen, Notfallhilfe &amp; AI-Begleitung für Raver:innen in DE/AT/CH —
+            evidenzbasiert, lokal, ohne Belehrung.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/log"
+              to="/notfall"
+              className="inline-flex items-center gap-2 rounded-full bg-destructive px-6 py-3 text-sm font-semibold text-destructive-foreground shadow-lg ring-2 ring-destructive/40 hover:brightness-110 active:scale-95 transition"
+            >
+              <ShieldAlert className="h-4 w-4" /> Notfall jetzt
+            </Link>
+            <Link
+              to="/substances"
               className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-105 active:scale-95"
             >
-              <Activity className="h-4 w-4" /> Eintrag anlegen
+              <BookOpen className="h-4 w-4" /> Safer Use lernen
             </Link>
             <Link
               to="/mix"
