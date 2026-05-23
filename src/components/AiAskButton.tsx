@@ -776,7 +776,7 @@ function AiPanel({
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Senden"
-                  className="rounded-full bg-aurora animate-aurora px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
+                  className="rounded-full bg-aurora animate-aurora shine px-3 py-2 text-sm font-semibold text-primary-foreground glow disabled:opacity-50 hover:scale-105 active:scale-95 transition min-h-11"
                 >
                   <Send className="h-4 w-4" />
                 </button>
