@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ravesave.de/sitemap.xml
+Sitemap: https://ravesave.fun/sitemap.xml
