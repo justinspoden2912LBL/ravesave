@@ -679,6 +679,42 @@ function AiPanel({
               {messages.length === 0 && !emergencyWarn && (
                 <div className="text-xs text-muted-foreground space-y-3">
                   <p className="text-sm text-foreground">Hi, ich bin Marleen. Womit kann ich dich begleiten?</p>
+
+                  {activePlan ? (
+                    <Link
+                      to="/safety-plan"
+                      onClick={onClose}
+                      className="block rounded-xl border border-secondary/30 bg-secondary/10 p-3 hover:bg-secondary/15 transition"
+                    >
+                      <div className="flex items-center gap-2 text-secondary text-[10px] uppercase tracking-widest font-medium">
+                        <ShieldCheck className="h-3.5 w-3.5" /> Aktiver Safety-Plan
+                      </div>
+                      <div className="mt-1 text-sm text-foreground font-medium truncate">
+                        {activePlan.event || "Heute Nacht"}
+                      </div>
+                      {activePlan.intentions && (
+                        <div className="mt-0.5 text-[11px] text-muted-foreground line-clamp-2 whitespace-pre-wrap">
+                          {activePlan.intentions}
+                        </div>
+                      )}
+                      <div className="mt-1 text-[10px] text-secondary/80">Tippen zum Anpassen →</div>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/safety-plan"
+                      onClick={onClose}
+                      className="block rounded-xl border border-border/60 bg-muted/10 p-3 hover:bg-muted/20 transition"
+                    >
+                      <div className="flex items-center gap-2 text-secondary text-[10px] uppercase tracking-widest font-medium">
+                        <ShieldCheck className="h-3.5 w-3.5" /> Safety-Plan
+                      </div>
+                      <div className="mt-1 text-sm text-foreground">Plan für heute Nacht anlegen</div>
+                      <div className="mt-0.5 text-[11px] text-muted-foreground">
+                        Vorsätze, Heimweg, Begleitung — Marleen kennt ihn dann.
+                      </div>
+                    </Link>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     {CORE_QUICK_ACTIONS.map((s) => (
                       <button
