@@ -90,9 +90,10 @@ function Home() {
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
             <span className="text-foreground">, have </span>
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
-            <br />
-            <span className="text-foreground/80 text-2xl md:text-4xl font-medium">Wissen statt Bauchgefühl.</span>
           </h1>
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-secondary/15 px-3 py-1 text-sm font-medium text-secondary ring-1 ring-secondary/30">
+            <Sparkles className="h-3.5 w-3.5" /> Wissen statt Bauchgefühl.
+          </p>
           <p className="mt-5 max-w-2xl text-muted-foreground text-lg">
             Protokolliere deinen Konsum, prüfe Mischkonsum-Risiken in Echtzeit
             und greife auf evidenzbasierte Informationen zu {SUBSTANCES.length}+ Substanzen zu.
@@ -101,13 +102,13 @@ function Home() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/log"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-105"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-105 active:scale-95"
             >
               <Activity className="h-4 w-4" /> Eintrag anlegen
             </Link>
             <Link
               to="/mix"
-              className="inline-flex items-center gap-2 rounded-full glass px-6 py-3 text-sm font-semibold transition-colors hover:bg-muted/40"
+              className="inline-flex items-center gap-2 rounded-full glass px-6 py-3 text-sm font-semibold transition-colors hover:bg-muted/40 active:scale-95"
             >
               <GitMerge className="h-4 w-4" /> Mischkonsum prüfen
             </Link>
