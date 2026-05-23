@@ -341,7 +341,7 @@ export const SUBSTANCES: Substance[] = [
   {
     id: "ketamine",
     name: "Ketamin",
-    aliases: ["K", "Keta"],
+    aliases: ["K", "Keta", "Special K", "Ket"],
     category: "dissociative",
     shortDescription: "Dissoziatives Anästhetikum.",
     mechanism: "NMDA-Antagonist.",
