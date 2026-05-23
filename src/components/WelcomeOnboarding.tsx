@@ -126,24 +126,24 @@ export function WelcomeOnboarding() {
 
 const TOUR_STEPS: Array<{ title: string; body: string }> = [
   {
-    title: "Protokoll",
-    body: "Halte fest, was du wann konsumiert hast und wie es dir geht. Bleibt lokal auf deinem Gerät.",
+    title: "Marleen ist dein Harm-Reduction-Companion",
+    body:
+      "Marleen ist eine KI-Begleiterin — keine Ärztin, keine Therapeutin. Sie hilft dir dabei, sicherer zu feiern: Risiken einordnen, Mischkonsum verstehen, im Zweifel ruhig durch eine Situation reden.",
   },
   {
-    title: "Mix-Check",
-    body: "Prüfe bekannte Wechselwirkungsrisiken zwischen Substanzen — basierend auf öffentlich dokumentierten Quellen.",
+    title: "Was Marleen gut kann",
+    body:
+      "Risiken erklären, Wechselwirkungen beim Mischkonsum einordnen, Safer-Use-Tipps geben (Pausen, Wasser, Buddy, Drug-Checking) und dich Schritt für Schritt durch eine schwierige Lage begleiten.",
   },
   {
-    title: "Wiki",
-    body: "Substanzinfos zum Nachlesen: Wirkung, Dauer, bekannte Risiken, mit Quellenangaben.",
+    title: "Was Marleen nicht macht",
+    body:
+      "Keine konkreten Dosierungsempfehlungen, keine medizinische Diagnose, keine Tipps zur Beschaffung. Wenn die Datenlage dünn ist, sagt sie das ehrlich, statt zu raten.",
   },
   {
-    title: "Notfall",
-    body: "Notfallpass, Übergabeinfos für den Rettungsdienst und direkter 112-Anruf.",
-  },
-  {
-    title: "KI fragen",
-    body: "Unten links findest du jederzeit den KI-Button für Erklärungen — keine Konsumfreigaben, keine Diagnosen.",
+    title: "Im Notfall: 112",
+    body:
+      "Bei Bewusstlosigkeit, Krampfanfall, Atemnot, Brustschmerz, starker Überhitzung oder Suizidgedanken: Rettungsdienst hat Priorität. KI ersetzt keinen Notruf.",
   },
 ];
 
