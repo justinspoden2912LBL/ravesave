@@ -54,6 +54,13 @@ export function AiAskButton() {
     }
   });
 
+  // BottomNav → öffnet das Marlene-Panel via globales Event
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("ravesave:open-marlene", onOpen);
+    return () => window.removeEventListener("ravesave:open-marlene", onOpen);
+  }, []);
+
   if (hidden) return null;
 
   function ack() {
