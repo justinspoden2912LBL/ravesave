@@ -219,6 +219,59 @@ function SettingsPage() {
           </p>
         </section>
       )}
+
+      <section className="rounded-3xl glass p-6 space-y-4">
+        <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-secondary" /> Marleen & Voice
+        </h2>
+
+        <label className="flex items-start gap-3 rounded-xl bg-muted/10 p-4 text-sm">
+          <input
+            type="checkbox"
+            checked={sounds}
+            onChange={(e) => toggleSounds(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-secondary"
+          />
+          <span>
+            <strong className="inline-flex items-center gap-1.5">
+              <Volume2 className="h-4 w-4 text-secondary" /> Soundeffekte
+            </strong>
+            <span className="block text-muted-foreground mt-1">
+              Sehr leise Töne bei Aufnahme-Start/-Ende und nach Marleens Sprachantwort. System-Lautstärke wird respektiert.
+            </span>
+          </span>
+        </label>
+
+        <div className="rounded-xl bg-muted/10 p-4 space-y-2 text-sm">
+          <div className="font-medium inline-flex items-center gap-1.5">
+            <HistoryIcon className="h-4 w-4 text-secondary" /> Chat-Verlauf
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Verläufe mit Marleen werden lokal in deinem Browser gespeichert ({historyCount} gespeichert). Sie verlassen dein Gerät nicht.
+          </p>
+          <button
+            onClick={clearHistory}
+            className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
+          >
+            <Trash2 className="h-4 w-4" /> Alle Verläufe löschen
+          </button>
+        </div>
+
+        <div className="rounded-xl bg-muted/10 p-4 space-y-2 text-sm">
+          <div className="font-medium inline-flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4 text-secondary" /> Onboarding
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Die kurze Einführung zu Marleen und dem Notfall-Hinweis erneut anzeigen.
+          </p>
+          <button
+            onClick={replayOnboarding}
+            className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
+          >
+            <BookOpen className="h-4 w-4" /> Onboarding erneut anzeigen
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
