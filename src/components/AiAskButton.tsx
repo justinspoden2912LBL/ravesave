@@ -436,18 +436,19 @@ function AiPanel({
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full sm:max-w-lg sm:m-4 max-h-[88dvh] sm:max-h-[80vh] flex flex-col rounded-t-2xl sm:rounded-2xl glass border border-border shadow-2xl">
+      <div className="relative w-full sm:max-w-lg sm:m-4 max-h-[88dvh] sm:max-h-[80vh] flex flex-col rounded-t-2xl sm:rounded-2xl glass glass-shine border border-border shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-2 p-4 border-b border-border/60">
           <div className="min-w-0">
             <h2 className="text-base font-bold flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-secondary" /> Marlene
+              <Sparkles className="h-4 w-4 text-secondary" /> Marleen
               <span className="ml-1 rounded-full bg-secondary/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary ring-1 ring-secondary/30">
                 KI-Begleiterin
               </span>
+              <StatusPill listening={listening} thinking={isLoading} speaking={speakingAudio} />
             </h2>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              Marlene kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
+              Marleen kann Fehler machen. Keine medizinische Beratung. Bei akuten Symptomen{" "}
               <a href="tel:112" className="font-semibold text-destructive hover:underline">
                 112
               </a>{" "}
@@ -455,10 +456,26 @@ function AiPanel({
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            {sttSupported && (
+              <button
+                type="button"
+                onClick={toggleVoiceConvo}
+                aria-label={voiceConvo ? "Voice-Chat beenden" : "Voice-Chat starten"}
+                aria-pressed={voiceConvo}
+                title={voiceConvo ? "Voice-Chat beenden" : "Voice-Chat (sprich, Marleen antwortet als Stimme)"}
+                className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
+                  voiceConvo
+                    ? "bg-aurora animate-aurora text-primary-foreground glow ring-1 ring-secondary/40"
+                    : "hover:bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                {voiceConvo ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+            )}
             <button
               type="button"
               onClick={toggleVoice}
-              aria-label={voiceOn ? "Marlenes Stimme ausschalten" : "Marlenes Stimme einschalten"}
+              aria-label={voiceOn ? "Marleens Stimme ausschalten" : "Marleens Stimme einschalten"}
               aria-pressed={voiceOn}
               title={voiceOn ? "Stimme aus" : "Stimme an (weiblich, Deutsch)"}
               className={`rounded-full p-1.5 min-h-9 min-w-9 inline-flex items-center justify-center transition ${
