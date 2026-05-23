@@ -26,6 +26,7 @@ import {
 
 const PRIVACY_ACK_KEY = "ravesave_ai_panel_privacy_ack";
 const PROFILE_OPTIN_KEY = "ravesave_ai_panel_profile_optin";
+const VOICE_OPTIN_KEY = "ravesave_ai_panel_voice_optin";
 
 const EMERGENCY_REGEX =
   /\b(bewusstlos|krampf|krampfanfall|atemnot|atem stockt|nicht ansprechbar|brustschmerz|herzrasen|kollaps|überhitz|hyperthermie|reagiert nicht|suizid|umkippen|umgekippt)\b/i;
