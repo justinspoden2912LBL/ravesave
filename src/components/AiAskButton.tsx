@@ -932,3 +932,95 @@ function StatusPill({
     </span>
   );
 }
+
+function HistoryView({
+  tick,
+  currentId,
+  onOpen,
+  onBack,
+}: {
+  tick: number;
+  currentId: string;
+  onOpen: (id: string) => void;
+  onBack: () => void;
+}) {
+  const [items, setItems] = useState(() => listSessions());
+  useEffect(() => {
+    setItems(listSessions());
+  }, [tick]);
+
+  function refresh() {
+    setItems(listSessions());
+  }
+
+  function fmt(iso: string) {
+    try {
+      return new Date(iso).toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground min-h-9"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Zurück
+        </button>
+        <span className="text-[11px] text-muted-foreground">Lokal auf deinem Gerät</span>
+        <button
+          type="button"
+          onClick={() => {
+            if (!confirm("Wirklich alle Marleen-Verläufe löschen? Das lässt sich nicht rückgängig machen.")) return;
+            clearAllSessions();
+            refresh();
+          }}
+          className="inline-flex items-center gap-1 rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/30 px-2.5 py-1 text-[11px] font-medium hover:bg-destructive/20 min-h-9"
+          aria-label="Alle Verläufe löschen"
+        >
+          <Trash2 className="h-3 w-3" /> Alles löschen
+        </button>
+      </div>
+      {items.length === 0 ? (
+        <div className="p-6 text-center text-xs text-muted-foreground">
+          Noch keine gespeicherten Verläufe.
+        </div>
+      ) : (
+        <ul className="divide-y divide-border/40">
+          {items.map((it) => (
+            <li key={it.id} className={`flex items-center gap-2 px-4 py-2.5 ${it.id === currentId ? "bg-muted/20" : ""}`}>
+              <button
+                type="button"
+                onClick={() => onOpen(it.id)}
+                className="flex-1 min-w-0 text-left"
+              >
+                <p className="text-sm truncate">{it.title}</p>
+                <p className="text-[10px] text-muted-foreground">{fmt(it.updatedAt)}{it.id === currentId ? " · aktuell" : ""}</p>
+              </button>
+              <button
+                type="button"
+                aria-label="Verlauf löschen"
+                onClick={() => {
+                  deleteSession(it.id);
+                  refresh();
+                }}
+                className="rounded-full p-1.5 hover:bg-muted/40 text-muted-foreground min-h-9 min-w-9 inline-flex items-center justify-center"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
