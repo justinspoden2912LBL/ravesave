@@ -185,68 +185,6 @@ function Home() {
   );
 }
 
-type CatItem = { to: string; icon: LucideIcon; label: string; desc: string };
-
-function CategoryCard({
-  icon: Icon,
-  title,
-  subtitle,
-  items,
-}: {
-  icon: LucideIcon;
-  title: string;
-  subtitle: string;
-  items: CatItem[];
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className={`rounded-2xl glass overflow-hidden transition-all hover-lift hover:ring-1 hover:ring-primary/30 ${
-        open ? "ring-1 ring-primary/40" : ""
-      }`}
-    >
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left cursor-pointer hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
-        aria-expanded={open}
-        aria-label={`${title}: ${open ? "zuklappen" : "aufklappen"}`}
-      >
-        <div className="h-10 w-10 shrink-0 rounded-xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold">{title}</div>
-          <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
-        </div>
-        <ChevronDown
-          className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {open && (
-        <ul className="px-3 pb-3 space-y-2 border-t border-border/40 pt-3">
-          {items.map((it) => (
-            <li key={it.to}>
-              <Link
-                to={it.to}
-                className="group flex items-start gap-3 rounded-xl bg-background/40 border border-border/40 px-3 py-2.5 hover:bg-muted/30 transition"
-              >
-                <it.icon className="h-4 w-4 mt-0.5 text-aurora shrink-0" />
-                <div className="min-w-0">
-                  <div className="text-sm font-medium group-hover:text-foreground">{it.label}</div>
-                  <div className="text-[11px] text-muted-foreground">{it.desc}</div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 function Principle({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
@@ -256,29 +194,35 @@ function Principle({ title, children }: { title: string; children: React.ReactNo
   );
 }
 
-function PraxisTile({
+function QuickTile({
   to,
   icon: Icon,
   title,
   desc,
-  accent,
+  tone,
 }: {
   to: string;
   icon: LucideIcon;
   title: string;
   desc: string;
-  accent?: "aurora";
+  tone?: "aurora" | "emergency";
 }) {
+  const iconBg =
+    tone === "emergency"
+      ? "bg-destructive ring-2 ring-destructive/40 animate-pulse"
+      : tone === "aurora"
+      ? "bg-aurora animate-aurora glow"
+      : "bg-aurora animate-aurora opacity-80";
+  const ring =
+    tone === "emergency"
+      ? "ring-1 ring-destructive/40 hover:ring-destructive/60"
+      : "hover:ring-1 hover:ring-primary/30";
   return (
     <Link
       to={to}
-      className="group rounded-2xl glass p-4 hover-lift hover:ring-1 hover:ring-primary/30 transition flex items-start gap-3"
+      className={`group rounded-2xl glass p-4 hover-lift transition flex items-start gap-3 min-h-[88px] ${ring}`}
     >
-      <div
-        className={`h-10 w-10 shrink-0 rounded-xl grid place-items-center text-primary-foreground glow ${
-          accent === "aurora" ? "bg-aurora animate-aurora" : "bg-aurora animate-aurora opacity-80"
-        }`}
-      >
+      <div className={`h-11 w-11 shrink-0 rounded-xl grid place-items-center text-primary-foreground ${iconBg}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0">
@@ -288,3 +232,4 @@ function PraxisTile({
     </Link>
   );
 }
+
