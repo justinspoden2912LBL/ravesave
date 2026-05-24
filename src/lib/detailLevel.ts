@@ -78,8 +78,8 @@ export function useDetailLevel(): DetailLevel {
 }
 
 export const DETAIL_LABEL: Record<DetailLevel, string> = {
-  basic: "Basis",
-  extended: "Mehr",
+  basic: "Kurz",
+  extended: "Erweitert",
   expert: "Experte",
 };
 
