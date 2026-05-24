@@ -94,6 +94,7 @@ function Home() {
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
             <span className="text-foreground">, have </span>
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
+            <span className="sr-only"> — Harm Reduction Companion für Raver:innen in DE/AT/CH</span>
           </h1>
           <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-secondary/15 px-3 py-1 text-sm font-medium text-secondary ring-1 ring-secondary/30">
             <Sparkles className="h-3.5 w-3.5" /> Wissen statt Bauchgefühl.

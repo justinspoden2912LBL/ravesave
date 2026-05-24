@@ -206,6 +206,7 @@ function SubstancesPage() {
             <div key={sup} className="rounded-2xl glass overflow-hidden">
               <button
                 onClick={() => setOpenSuper((p) => ({ ...p, [sup]: !p[sup] }))}
+                aria-expanded={isOpen}
                 className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left hover:bg-muted/30 transition"
               >
                 <div className="flex items-center gap-2">
@@ -225,6 +226,7 @@ function SubstancesPage() {
                       <div key={cat} className="rounded-xl border border-border/50 bg-background/30">
                         <button
                           onClick={() => setOpenCat((p) => ({ ...p, [cat]: !p[cat] }))}
+                          aria-expanded={catOpen}
                           className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left hover:bg-muted/30 transition"
                         >
                           <div className="flex items-center gap-2">

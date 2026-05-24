@@ -26,6 +26,11 @@ const STATIC_ENTRIES: SitemapEntry[] = [
   { path: "/erfahrungen", changefreq: "weekly", priority: "0.6" },
   { path: "/onboarding", changefreq: "yearly", priority: "0.4" },
   { path: "/settings", changefreq: "yearly", priority: "0.3" },
+  { path: "/aftercare", changefreq: "monthly", priority: "0.7" },
+  { path: "/drugchecking", changefreq: "monthly", priority: "0.7" },
+  { path: "/reagenztest", changefreq: "monthly", priority: "0.7" },
+  { path: "/tolerance", changefreq: "monthly", priority: "0.6" },
+  { path: "/session/active", changefreq: "monthly", priority: "0.5" },
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
