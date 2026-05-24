@@ -156,6 +156,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Boot: hydrate i18n cache + refresh from server.
+  useEffect(() => {
+    initI18n();
+    void refreshI18n();
+  }, []);
+
+  // Page-view tracking.
+  useEffect(() => {
+    if (pathname) trackPageView(pathname);
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
