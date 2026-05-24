@@ -201,7 +201,7 @@ export const SUBSTANCES: Substance[] = [
     duration: "30–90 min",
     doses: [{ route: "insufflated", light: "10–30 mg", common: "30–60 mg", strong: "60–90 mg" }],
     evidence: [{ label: "EMCDDA Cocaine Profile", url: "https://www.emcdda.europa.eu/publications/drug-profiles/cocaine_en" }],
-    warnings: ["Kardiotox – Vasospasmus, Infarkt-Risiko", "Mit Alkohol → Cocaethylen (hepato-/kardiotox)"],
+    warnings: ["Kardiotox – Vasospasmus, Infarkt-Risiko", "Mit Alkohol → Cocaethylen (hepato-/kardiotox)", "EU-Streckmittel Levamisol (>70% der Proben) → Agranulozytose, Vaskulitis bei wiederholtem Gebrauch", "Fentanyl-Kontamination möglich — Teststreifen vor Konsum"],
     expert: {
       halfLife: "Plasma t½ ≈ 0.7–1.5 h; Benzoylecgonin t½ ≈ 5–8 h (Urin-Marker)",
       bioavailability: "nasal ~80 %, oral ~33 %, gerauchte Base (Crack) ~70 %",
@@ -1251,6 +1251,22 @@ export const SUBSTANCES: Substance[] = [
     doses: [{ route: "oral", threshold: "20 mg", light: "40–75 mg", common: "75–150 mg", strong: "150–200 mg" }],
     evidence: [{ label: "PsychonautWiki MDA", url: "https://psychonautwiki.org/wiki/MDA" }],
     warnings: ["Stärker neurotoxisch als MDMA (Tiermodelle)", "Lange Wirkdauer, hohe Herz-/Hitze-Last"],
+  },
+  {
+    id: "4-fa",
+    name: "4-FA",
+    aliases: ["4-Fluoramphetamin", "4-FMP", "Flux"],
+    category: "stimulant",
+    shortDescription: "Fluoriertes Amphetamin mit empathogen-stimulierendem Profil — in DE/AT verboten.",
+    mechanism: "Mixed-Action Releaser (NE/DA > 5-HT), Affinität zu TAAR1.",
+    onset: "30–90 min",
+    duration: "4–7 h",
+    doses: [{ route: "oral", threshold: "25 mg", light: "50–75 mg", common: "75–125 mg", strong: "125–175 mg", notes: "Steile Dosis-Wirkungs-Kurve im oberen Bereich" }],
+    evidence: [
+      { label: "Linsen 2015 – 4-FA-assoziierte kardiovaskuläre Komplikationen (Clin Toxicol)", url: "https://pubmed.ncbi.nlm.nih.gov/26653953/" },
+      { label: "EMCDDA 4-FA Risk Assessment", url: "https://www.emcdda.europa.eu/publications/risk-assessments/4-fa_en" },
+    ],
+    warnings: ["Kardiale Notfälle (Infarkt, Hirnblutung) bereits bei moderaten Dosen dokumentiert", "Neurotoxisch bei Wiederholung — keine kurze Cooldown-Phase ausreichend", "In DE seit 2017 BtMG-Anlage I (verboten)", "Häufig fälschlich als MDMA verkauft"],
   },
   {
     id: "methylone",

@@ -2,11 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
   BookOpen,
-  ChevronDown,
   Clock,
   GitMerge,
   Heart,
-  HeartPulse,
   MapPin,
   MessageCircle,
   Shield,
@@ -126,55 +124,21 @@ function Home() {
         </div>
       </section>
 
-      {/* Category hub — kompakt, klappt einzeln auf */}
+      {/* Direkter Quick-Hub — keine versteckten Accordions */}
       <section className="mt-8 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
-            Was möchtest du tun?
-          </h2>
-          <span className="text-xs text-muted-foreground">Zum Öffnen antippen</span>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <CategoryCard
-            icon={Activity}
-            title="Tracken"
-            subtitle="Konsum & Stimmung dokumentieren"
-            items={[
-              { to: "/log", icon: Activity, label: "Eintrag anlegen", desc: "Substanz, Dosis, Set & Setting." },
-              { to: "/stats", icon: Sparkles, label: "Statistik", desc: "Muster, Häufigkeiten, Trends." },
-            ]}
-          />
-          <CategoryCard
-            icon={ShieldAlert}
-            title="Risiko prüfen"
-            subtitle="Bevor du kombinierst"
-            items={[
-              { to: "/mix", icon: GitMerge, label: "Mischkonsum-Check", desc: "Ampel für 2+ Substanzen." },
-              { to: "/risks", icon: ShieldAlert, label: "Risiko-Übersicht", desc: "Alle Paarungen pro Substanz." },
-            ]}
-          />
-          <CategoryCard
-            icon={BookOpen}
-            title="Lernen"
-            subtitle="Pharmakologie verstehen"
-            items={[
-              { to: "/substances", icon: BookOpen, label: "Substanz-Wiki", desc: `${SUBSTANCES.length}+ Substanzen, gruppiert.` },
-              { to: "/chat", icon: MessageCircle, label: "KI-Chat", desc: "Fragen zur Studienlage stellen." },
-            ]}
-          />
-          <CategoryCard
-            icon={HeartPulse}
-            title="Notfall & Profil"
-            subtitle="Vorbereitet sein"
-            items={[
-              { to: "/settings", icon: UserCircle2, label: "Profil & Notfallpass", desc: "Erfahrung, Beruf, Notfallplan." },
-            ]}
-          />
+        <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
+          Schnellzugriff
+        </h2>
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
+          <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="aurora" />
+          <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe, gruppiert.`} />
+          <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung tracken." />
         </div>
       </section>
 
       {/* Praxis-Werkzeuge */}
-      <section className="mt-10 space-y-3">
+      <section className="mt-8 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
             Praxis-Werkzeuge
@@ -182,14 +146,18 @@ function Home() {
           <span className="text-xs text-muted-foreground">Vor, während &amp; nach der Session</span>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <PraxisTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." accent="aurora" />
-          <PraxisTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
-          <PraxisTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen in DE / AT / CH." />
-          <PraxisTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
-          <PraxisTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
-          <PraxisTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
+          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." tone="aurora" />
+          <QuickTile to="/risks" icon={ShieldAlert} title="Risiko-Übersicht" desc="Alle Paarungen pro Substanz." />
+          <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
+          <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen DE / AT / CH." />
+          <QuickTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
+          <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
+          <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
+          <QuickTile to="/chat" icon={MessageCircle} title="Marleen (KI)" desc="Fragen zur Studienlage." />
+          <QuickTile to="/stats" icon={Sparkles} title="Statistik" desc="Muster, Häufigkeiten, Trends." />
         </div>
       </section>
+
 
 
       {/* Principles */}
@@ -216,68 +184,6 @@ function Home() {
   );
 }
 
-type CatItem = { to: string; icon: LucideIcon; label: string; desc: string };
-
-function CategoryCard({
-  icon: Icon,
-  title,
-  subtitle,
-  items,
-}: {
-  icon: LucideIcon;
-  title: string;
-  subtitle: string;
-  items: CatItem[];
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className={`rounded-2xl glass overflow-hidden transition-all hover-lift hover:ring-1 hover:ring-primary/30 ${
-        open ? "ring-1 ring-primary/40" : ""
-      }`}
-    >
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left cursor-pointer hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition"
-        aria-expanded={open}
-        aria-label={`${title}: ${open ? "zuklappen" : "aufklappen"}`}
-      >
-        <div className="h-10 w-10 shrink-0 rounded-xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold">{title}</div>
-          <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
-        </div>
-        <ChevronDown
-          className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {open && (
-        <ul className="px-3 pb-3 space-y-2 border-t border-border/40 pt-3">
-          {items.map((it) => (
-            <li key={it.to}>
-              <Link
-                to={it.to}
-                className="group flex items-start gap-3 rounded-xl bg-background/40 border border-border/40 px-3 py-2.5 hover:bg-muted/30 transition"
-              >
-                <it.icon className="h-4 w-4 mt-0.5 text-aurora shrink-0" />
-                <div className="min-w-0">
-                  <div className="text-sm font-medium group-hover:text-foreground">{it.label}</div>
-                  <div className="text-[11px] text-muted-foreground">{it.desc}</div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 function Principle({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
@@ -287,29 +193,35 @@ function Principle({ title, children }: { title: string; children: React.ReactNo
   );
 }
 
-function PraxisTile({
+function QuickTile({
   to,
   icon: Icon,
   title,
   desc,
-  accent,
+  tone,
 }: {
   to: string;
   icon: LucideIcon;
   title: string;
   desc: string;
-  accent?: "aurora";
+  tone?: "aurora" | "emergency";
 }) {
+  const iconBg =
+    tone === "emergency"
+      ? "bg-destructive ring-2 ring-destructive/40 animate-pulse"
+      : tone === "aurora"
+      ? "bg-aurora animate-aurora glow"
+      : "bg-aurora animate-aurora opacity-80";
+  const ring =
+    tone === "emergency"
+      ? "ring-1 ring-destructive/40 hover:ring-destructive/60"
+      : "hover:ring-1 hover:ring-primary/30";
   return (
     <Link
       to={to}
-      className="group rounded-2xl glass p-4 hover-lift hover:ring-1 hover:ring-primary/30 transition flex items-start gap-3"
+      className={`group rounded-2xl glass p-4 hover-lift transition flex items-start gap-3 min-h-[88px] ${ring}`}
     >
-      <div
-        className={`h-10 w-10 shrink-0 rounded-xl grid place-items-center text-primary-foreground glow ${
-          accent === "aurora" ? "bg-aurora animate-aurora" : "bg-aurora animate-aurora opacity-80"
-        }`}
-      >
+      <div className={`h-11 w-11 shrink-0 rounded-xl grid place-items-center text-primary-foreground ${iconBg}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0">
@@ -319,3 +231,4 @@ function PraxisTile({
     </Link>
   );
 }
+
