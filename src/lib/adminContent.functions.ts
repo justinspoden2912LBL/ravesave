@@ -128,7 +128,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
 
 export const adminListTexts = createServerFn({ method: "GET" }).handler(
   async () => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return [];
     const { data, error } = await supabaseAdmin
       .from("ui_texts")
       .select("*")
@@ -148,7 +148,7 @@ const TextInput = z.object({
 export const adminUpsertText = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => TextInput.parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("ui_texts").upsert({
       key: data.key,
       value: data.value,
@@ -165,7 +165,7 @@ export const adminDeleteText = createServerFn({ method: "POST" })
     z.object({ key: z.string().min(1).max(120) }).parse(d),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin
       .from("ui_texts")
       .delete()
@@ -180,7 +180,7 @@ export const adminDeleteText = createServerFn({ method: "POST" })
 
 export const adminListSubstanceOverrides = createServerFn({ method: "GET" }).handler(
   async () => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return [];
     const { data, error } = await supabaseAdmin
       .from("substance_overrides")
       .select("*")
@@ -198,7 +198,7 @@ const SubstancePatch = z.object({
 export const adminUpsertSubstanceOverride = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SubstancePatch.parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("substance_overrides").upsert({
       slug: data.slug,
       patch: data.patch as never,
@@ -213,7 +213,7 @@ export const adminDeleteSubstanceOverride = createServerFn({ method: "POST" })
     z.object({ slug: z.string().min(1).max(120) }).parse(d),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin
       .from("substance_overrides")
       .delete()
