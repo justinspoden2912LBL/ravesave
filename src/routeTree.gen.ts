@@ -34,6 +34,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
+import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
@@ -163,6 +164,11 @@ const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ErfahrungenRoute,
 } as any)
+const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
+  id: '/api/voice-token',
+  path: '/api/voice-token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTtsRoute = ApiTtsRouteImport.update({
   id: '/api/tts',
   path: '/api/tts',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
+  '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
 }
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
+  '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
 }
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
+  '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
 }
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
+    | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
   fileRoutesByTo: FileRoutesByTo
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
+    | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
   id:
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
+    | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
   fileRoutesById: FileRoutesById
@@ -390,6 +402,7 @@ export interface RootRouteChildren {
   ApiAkutCoachRoute: typeof ApiAkutCoachRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiTtsRoute: typeof ApiTtsRoute
+  ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   SessionActiveRoute: typeof SessionActiveRoute
 }
 
@@ -570,6 +583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErfahrungenSlugRouteImport
       parentRoute: typeof ErfahrungenRoute
     }
+    '/api/voice-token': {
+      id: '/api/voice-token'
+      path: '/api/voice-token'
+      fullPath: '/api/voice-token'
+      preLoaderRoute: typeof ApiVoiceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/tts': {
       id: '/api/tts'
       path: '/api/tts'
@@ -633,18 +653,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAkutCoachRoute: ApiAkutCoachRoute,
   ApiChatRoute: ApiChatRoute,
   ApiTtsRoute: ApiTtsRoute,
+  ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   SessionActiveRoute: SessionActiveRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

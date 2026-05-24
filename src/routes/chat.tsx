@@ -14,6 +14,10 @@ import {
   listSessions, loadSession, saveSession, deleteSession, renameSession,
   newSessionId, exportSessionJson, exportSessionMarkdown, exportAllJson,
 } from "@/lib/chatHistory";
+import {
+  speak as ttsSpeak, cancelSpeech,
+  getTTSProvider, setTTSProvider, type TTSProviderId, TTS_PROVIDER_LABEL,
+} from "@/lib/tts";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -105,10 +109,39 @@ function ChatPage() {
   const [parsing, setParsing] = useState(false);
   const [listening, setListening] = useState(false);
   const [speak, setSpeak] = useState(false);
+  const [ttsProvider, setTtsProviderState] = useState<TTSProviderId>("browser");
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const spokenIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => { setTtsProviderState(getTTSProvider()); }, []);
+  function changeProvider(p: TTSProviderId) {
+    setTTSProvider(p);
+    setTtsProviderState(p);
+    cancelSpeech();
+    setSpeakingId(null);
+  }
+
+  /** Sprich einen einzelnen Text (manueller "Vorlesen"-Button). */
+  const playText = useCallback(async (id: string, text: string) => {
+    if (!text.trim()) return;
+    if (speakingId === id) {
+      cancelSpeech();
+      setSpeakingId(null);
+      return;
+    }
+    cancelSpeech();
+    setSpeakingId(id);
+    try {
+      await ttsSpeak(text);
+    } catch (e) {
+      console.warn("[chat] tts error", e);
+    } finally {
+      setSpeakingId((cur) => (cur === id ? null : cur));
+    }
+  }, [speakingId]);
 
   // ----- Local persistence -----
   const [persist, setPersist] = useState(false);
@@ -185,7 +218,7 @@ function ChatPage() {
     if (!isLoading) taRef.current?.focus();
   }, [isLoading]);
 
-  // TTS: speak assistant messages when finished
+  // TTS: speak assistant messages when finished (auto-Vorlesen)
   useEffect(() => {
     if (!speak || isLoading) return;
     const last = messages[messages.length - 1];
@@ -194,15 +227,13 @@ function ChatPage() {
     const text = last.parts.map((p: any) => (p.type === "text" ? p.text : "")).join(" ").trim();
     if (!text) return;
     spokenIdsRef.current.add(last.id);
-    try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "de-DE";
-      window.speechSynthesis.speak(u);
-    } catch { /* ignore */ }
+    setSpeakingId(last.id);
+    ttsSpeak(text)
+      .catch((e) => console.warn("[chat] tts error", e))
+      .finally(() => setSpeakingId((cur) => (cur === last.id ? null : cur)));
   }, [messages, isLoading, speak]);
 
-  useEffect(() => () => { try { window.speechSynthesis.cancel(); } catch {} }, []);
+  useEffect(() => () => { cancelSpeech(); }, []);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -490,18 +521,40 @@ function ChatPage() {
                 {isUser ? (
                   text
                 ) : (
-                  <div className="space-y-2 [&_a]:text-secondary [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:opacity-80 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_p]:my-1.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h3]:font-semibold [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ ...props }: any) => (
-                          <a {...props} target="_blank" rel="noopener noreferrer" />
-                        ),
-                      }}
-                    >
-                      {text}
-                    </ReactMarkdown>
-                  </div>
+                  <>
+                    <div className="space-y-2 [&_a]:text-secondary [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:opacity-80 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_p]:my-1.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h3]:font-semibold [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          a: ({ ...props }: any) => (
+                            <a {...props} target="_blank" rel="noopener noreferrer" />
+                          ),
+                        }}
+                      >
+                        {text}
+                      </ReactMarkdown>
+                    </div>
+                    {text.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => playText(m.id, text)}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition"
+                        aria-label={speakingId === m.id ? "Wiedergabe stoppen" : "Antwort vorlesen"}
+                      >
+                        {speakingId === m.id ? (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span>spricht…</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="h-3 w-3" />
+                            <span>Vorlesen</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -586,14 +639,24 @@ function ChatPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setSpeak(!speak); if (speak) window.speechSynthesis.cancel(); }}
+              onClick={() => { setSpeak(!speak); if (speak) cancelSpeech(); }}
               className={`rounded-full p-2 transition ${speak ? "bg-secondary/30 text-secondary" : "hover:bg-muted/40"}`}
-              title={speak ? "Sprachausgabe an (klicken zum Ausschalten)" : "Antworten vorlesen"}
-              aria-label={speak ? "Sprachausgabe ausschalten" : "Antworten vorlesen"}
+              title={speak ? `Auto-Vorlesen an · ${TTS_PROVIDER_LABEL[ttsProvider]}` : "Antworten automatisch vorlesen"}
+              aria-label={speak ? "Auto-Vorlesen ausschalten" : "Antworten automatisch vorlesen"}
               aria-pressed={speak}
             >
               {speak ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
+            <select
+              value={ttsProvider}
+              onChange={(e) => changeProvider(e.target.value as TTSProviderId)}
+              className="rounded-full bg-transparent px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground outline-none cursor-pointer"
+              title="Stimme / TTS-Anbieter"
+              aria-label="TTS-Anbieter wählen"
+            >
+              <option value="browser">🆓 Browser</option>
+              <option value="elevenlabs">✨ ElevenLabs</option>
+            </select>
           </div>
 
           {isLoading ? (
