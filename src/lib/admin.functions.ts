@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useSession, getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { createHash, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Server-side brute-force protection (best-effort, per-isolate in-memory).
