@@ -50,6 +50,9 @@ export function AdminStatsTab() {
     try {
       const res = await adminGetStats({ data: { days: d } });
       setStats(res);
+      if (res.authRequired) {
+        setErr("Admin-Sitzung abgelaufen. Bitte abmelden und neu einloggen.");
+      }
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Fehler");
     } finally {
