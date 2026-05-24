@@ -155,7 +155,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Nav />
-        <main className="flex-1 pb-bottomnav">
+        <main className="flex-1 pb-bottomnav min-h-[60vh]">
           <Outlet />
         </main>
         <Footer />
