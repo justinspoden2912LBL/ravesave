@@ -13,7 +13,7 @@ import { Home, BookOpen, Sparkles, ShieldAlert } from "lucide-react";
 const tabs = [
   { id: "home", to: "/", label: "Home", icon: Home, kind: "link" as const },
   { id: "wissen", to: "/substances", label: "Wissen", icon: BookOpen, kind: "link" as const },
-  { id: "marlene", label: "Marleen", icon: Sparkles, kind: "event" as const, event: "ravesave:open-marlene" },
+  { id: "marlene", to: "/chat", label: "Marleen", icon: Sparkles, kind: "link" as const },
   { id: "notfall", label: "Notfall", icon: ShieldAlert, kind: "event" as const, event: "ravesave:open-emergency" },
 ];
 
@@ -49,13 +49,17 @@ export function BottomNav() {
               />
             ) : null;
             if (t.kind === "link") {
+              const iconTone =
+                t.id === "marlene"
+                  ? `text-secondary ${active ? "drop-shadow-[0_0_8px_var(--aurora-1)]" : ""}`
+                  : active
+                  ? "text-secondary drop-shadow-[0_0_8px_var(--aurora-1)]"
+                  : "";
               return (
                 <li key={t.id} className="relative">
                   {indicator}
                   <Link to={t.to!} className={cls} aria-current={active ? "page" : undefined}>
-                    <Icon
-                      className={`h-5 w-5 ${active ? "text-secondary drop-shadow-[0_0_8px_var(--aurora-1)]" : ""}`}
-                    />
+                    <Icon className={`h-5 w-5 ${iconTone}`} />
                     <span>{t.label}</span>
                   </Link>
                 </li>
