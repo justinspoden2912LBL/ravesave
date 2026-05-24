@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, X, Sparkles, AlertTriangle, Phone, Syringe, ShieldCheck, Siren } from "lucide-react";
+import { ChevronRight, X, Sparkles, AlertTriangle, Phone, Syringe, ShieldCheck, Siren, Info } from "lucide-react";
 import {
   SUBSTANCES,
   assessPair,
@@ -15,8 +15,10 @@ import {
   type SubstanceCategory,
   type SuperCategory,
 } from "@/lib/substances";
-import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 import { useRegisterAiContext } from "@/lib/aiContext";
+import { useDetailLevel } from "@/lib/detailLevel";
+import { DetailGate } from "@/components/DetailGate";
+import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 
 
 export const Route = createFileRoute("/mix")({
@@ -33,16 +35,19 @@ export const Route = createFileRoute("/mix")({
   }),
 });
 
+const DETAIL_TO_PROFILE = {
+  basic: "lay",
+  extended: "intermediate",
+  expert: "expert",
+} as const;
+
 function MixPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
-  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
-  const [detail, setDetail] = useState<DetailLevel>("lay");
+  const detailLevel = useDetailLevel();
+  const detail = DETAIL_TO_PROFILE[detailLevel];
   const searchRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const d = getDetailLevel(loadProfile());
-    setProfileDetail(d);
-    setDetail(d);
     // Autofocus the picker so users can start typing immediately
     searchRef.current?.focus({ preventScroll: true });
   }, []);
