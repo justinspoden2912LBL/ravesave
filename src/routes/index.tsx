@@ -286,3 +286,36 @@ function Principle({ title, children }: { title: string; children: React.ReactNo
     </div>
   );
 }
+
+function PraxisTile({
+  to,
+  icon: Icon,
+  title,
+  desc,
+  accent,
+}: {
+  to: string;
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  accent?: "aurora";
+}) {
+  return (
+    <Link
+      to={to}
+      className="group rounded-2xl glass p-4 hover-lift hover:ring-1 hover:ring-primary/30 transition flex items-start gap-3"
+    >
+      <div
+        className={`h-10 w-10 shrink-0 rounded-xl grid place-items-center text-primary-foreground glow ${
+          accent === "aurora" ? "bg-aurora animate-aurora" : "bg-aurora animate-aurora opacity-80"
+        }`}
+      >
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="min-w-0">
+        <div className="font-semibold group-hover:text-foreground">{title}</div>
+        <div className="text-xs text-muted-foreground">{desc}</div>
+      </div>
+    </Link>
+  );
+}
