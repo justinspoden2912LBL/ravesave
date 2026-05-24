@@ -201,7 +201,7 @@ export const SUBSTANCES: Substance[] = [
     duration: "30–90 min",
     doses: [{ route: "insufflated", light: "10–30 mg", common: "30–60 mg", strong: "60–90 mg" }],
     evidence: [{ label: "EMCDDA Cocaine Profile", url: "https://www.emcdda.europa.eu/publications/drug-profiles/cocaine_en" }],
-    warnings: ["Kardiotox – Vasospasmus, Infarkt-Risiko", "Mit Alkohol → Cocaethylen (hepato-/kardiotox)"],
+    warnings: ["Kardiotox – Vasospasmus, Infarkt-Risiko", "Mit Alkohol → Cocaethylen (hepato-/kardiotox)", "EU-Streckmittel Levamisol (>70% der Proben) → Agranulozytose, Vaskulitis bei wiederholtem Gebrauch", "Fentanyl-Kontamination möglich — Teststreifen vor Konsum"],
     expert: {
       halfLife: "Plasma t½ ≈ 0.7–1.5 h; Benzoylecgonin t½ ≈ 5–8 h (Urin-Marker)",
       bioavailability: "nasal ~80 %, oral ~33 %, gerauchte Base (Crack) ~70 %",
