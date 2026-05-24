@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Download,
   FlaskConical,
   GitMerge,
   HandHeart,
