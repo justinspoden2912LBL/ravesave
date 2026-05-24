@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, X, Sparkles, AlertTriangle, Phone, Syringe, ShieldCheck, Siren } from "lucide-react";
+import { ChevronRight, X, Sparkles, AlertTriangle, Phone, Syringe, ShieldCheck, Siren, Info } from "lucide-react";
 import {
   SUBSTANCES,
   assessPair,
@@ -15,8 +15,10 @@ import {
   type SubstanceCategory,
   type SuperCategory,
 } from "@/lib/substances";
-import { loadProfile, getDetailLevel, type DetailLevel } from "@/lib/profile";
 import { useRegisterAiContext } from "@/lib/aiContext";
+import { useDetailLevel } from "@/lib/detailLevel";
+import { DetailGate } from "@/components/DetailGate";
+import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 
 
 export const Route = createFileRoute("/mix")({
@@ -33,16 +35,19 @@ export const Route = createFileRoute("/mix")({
   }),
 });
 
+const DETAIL_TO_PROFILE = {
+  basic: "lay",
+  extended: "intermediate",
+  expert: "expert",
+} as const;
+
 function MixPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
-  const [profileDetail, setProfileDetail] = useState<DetailLevel>("lay");
-  const [detail, setDetail] = useState<DetailLevel>("lay");
+  const detailLevel = useDetailLevel();
+  const detail = DETAIL_TO_PROFILE[detailLevel];
   const searchRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const d = getDetailLevel(loadProfile());
-    setProfileDetail(d);
-    setDetail(d);
     // Autofocus the picker so users can start typing immediately
     searchRef.current?.focus({ preventScroll: true });
   }, []);
@@ -84,12 +89,39 @@ function MixPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
-        <p className="text-muted-foreground mt-1">
-          Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
-        </p>
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
+          <p className="text-muted-foreground mt-1">
+            Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
+          </p>
+        </div>
+        <DetailLevelSwitch size="sm" />
       </header>
+
+      <DetailGate min="extended">
+        <aside className="rounded-2xl glass p-5 border border-border/40">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
+            <div className="text-sm leading-relaxed space-y-2">
+              <h2 className="font-semibold text-foreground">Warum ist Mischkonsum besonders riskant?</h2>
+              <p className="text-muted-foreground">
+                Substanzen interagieren oft <strong>nicht additiv</strong>: zwei Dämpfer drücken die Atmung
+                stärker als die Summe ihrer Einzelwirkungen, Stimulanzien addieren Hitze und Herzlast,
+                und Serotonerge können sich zum Serotonin-Syndrom hochschaukeln.
+              </p>
+              <DetailGate min="expert">
+                <p className="text-muted-foreground">
+                  Pharmakologisch entstehen Risiken aus geteilten Rezeptor-Targets (GABA<sub>A</sub>, µ-Opioid,
+                  5-HT<sub>2A</sub>), CYP-Hemmung (Grapefruit, Ritonavir → MDMA), pharmakokinetischen
+                  Verschiebungen und konkurrierenden Effekten an Thermoregulation und QT-Intervall.
+                </p>
+              </DetailGate>
+            </div>
+          </div>
+        </aside>
+      </DetailGate>
+
 
       {/* Selected */}
       <div className="rounded-2xl glass p-5">
@@ -220,7 +252,7 @@ function MixPage() {
         <div className="rounded-2xl glass p-5">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <h2 className="font-semibold">Alle Paare</h2>
-            <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+            <DetailLevelSwitch size="sm" />
           </div>
           <ul className="space-y-2">
             {pairs.map(({ a, b, risk }) => {
@@ -393,37 +425,3 @@ function GroupedPicker({
   );
 }
 
-const DETAIL_LABEL: Record<DetailLevel, string> = {
-  lay: "Einfach",
-  intermediate: "Mechanismus",
-  expert: "Fachebene",
-};
-
-function DetailToggle({
-  value,
-  onChange,
-  profileDetail,
-}: {
-  value: DetailLevel;
-  onChange: (v: DetailLevel) => void;
-  profileDetail: DetailLevel;
-}) {
-  const levels: DetailLevel[] = ["lay", "intermediate", "expert"];
-  return (
-    <div className="flex items-center gap-1 rounded-full glass p-0.5 text-xs">
-      {levels.map((l) => (
-        <button
-          key={l}
-          onClick={() => onChange(l)}
-          title={l === profileDetail ? "Aus deinem Profil" : undefined}
-          className={`px-2.5 py-1 rounded-full transition ${
-            value === l ? "bg-aurora animate-aurora text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {DETAIL_LABEL[l]}
-          {l === profileDetail && <span className="ml-1 opacity-60">·</span>}
-        </button>
-      ))}
-    </div>
-  );
-}

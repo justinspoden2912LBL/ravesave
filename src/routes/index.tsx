@@ -6,7 +6,9 @@ import {
   GitMerge,
   Heart,
   HeartPulse,
+  ListChecks,
   MapPin,
+
   MessageCircle,
   Shield,
   ShieldAlert,
@@ -171,8 +173,10 @@ function Home() {
           <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
           <QuickTile to="/akut" icon={HeartPulse} title="Akute Hilfe" desc="Atmung, Erden, Comedown." />
           <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="aurora" />
+          <QuickTile to="/checkliste" icon={ListChecks} title="Pre-Rave-Check" desc="Zwei Minuten vor dem Start." />
           <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe, gruppiert.`} />
           <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung tracken." />
+
         </div>
       </section>
 
