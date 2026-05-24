@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      page_views: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string | null
@@ -74,6 +101,72 @@ export type Database = {
           key?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      substance_overrides: {
+        Row: {
+          patch: Json
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          patch?: Json
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          patch?: Json
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ui_texts: {
+        Row: {
+          category: string | null
+          description: string | null
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          category?: string | null
+          description?: string | null
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          category?: string | null
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      usage_events: {
+        Row: {
+          created_at: string
+          detail: string | null
+          event_type: string
+          id: string
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          event_type: string
+          id?: string
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          event_type?: string
+          id?: string
+          session_id?: string | null
         }
         Relationships: []
       }
