@@ -268,12 +268,13 @@ export function Footer() {
         Reinheit und individuelle Verträglichkeit sind nicht abschätzbar; nutze Drug-Checking,
         beginne mit niedrigen Dosen, sei nicht allein. Im Notfall: <strong>112</strong>.
       </p>
-      <p className="leading-relaxed">
-        Feedback, Bugs oder Verbesserungsvorschläge? →{" "}
-        <a className="text-secondary hover:underline" href="mailto:ravesafe.live@gmail.com?subject=Rave%20Safe%20Beta%20Feedback">
-          ravesafe.live@gmail.com
-        </a>
-      </p>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Link to="/install" className="text-secondary hover:underline">App installieren</Link>
+        <span className="text-border">·</span>
+        <Link to="/about" className="text-secondary hover:underline">Über uns</Link>
+        <span className="text-border">·</span>
+        <Link to="/settings" className="text-secondary hover:underline">Einstellungen</Link>
+      </div>
     </footer>
   );
 }
