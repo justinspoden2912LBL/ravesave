@@ -23,6 +23,7 @@ import { Route as NotfallRouteImport } from './routes/notfall'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
+import { Route as InstallRouteImport } from './routes/install'
 import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
 import { Route as ChecklisteRouteImport } from './routes/checkliste'
@@ -108,6 +109,11 @@ const LogRoute = LogRouteImport.update({
 const KniggeRoute = KniggeRouteImport.update({
   id: '/knigge',
   path: '/knigge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ErfahrungenRoute = ErfahrungenRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -397,6 +409,7 @@ export interface RootRouteChildren {
   ChecklisteRoute: typeof ChecklisteRoute
   DrugcheckingRoute: typeof DrugcheckingRoute
   ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
+  InstallRoute: typeof InstallRoute
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
@@ -517,6 +530,13 @@ declare module '@tanstack/react-router' {
       path: '/knigge'
       fullPath: '/knigge'
       preLoaderRoute: typeof KniggeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/erfahrungen': {
@@ -656,6 +676,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChecklisteRoute: ChecklisteRoute,
   DrugcheckingRoute: DrugcheckingRoute,
   ErfahrungenRoute: ErfahrungenRouteWithChildren,
+  InstallRoute: InstallRoute,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
