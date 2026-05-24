@@ -225,7 +225,7 @@ function MixPage() {
         <div className="rounded-2xl glass p-5">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <h2 className="font-semibold">Alle Paare</h2>
-            <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
+            <DetailLevelSwitch size="sm" />
           </div>
           <ul className="space-y-2">
             {pairs.map(({ a, b, risk }) => {
