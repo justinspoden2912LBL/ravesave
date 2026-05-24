@@ -14,6 +14,9 @@ import {
   type Substance,
 } from "@/lib/substances";
 import { useRegisterAiContext } from "@/lib/aiContext";
+import { useDetailLevel } from "@/lib/detailLevel";
+import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
+
 
 
 export const Route = createFileRoute("/substances")({
@@ -30,14 +33,7 @@ export const Route = createFileRoute("/substances")({
   }),
 });
 
-const DEPTH_KEY = "rs.depth";
 type Depth = "einfach" | "fortgeschritten" | "experte";
-
-const DEPTH_META: Record<Depth, { label: string; hint: string }> = {
-  einfach: { label: "Einfach", hint: "Locker erklärt, das Wichtigste auf einen Blick." },
-  fortgeschritten: { label: "Fortgeschritten", hint: "Mehr Kontext, klare Empfehlungen, mehr Tiefe." },
-  experte: { label: "Experte", hint: "Pharmakologie, Rezeptorprofile, PK/CYP — volle Tiefe." },
-};
 
 const TAB_LABELS: Record<Depth, Record<"overview" | "dose" | "duration" | "risks" | "pharma", string>> = {
   einfach: { overview: "Was ist das?", dose: "Wie viel?", duration: "Wie lange?", risks: "Worauf achten", pharma: "Pharma" },
@@ -51,20 +47,11 @@ function SubstancesPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [openSuper, setOpenSuper] = useState<Record<string, boolean>>({});
   const [openCat, setOpenCat] = useState<Record<string, boolean>>({});
-  const [depth, setDepth] = useState<Depth>("fortgeschritten");
 
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem(DEPTH_KEY) as Depth | null;
-      if (v === "einfach" || v === "fortgeschritten" || v === "experte") setDepth(v);
-    } catch {}
-  }, []);
-  useEffect(() => {
-    try {
-      localStorage.setItem(DEPTH_KEY, depth);
-    } catch {}
-  }, [depth]);
-
+  // Globale Detailtiefe → lokale Depth-Variante mappen
+  const detailLevel = useDetailLevel();
+  const depth: Depth =
+    detailLevel === "basic" ? "einfach" : detailLevel === "extended" ? "fortgeschritten" : "experte";
   const expert = depth === "experte";
 
   // KI-Kontext: aktuell geöffnetes Wiki-Item
@@ -136,30 +123,11 @@ function SubstancesPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl glass p-3 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <FlaskConical className="h-3 w-3" /> Detailtiefe
-            </span>
-            <span className="text-[10px] text-muted-foreground hidden sm:block">{DEPTH_META[depth].hint}</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {(Object.keys(DEPTH_META) as Depth[]).map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDepth(d)}
-                className={`rounded-lg px-3 py-2 text-xs font-medium border transition ${
-                  depth === d
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-muted/20 border-border/50 text-foreground/80 hover:bg-muted/50"
-                }`}
-              >
-                {DEPTH_META[d].label}
-              </button>
-            ))}
-          </div>
-          <p className="text-[10px] text-muted-foreground sm:hidden">{DEPTH_META[depth].hint}</p>
+        <div className="rounded-2xl glass p-3 flex items-center justify-between gap-3 flex-wrap">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <FlaskConical className="h-3 w-3" /> Detailtiefe
+          </span>
+          <DetailLevelSwitch size="sm" />
         </div>
       </header>
 
