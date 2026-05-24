@@ -66,7 +66,10 @@ function NotfallPage() {
 
   // Vorlesen der stabilen Seitenlage via SpeechSynthesis
   const [reading, setReading] = useState(false);
-  const ttsAvailable = typeof window !== "undefined" && "speechSynthesis" in window;
+  const [ttsAvailable, setTtsAvailable] = useState(false);
+  useEffect(() => {
+    setTtsAvailable(typeof window !== "undefined" && "speechSynthesis" in window);
+  }, []);
 
   function speakRecovery() {
     if (!ttsAvailable) return;
