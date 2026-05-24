@@ -14,8 +14,6 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
-import { Spotlight } from "../components/Spotlight";
-import { ActiveSessionHUD } from "../components/ActiveSessionHUD";
 
 function NotFoundComponent() {
   return (
@@ -79,8 +77,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Alles lokal im Browser." },
+      { title: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
+      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
       { name: "author", content: "Rave Safe, have Fun" },
       { name: "theme-color", content: "#0c0a1c" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
@@ -91,8 +89,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7f4902de-9520-4d17-bc78-e1fbff2f9798" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/549e0f68-4709-4dfe-86d2-63618f64ad0b" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/549e0f68-4709-4dfe-86d2-63618f64ad0b" },
+      { property: "og:title", content: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
+      { name: "twitter:title", content: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
+      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
+      { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
     ],
     links: [
       {
@@ -155,7 +157,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Nav />
-        <main className="flex-1 pb-bottomnav min-h-[60vh]">
+        <main className="flex-1 pb-bottomnav">
           <Outlet />
         </main>
         <Footer />
@@ -163,8 +165,6 @@ function RootComponent() {
         <AiAskButton />
         <BottomNav />
         <WelcomeOnboarding />
-        <ActiveSessionHUD />
-        <Spotlight />
       </div>
     </QueryClientProvider>
   );
