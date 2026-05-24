@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useSession, getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
+import {
+  useSession as getTanstackSession,
+  getRequestIP,
+  getRequestHeader,
+} from "@tanstack/react-start/server";
 import { z } from "zod";
 import { createHash, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
@@ -79,7 +83,7 @@ function sessionConfig() {
 }
 
 async function getAdminSession() {
-  return useSession<AdminSession>(sessionConfig());
+  return getTanstackSession<AdminSession>(sessionConfig());
 }
 
 async function useAdminSessionGate() {
