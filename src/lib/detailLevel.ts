@@ -1,6 +1,7 @@
 // Globale Informations-Tiefe (Basis / Erweitert / Experte).
 // Wird lokal im Browser persistiert. Synchron mit Marleen-AiMode.
 import { useSyncExternalStore } from "react";
+import { setAiMode } from "@/lib/aiContext";
 
 export type DetailLevel = "basic" | "extended" | "expert";
 
@@ -34,9 +35,11 @@ export function setDetailLevel(level: DetailLevel) {
   snapshot = level;
   try {
     window.localStorage.setItem(KEY, level);
-    // Sync zurück auf Marleen-AiMode für bestehenden Chat-Kontext
-    const aiMode = level === "basic" ? "einfach" : level === "extended" ? "normal" : "experte";
-    window.localStorage.setItem(LEGACY_AI_KEY, aiMode);
+  } catch {
+    /* ignore */
+  }
+  try {
+    setAiMode(level === "basic" ? "einfach" : level === "extended" ? "normal" : "experte");
   } catch {
     /* ignore */
   }
