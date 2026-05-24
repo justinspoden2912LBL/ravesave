@@ -61,6 +61,7 @@ const links: readonly NavLink[] = [
   { to: "/log", label: "Protokoll", icon: Activity, tone: "primary" },
   { to: "/stats", label: "Statistik", icon: FlaskConical, tone: "primary" },
   // Meta
+  { to: "/install", label: "App installieren", icon: Download, tone: "neutral" },
   { to: "/about", label: "Über", icon: Info, tone: "neutral" },
   { to: "/settings", label: "Profil", icon: SettingsIcon, tone: "neutral" },
 ] as const;
