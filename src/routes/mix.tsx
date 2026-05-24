@@ -89,12 +89,39 @@ function MixPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
-        <p className="text-muted-foreground mt-1">
-          Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
-        </p>
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Mischkonsum-Check</h1>
+          <p className="text-muted-foreground mt-1">
+            Wähle 2 oder mehr Substanzen — wir zeigen das paarweise Risiko, basierend auf TripSit, EMCDDA und Fachliteratur.
+          </p>
+        </div>
+        <DetailLevelSwitch size="sm" />
       </header>
+
+      <DetailGate min="extended">
+        <aside className="rounded-2xl glass p-5 border border-border/40">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
+            <div className="text-sm leading-relaxed space-y-2">
+              <h2 className="font-semibold text-foreground">Warum ist Mischkonsum besonders riskant?</h2>
+              <p className="text-muted-foreground">
+                Substanzen interagieren oft <strong>nicht additiv</strong>: zwei Dämpfer drücken die Atmung
+                stärker als die Summe ihrer Einzelwirkungen, Stimulanzien addieren Hitze und Herzlast,
+                und Serotonerge können sich zum Serotonin-Syndrom hochschaukeln.
+              </p>
+              <DetailGate min="expert">
+                <p className="text-muted-foreground">
+                  Pharmakologisch entstehen Risiken aus geteilten Rezeptor-Targets (GABA<sub>A</sub>, µ-Opioid,
+                  5-HT<sub>2A</sub>), CYP-Hemmung (Grapefruit, Ritonavir → MDMA), pharmakokinetischen
+                  Verschiebungen und konkurrierenden Effekten an Thermoregulation und QT-Intervall.
+                </p>
+              </DetailGate>
+            </div>
+          </div>
+        </aside>
+      </DetailGate>
+
 
       {/* Selected */}
       <div className="rounded-2xl glass p-5">
