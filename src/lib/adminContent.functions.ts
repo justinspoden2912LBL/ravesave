@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 // editable UI text, and substance overrides. It re-implements the
 // `requireAdmin` gate locally to avoid a circular import with
 // `admin.functions.ts`.
-import { useSession } from "@tanstack/react-start/server";
+import { useSession as getTanstackSession } from "@tanstack/react-start/server";
 
 type AdminSession = { admin?: boolean; loginAt?: number };
 const SESSION_MAX_AGE = 60 * 60 * 24;
@@ -30,7 +30,7 @@ function sessionConfig() {
 }
 
 async function useAdminSessionGate() {
-  const s = await useSession<AdminSession>(sessionConfig());
+  const s = await getTanstackSession<AdminSession>(sessionConfig());
   if (!s.data.admin) return null;
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
