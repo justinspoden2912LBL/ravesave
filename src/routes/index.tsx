@@ -125,55 +125,21 @@ function Home() {
         </div>
       </section>
 
-      {/* Category hub — kompakt, klappt einzeln auf */}
+      {/* Direkter Quick-Hub — keine versteckten Accordions */}
       <section className="mt-8 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
-            Was möchtest du tun?
-          </h2>
-          <span className="text-xs text-muted-foreground">Zum Öffnen antippen</span>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <CategoryCard
-            icon={Activity}
-            title="Tracken"
-            subtitle="Konsum & Stimmung dokumentieren"
-            items={[
-              { to: "/log", icon: Activity, label: "Eintrag anlegen", desc: "Substanz, Dosis, Set & Setting." },
-              { to: "/stats", icon: Sparkles, label: "Statistik", desc: "Muster, Häufigkeiten, Trends." },
-            ]}
-          />
-          <CategoryCard
-            icon={ShieldAlert}
-            title="Risiko prüfen"
-            subtitle="Bevor du kombinierst"
-            items={[
-              { to: "/mix", icon: GitMerge, label: "Mischkonsum-Check", desc: "Ampel für 2+ Substanzen." },
-              { to: "/risks", icon: ShieldAlert, label: "Risiko-Übersicht", desc: "Alle Paarungen pro Substanz." },
-            ]}
-          />
-          <CategoryCard
-            icon={BookOpen}
-            title="Lernen"
-            subtitle="Pharmakologie verstehen"
-            items={[
-              { to: "/substances", icon: BookOpen, label: "Substanz-Wiki", desc: `${SUBSTANCES.length}+ Substanzen, gruppiert.` },
-              { to: "/chat", icon: MessageCircle, label: "KI-Chat", desc: "Fragen zur Studienlage stellen." },
-            ]}
-          />
-          <CategoryCard
-            icon={HeartPulse}
-            title="Notfall & Profil"
-            subtitle="Vorbereitet sein"
-            items={[
-              { to: "/settings", icon: UserCircle2, label: "Profil & Notfallpass", desc: "Erfahrung, Beruf, Notfallplan." },
-            ]}
-          />
+        <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
+          Schnellzugriff
+        </h2>
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
+          <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="aurora" />
+          <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe, gruppiert.`} />
+          <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung tracken." />
         </div>
       </section>
 
       {/* Praxis-Werkzeuge */}
-      <section className="mt-10 space-y-3">
+      <section className="mt-8 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
             Praxis-Werkzeuge
@@ -181,14 +147,18 @@ function Home() {
           <span className="text-xs text-muted-foreground">Vor, während &amp; nach der Session</span>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <PraxisTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." accent="aurora" />
-          <PraxisTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
-          <PraxisTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen in DE / AT / CH." />
-          <PraxisTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
-          <PraxisTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
-          <PraxisTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
+          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." tone="aurora" />
+          <QuickTile to="/risks" icon={ShieldAlert} title="Risiko-Übersicht" desc="Alle Paarungen pro Substanz." />
+          <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
+          <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen DE / AT / CH." />
+          <QuickTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
+          <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
+          <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
+          <QuickTile to="/chat" icon={MessageCircle} title="Marleen (KI)" desc="Fragen zur Studienlage." />
+          <QuickTile to="/stats" icon={Sparkles} title="Statistik" desc="Muster, Häufigkeiten, Trends." />
         </div>
       </section>
+
 
 
       {/* Principles */}
