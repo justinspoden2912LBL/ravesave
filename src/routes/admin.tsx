@@ -105,7 +105,9 @@ function AdminPage() {
       <header className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Admin</h1>
-          <p className="text-xs text-muted-foreground">Statistik · Texte · Substanzen · Beiträge</p>
+          <p className="text-xs text-muted-foreground">
+            Seiten an-/abschalten · Texte bearbeiten · Statistiken
+          </p>
         </div>
         <button
           onClick={async () => {
@@ -126,8 +128,9 @@ function AdminPage() {
       <nav className="flex gap-1 overflow-x-auto -mx-4 px-4 pb-1" aria-label="Admin-Bereiche">
         {(
           [
+            { id: "pages", label: "Seiten" },
             { id: "stats", label: "Statistik" },
-            { id: "texts", label: "Texte" },
+            { id: "texts", label: "Alle Texte" },
             { id: "substances", label: "Substanzen" },
             { id: "posts", label: "Beiträge" },
           ] as { id: Tab; label: string }[]
@@ -146,6 +149,7 @@ function AdminPage() {
         ))}
       </nav>
 
+      {tab === "pages" && <AdminPagesTab />}
       {tab === "stats" && <AdminStatsTab />}
       {tab === "texts" && <AdminTextsTab />}
       {tab === "substances" && <AdminSubstancesTab />}
@@ -153,6 +157,7 @@ function AdminPage() {
     </div>
   );
 }
+
 
 function LoginCard({ onSuccess }: { onSuccess: () => void }) {
   const [key, setKey] = useState("");
