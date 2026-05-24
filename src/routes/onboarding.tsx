@@ -53,9 +53,9 @@ export const Route = createFileRoute("/onboarding")({
       { name: "description", content: "Richte dein lokales Profil ein: Erfahrung, Beruf und Notfallplan in 2 Minuten." },
       { property: "og:title", content: "Profil einrichten — Rave Safe, have Fun" },
       { property: "og:description", content: "Lokales Profil für persönlichere Dosis- und Risikohinweise." },
-      { property: "og:url", content: "https://ravesave.lovable.app/onboarding" },
+      { property: "og:url", content: "https://ravesave.fun/onboarding" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/onboarding" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/onboarding" }],
   }),
 });
 

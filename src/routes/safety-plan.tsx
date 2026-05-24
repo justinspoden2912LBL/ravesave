@@ -39,9 +39,9 @@ export const Route = createFileRoute("/safety-plan")({
         property: "og:description",
         content: "In wenigen Schritten einen Plan für die Nacht erstellen.",
       },
-      { property: "og:url", content: "https://ravesave.lovable.app/safety-plan" },
+      { property: "og:url", content: "https://ravesave.fun/safety-plan" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/safety-plan" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/safety-plan" }],
   }),
 });
 

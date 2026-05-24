@@ -15,9 +15,9 @@ export const Route = createFileRoute("/log")({
       { name: "description", content: "Dokumentiere Substanz, Dosis, Set & Setting lokal im Browser und erkenne riskante Kombinationen der letzten Stunden." },
       { property: "og:title", content: "Konsum-Protokoll — Rave Safe, have Fun" },
       { property: "og:description", content: "Dokumentiere Substanz, Dosis und Stimmung lokal — mit Live-Warnung bei kritischen Kombinationen." },
-      { property: "og:url", content: "https://ravesave.lovable.app/log" },
+      { property: "og:url", content: "https://ravesave.fun/log" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/log" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/log" }],
   }),
 });
 

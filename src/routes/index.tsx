@@ -27,9 +27,9 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
       { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
       { property: "og:description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
-      { property: "og:url", content: "https://ravesave.lovable.app/" },
+      { property: "og:url", content: "https://ravesave.fun/" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/" }],
   }),
 });
 

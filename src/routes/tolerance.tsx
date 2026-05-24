@@ -11,9 +11,9 @@ export const Route = createFileRoute("/tolerance")({
       { name: "description", content: "Empfohlene Mindestabstände pro Substanz, automatisch aus deinem lokalen Log." },
       { property: "og:title", content: "Toleranz & Cooldowns — Rave Safe, have Fun" },
       { property: "og:description", content: "Cooldowns und Pausen — basierend auf deinem Log." },
-      { property: "og:url", content: "https://ravesave.lovable.app/tolerance" },
+      { property: "og:url", content: "https://ravesave.fun/tolerance" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/tolerance" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/tolerance" }],
   }),
 });
 
