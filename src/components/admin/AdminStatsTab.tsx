@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  BarChart3,
-  Globe2,
-  Activity,
-  RefreshCw,
-} from "lucide-react";
+import { BarChart3, Globe2, Activity, RefreshCw } from "lucide-react";
 import { adminGetStats } from "@/lib/adminContent.functions";
 
 type Stats = Awaited<ReturnType<typeof adminGetStats>>;
@@ -50,6 +45,9 @@ export function AdminStatsTab() {
     try {
       const res = await adminGetStats({ data: { days: d } });
       setStats(res);
+      if (res.authRequired) {
+        setErr("Admin-Sitzung abgelaufen. Bitte abmelden und neu einloggen.");
+      }
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Fehler");
     } finally {
@@ -61,10 +59,7 @@ export function AdminStatsTab() {
     void load(days);
   }, [days]);
 
-  const maxByDay = useMemo(
-    () => Math.max(1, ...(stats?.byDay ?? []).map((d) => d.count)),
-    [stats],
-  );
+  const maxByDay = useMemo(() => Math.max(1, ...(stats?.byDay ?? []).map((d) => d.count)), [stats]);
 
   return (
     <div className="space-y-5">
@@ -102,9 +97,21 @@ export function AdminStatsTab() {
       ) : !stats ? null : (
         <>
           <div className="grid grid-cols-3 gap-2">
-            <Card icon={<BarChart3 className="h-4 w-4" />} label="Aufrufe" value={stats.totals.views} />
-            <Card icon={<Activity className="h-4 w-4" />} label="Sessions" value={stats.totals.sessions} />
-            <Card icon={<BarChart3 className="h-4 w-4" />} label="Events" value={stats.totals.events} />
+            <Card
+              icon={<BarChart3 className="h-4 w-4" />}
+              label="Aufrufe"
+              value={stats.totals.views}
+            />
+            <Card
+              icon={<Activity className="h-4 w-4" />}
+              label="Sessions"
+              value={stats.totals.sessions}
+            />
+            <Card
+              icon={<BarChart3 className="h-4 w-4" />}
+              label="Events"
+              value={stats.totals.events}
+            />
           </div>
 
           {stats.byDay.length > 0 && (
@@ -147,7 +154,9 @@ export function AdminStatsTab() {
               <Globe2 className="h-4 w-4" /> Länder
             </h3>
             {stats.topCountries.length === 0 ? (
-              <p className="text-xs text-muted-foreground">Keine Länder erkannt (lokal/Preview?).</p>
+              <p className="text-xs text-muted-foreground">
+                Keine Länder erkannt (lokal/Preview?).
+              </p>
             ) : (
               <ul className="space-y-1.5">
                 {stats.topCountries.map((c) => (
@@ -182,15 +191,7 @@ export function AdminStatsTab() {
   );
 }
 
-function Card({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-}) {
+function Card({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
     <div className="rounded-2xl glass p-3 text-center">
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

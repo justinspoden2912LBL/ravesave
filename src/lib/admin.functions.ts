@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useSession, getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
+import {
+  useSession as getTanstackSession,
+  getRequestIP,
+  getRequestHeader,
+} from "@tanstack/react-start/server";
 import { z } from "zod";
 import { createHash, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
@@ -79,20 +83,18 @@ function sessionConfig() {
 }
 
 async function getAdminSession() {
-  return useSession<AdminSession>(sessionConfig());
+  return getTanstackSession<AdminSession>(sessionConfig());
 }
 
-async function requireAdmin() {
+async function useAdminSessionGate() {
   const s = await getAdminSession();
   if (!s.data.admin) {
-    // Throw a Response so TanStack treats this as an HTTP 401 (control flow)
-    // rather than an uncaught runtime error in the dev overlay.
-    throw new Response("Unauthorized", { status: 401 });
+    return null;
   }
   // 24h enforce
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
-    throw new Response("Session expired", { status: 401 });
+    return null;
   }
   return s;
 }
@@ -129,13 +131,12 @@ export const adminLogout = createServerFn({ method: "POST" }).handler(async () =
 export const adminWhoami = createServerFn({ method: "GET" }).handler(async () => {
   const s = await getAdminSession();
   const isAdmin =
-    !!s.data.admin &&
-    (!s.data.loginAt || Date.now() - s.data.loginAt <= SESSION_MAX_AGE * 1000);
+    !!s.data.admin && (!s.data.loginAt || Date.now() - s.data.loginAt <= SESSION_MAX_AGE * 1000);
   return { isAdmin, loginAt: s.data.loginAt ?? null };
 });
 
 export const adminListPosts = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAdmin();
+  if (!(await useAdminSessionGate())) return [];
   const { data, error } = await supabaseAdmin
     .from("posts")
     .select("*")
@@ -147,7 +148,11 @@ export const adminListPosts = createServerFn({ method: "GET" }).handler(async ()
 const PostInput = z.object({
   id: z.string().uuid().optional(),
   title: z.string().min(1).max(300),
-  slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9-]+$/),
   excerpt: z.string().max(500).nullable().optional(),
   category: z.string().max(80).nullable().optional(),
   content: z.string().max(100000),
@@ -157,7 +162,7 @@ const PostInput = z.object({
 export const adminUpsertPost = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => PostInput.parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const now = new Date().toISOString();
     if (data.id) {
       const { data: existing } = await supabaseAdmin
@@ -166,8 +171,8 @@ export const adminUpsertPost = createServerFn({ method: "POST" })
         .eq("id", data.id)
         .maybeSingle();
       const published_at = data.published
-        ? existing?.published_at ?? now
-        : existing?.published_at ?? null;
+        ? (existing?.published_at ?? now)
+        : (existing?.published_at ?? null);
       const { error } = await supabaseAdmin
         .from("posts")
         .update({
@@ -202,11 +207,9 @@ export const adminUpsertPost = createServerFn({ method: "POST" })
   });
 
 export const adminTogglePublish = createServerFn({ method: "POST" })
-  .inputValidator((d: { id: string }) =>
-    z.object({ id: z.string().uuid() }).parse(d),
-  )
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { data: existing, error: e1 } = await supabaseAdmin
       .from("posts")
       .select("published, published_at")
@@ -219,7 +222,9 @@ export const adminTogglePublish = createServerFn({ method: "POST" })
       .from("posts")
       .update({
         published: next,
-        published_at: next ? existing.published_at ?? new Date().toISOString() : existing.published_at,
+        published_at: next
+          ? (existing.published_at ?? new Date().toISOString())
+          : existing.published_at,
       })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -227,11 +232,9 @@ export const adminTogglePublish = createServerFn({ method: "POST" })
   });
 
 export const adminDeletePost = createServerFn({ method: "POST" })
-  .inputValidator((d: { id: string }) =>
-    z.object({ id: z.string().uuid() }).parse(d),
-  )
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("posts").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
