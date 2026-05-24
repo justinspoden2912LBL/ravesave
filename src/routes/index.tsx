@@ -6,7 +6,9 @@ import {
   GitMerge,
   Heart,
   HeartPulse,
+  ListChecks,
   MapPin,
+
   MessageCircle,
   Shield,
   ShieldAlert,
