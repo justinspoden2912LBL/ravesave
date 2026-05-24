@@ -82,7 +82,7 @@ async function getAdminSession() {
   return useSession<AdminSession>(sessionConfig());
 }
 
-async function requireAdmin() {
+async function useAdminSessionGate() {
   const s = await getAdminSession();
   if (!s.data.admin) {
     return null;
@@ -133,7 +133,7 @@ export const adminWhoami = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const adminListPosts = createServerFn({ method: "GET" }).handler(async () => {
-  if (!(await requireAdmin())) return [];
+  if (!(await useAdminSessionGate())) return [];
   const { data, error } = await supabaseAdmin
     .from("posts")
     .select("*")
@@ -155,7 +155,7 @@ const PostInput = z.object({
 export const adminUpsertPost = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => PostInput.parse(d))
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const now = new Date().toISOString();
     if (data.id) {
       const { data: existing } = await supabaseAdmin
@@ -204,7 +204,7 @@ export const adminTogglePublish = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { data: existing, error: e1 } = await supabaseAdmin
       .from("posts")
       .select("published, published_at")
@@ -229,7 +229,7 @@ export const adminDeletePost = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("posts").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
