@@ -4,7 +4,7 @@
  * unverdünnter Probe; Mischsubstanzen können das Bild verfälschen.
  */
 
-export type Reagent = "marquis" | "mecke" | "mandelin" | "simons" | "folin" | "liebermann" | "morris";
+export type Reagent = "marquis" | "mecke" | "mandelin" | "simons" | "folin" | "liebermann" | "morris" | "ehrlich";
 
 export interface ReagentReaction {
   reagent: Reagent;
@@ -23,6 +23,7 @@ export const REAGENT_LABEL: Record<Reagent, string> = {
   folin: "Folin",
   liebermann: "Liebermann",
   morris: "Morris",
+  ehrlich: "Ehrlich",
 };
 
 export const REAGENT_INTRO: Record<Reagent, string> = {
@@ -33,6 +34,7 @@ export const REAGENT_INTRO: Record<Reagent, string> = {
   folin: "Detektiert Piperazine (BZP/TFMPP) — relevant bei verfälschten Pillen.",
   liebermann: "Erkennt 2C-B/2C-x und Mescalin; nützlich als Zweittest neben Marquis.",
   morris: "Ergänzungstest u. a. für Ketamin (klar→grün).",
+  ehrlich: "Spezifisch für Tryptamine (LSD, Psilocybin/Psilocin, DMT) — tiefblau bis violett.",
 };
 
 export interface ReagentEntry {
@@ -119,7 +121,7 @@ export const REAGENT_DATA: ReagentEntry[] = [
   {
     substanceId: "psilocybin",
     reactions: [
-      { reagent: "ehrlich" as Reagent, color: "Dunkelblau-violett (Ehrlich-Reagenz)", swatch: ["#312e81", "#581c87"], notes: "Marquis/Mandelin reagieren nicht zuverlässig — Ehrlich (separat erhältlich) ist Standard für Tryptamine." },
+      { reagent: "ehrlich", color: "Dunkelblau-violett", swatch: ["#312e81", "#581c87"], notes: "Marquis/Mandelin reagieren nicht zuverlässig — Ehrlich ist Standard für Tryptamine." },
     ],
   },
   {
