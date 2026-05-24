@@ -184,9 +184,9 @@ function AboutPage() {
       </section>
 
       <section className="rounded-2xl glass p-5 space-y-3">
-        <div className="flex items-center gap-2 font-semibold">
+        <h2 className="flex items-center gap-2 font-semibold text-base">
           <BookOpen className="h-4 w-4 text-secondary" /> Quellen &amp; Vertrauen
-        </div>
+        </h2>
         <p className="text-sm text-muted-foreground">
           Dosis-Bereiche, Wechselwirkungen und Wirkdauern werden mit folgenden öffentlichen,
           fachlich anerkannten Quellen abgeglichen:
@@ -229,9 +229,9 @@ function AboutPage() {
       </section>
 
       <section className="rounded-2xl glass p-5 space-y-2">
-        <div className="flex items-center gap-2 font-semibold">
+        <h2 className="flex items-center gap-2 font-semibold text-base">
           <Mail className="h-4 w-4 text-secondary" /> Feedback &amp; Anregungen
-        </div>
+        </h2>
         <p className="text-sm text-muted-foreground">
           Bug gefunden, Verbesserungsvorschlag oder einfach Feedback? Immer her damit:
         </p>
