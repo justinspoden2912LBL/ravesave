@@ -188,7 +188,7 @@ export const adminUpsertSubstanceOverride = createServerFn({ method: "POST" })
     await requireAdmin();
     const { error } = await supabaseAdmin.from("substance_overrides").upsert({
       slug: data.slug,
-      patch: data.patch,
+      patch: data.patch as never,
       updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
