@@ -3,12 +3,17 @@ import {
   Activity,
   BookOpen,
   ChevronDown,
+  Clock,
+  FlaskConical,
   GitMerge,
+  Heart,
   HeartPulse,
+  MapPin,
   MessageCircle,
   Shield,
   ShieldAlert,
   Sparkles,
+  TestTube,
   UserCircle2,
   X,
   type LucideIcon,
@@ -167,6 +172,25 @@ function Home() {
           />
         </div>
       </section>
+
+      {/* Praxis-Werkzeuge */}
+      <section className="mt-10 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
+            Praxis-Werkzeuge
+          </h2>
+          <span className="text-xs text-muted-foreground">Vor, während &amp; nach der Session</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <PraxisTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." accent="aurora" />
+          <PraxisTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
+          <PraxisTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen in DE / AT / CH." />
+          <PraxisTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
+          <PraxisTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
+          <PraxisTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
+        </div>
+      </section>
+
 
       {/* Principles */}
       <section className="mt-12 rounded-3xl glass p-8">
