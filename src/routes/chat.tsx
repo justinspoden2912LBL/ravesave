@@ -6,7 +6,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Mic, MicOff, Paperclip, Send, Square, Volume2, VolumeX, X, FileText, Loader2,
-  UserCircle2, History, Plus, Download, Trash2, Save, Check, Pencil,
+  UserCircle2, History, Plus, Download, Trash2, Save, Check, Pencil, Sparkles,
 } from "lucide-react";
 import { loadProfile, summarizeProfile } from "@/lib/profile";
 import {
@@ -19,9 +19,9 @@ export const Route = createFileRoute("/chat")({
   component: ChatPage,
   head: () => ({
     meta: [
-      { title: "KI-Chat — Rave Safe, have Fun" },
-      { name: "description", content: "Stelle Fragen zur Studienlage, lade Dokumente hoch und chatte direkt mit der KI über Substanzen und Harm Reduction." },
-      { property: "og:title", content: "KI-Chat — Rave Safe, have Fun" },
+      { title: "Marleen — KI-Begleiterin · RaveSave" },
+      { name: "description", content: "Marleen ist die KI-Begleiterin von RaveSave. Stelle Fragen zu Substanzen, Mischkonsum und Harm Reduction — ruhig, evidenzbasiert, lokal." },
+      { property: "og:title", content: "Marleen — KI-Begleiterin · RaveSave" },
       { property: "og:description", content: "KI-gestützter Chat zu Pharmakologie, Studien und Harm Reduction." },
       { property: "og:url", content: "https://ravesave.fun/chat" },
     ],
@@ -278,14 +278,27 @@ function ChatPage() {
     <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col h-[calc(100vh-8rem)] relative">
       <header className="mb-4">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold tracking-tight">KI-Chat</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Stelle Fragen, lade Dokumente hoch oder sprich direkt mit der KI.
-              {persist
-                ? " Verlauf wird lokal in deinem Browser gespeichert."
-                : " Verlauf wird nicht gespeichert."}
-            </p>
+          <div className="flex-1 flex items-start gap-3">
+            <div
+              className="h-11 w-11 shrink-0 rounded-2xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow"
+              aria-hidden="true"
+            >
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-3xl font-bold tracking-tight">Marleen</h1>
+                <span className="inline-flex items-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                  KI-Begleiterin
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Frag mich was — zu Substanzen, Mischkonsum, Safer Use. Ruhig, evidenzbasiert, ohne Drama.
+                {persist
+                  ? " Verlauf bleibt lokal in deinem Browser."
+                  : " Verlauf wird nicht gespeichert."}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <button onClick={newChat} title="Neuer Chat" aria-label="Neuen Chat starten" className="rounded-full glass p-2 hover:bg-muted/30">
