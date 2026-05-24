@@ -1253,6 +1253,22 @@ export const SUBSTANCES: Substance[] = [
     warnings: ["Stärker neurotoxisch als MDMA (Tiermodelle)", "Lange Wirkdauer, hohe Herz-/Hitze-Last"],
   },
   {
+    id: "4-fa",
+    name: "4-FA",
+    aliases: ["4-Fluoramphetamin", "4-FMP", "Flux"],
+    category: "stimulant",
+    shortDescription: "Fluoriertes Amphetamin mit empathogen-stimulierendem Profil — in DE/AT verboten.",
+    mechanism: "Mixed-Action Releaser (NE/DA > 5-HT), Affinität zu TAAR1.",
+    onset: "30–90 min",
+    duration: "4–7 h",
+    doses: [{ route: "oral", threshold: "25 mg", light: "50–75 mg", common: "75–125 mg", strong: "125–175 mg", notes: "Steile Dosis-Wirkungs-Kurve im oberen Bereich" }],
+    evidence: [
+      { label: "Linsen 2015 – 4-FA-assoziierte kardiovaskuläre Komplikationen (Clin Toxicol)", url: "https://pubmed.ncbi.nlm.nih.gov/26653953/" },
+      { label: "EMCDDA 4-FA Risk Assessment", url: "https://www.emcdda.europa.eu/publications/risk-assessments/4-fa_en" },
+    ],
+    warnings: ["Kardiale Notfälle (Infarkt, Hirnblutung) bereits bei moderaten Dosen dokumentiert", "Neurotoxisch bei Wiederholung — keine kurze Cooldown-Phase ausreichend", "In DE seit 2017 BtMG-Anlage I (verboten)", "Häufig fälschlich als MDMA verkauft"],
+  },
+  {
     id: "methylone",
     name: "Methylon",
     aliases: ["bk-MDMA", "M1"],
