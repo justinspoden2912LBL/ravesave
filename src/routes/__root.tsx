@@ -162,7 +162,9 @@ function RootComponent() {
   // Boot: hydrate i18n cache + refresh from server.
   useEffect(() => {
     initI18n();
+    initSubstanceOverrides();
     void refreshI18n();
+    void refreshSubstanceOverrides();
   }, []);
 
   // Page-view tracking.
