@@ -8,6 +8,7 @@ import {
   Home,
   Info,
   MessageCircle,
+  Search,
   Settings as SettingsIcon,
   ShieldAlert,
 } from "lucide-react";
@@ -73,6 +74,14 @@ export function Nav() {
           {/* Edge fade hint that it's scrollable */}
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-background/80 to-transparent" />
         </nav>
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("ravesave:open-spotlight"))}
+          className="shrink-0 inline-flex items-center justify-center rounded-full p-2 min-h-9 min-w-9 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition"
+          aria-label="Suche öffnen (⌘K)"
+          title="Suche (⌘K / Strg+K)"
+        >
+          <Search className="h-4 w-4" />
+        </button>
       </div>
     </header>
   );
