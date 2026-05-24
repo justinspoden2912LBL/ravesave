@@ -14,6 +14,10 @@ import {
   listSessions, loadSession, saveSession, deleteSession, renameSession,
   newSessionId, exportSessionJson, exportSessionMarkdown, exportAllJson,
 } from "@/lib/chatHistory";
+import {
+  speak as ttsSpeak, cancelSpeech,
+  getTTSProvider, setTTSProvider, type TTSProviderId, TTS_PROVIDER_LABEL,
+} from "@/lib/tts";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -105,10 +109,39 @@ function ChatPage() {
   const [parsing, setParsing] = useState(false);
   const [listening, setListening] = useState(false);
   const [speak, setSpeak] = useState(false);
+  const [ttsProvider, setTtsProviderState] = useState<TTSProviderId>("browser");
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const spokenIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => { setTtsProviderState(getTTSProvider()); }, []);
+  function changeProvider(p: TTSProviderId) {
+    setTTSProvider(p);
+    setTtsProviderState(p);
+    cancelSpeech();
+    setSpeakingId(null);
+  }
+
+  /** Sprich einen einzelnen Text (manueller "Vorlesen"-Button). */
+  const playText = useCallback(async (id: string, text: string) => {
+    if (!text.trim()) return;
+    if (speakingId === id) {
+      cancelSpeech();
+      setSpeakingId(null);
+      return;
+    }
+    cancelSpeech();
+    setSpeakingId(id);
+    try {
+      await ttsSpeak(text);
+    } catch (e) {
+      console.warn("[chat] tts error", e);
+    } finally {
+      setSpeakingId((cur) => (cur === id ? null : cur));
+    }
+  }, [speakingId]);
 
   // ----- Local persistence -----
   const [persist, setPersist] = useState(false);
@@ -185,7 +218,7 @@ function ChatPage() {
     if (!isLoading) taRef.current?.focus();
   }, [isLoading]);
 
-  // TTS: speak assistant messages when finished
+  // TTS: speak assistant messages when finished (auto-Vorlesen)
   useEffect(() => {
     if (!speak || isLoading) return;
     const last = messages[messages.length - 1];
@@ -194,15 +227,13 @@ function ChatPage() {
     const text = last.parts.map((p: any) => (p.type === "text" ? p.text : "")).join(" ").trim();
     if (!text) return;
     spokenIdsRef.current.add(last.id);
-    try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "de-DE";
-      window.speechSynthesis.speak(u);
-    } catch { /* ignore */ }
+    setSpeakingId(last.id);
+    ttsSpeak(text)
+      .catch((e) => console.warn("[chat] tts error", e))
+      .finally(() => setSpeakingId((cur) => (cur === last.id ? null : cur)));
   }, [messages, isLoading, speak]);
 
-  useEffect(() => () => { try { window.speechSynthesis.cancel(); } catch {} }, []);
+  useEffect(() => () => { cancelSpeech(); }, []);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
