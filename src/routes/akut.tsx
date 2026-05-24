@@ -187,7 +187,7 @@ function AkutPage() {
                   onChange={(e) => setCustomText(e.target.value)}
                   rows={3}
                   maxLength={600}
-                  placeholder="z. B. „Mir ist heiß, Herz rast, ich hab vor 1 h 100 mg MDMA genommen und tanze seit 2 h." "
+                  placeholder="z. B. Mir ist heiß, Herz rast, ich hab vor 1 h 100 mg MDMA genommen und tanze seit 2 h."
                   className="w-full rounded-xl bg-input/60 border border-border/40 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-secondary/50"
                 />
                 <div className="flex items-center justify-between gap-2">
