@@ -29,7 +29,7 @@ function sessionConfig() {
   };
 }
 
-async function requireAdmin() {
+async function useAdminSessionGate() {
   const s = await useSession<AdminSession>(sessionConfig());
   if (!s.data.admin) return null;
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
@@ -60,7 +60,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
     z.object({ days: z.number().int().min(1).max(365).default(30) }).parse(d ?? {}),
   )
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return emptyStats(data.days, true);
+    if (!(await useAdminSessionGate())) return emptyStats(data.days, true);
     const since = new Date(Date.now() - data.days * 86400_000).toISOString();
 
     const [{ data: views, error: e1 }, { data: events, error: e2 }] =
@@ -128,7 +128,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
 
 export const adminListTexts = createServerFn({ method: "GET" }).handler(
   async () => {
-    if (!(await requireAdmin())) return [];
+    if (!(await useAdminSessionGate())) return [];
     const { data, error } = await supabaseAdmin
       .from("ui_texts")
       .select("*")
@@ -148,7 +148,7 @@ const TextInput = z.object({
 export const adminUpsertText = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => TextInput.parse(d))
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("ui_texts").upsert({
       key: data.key,
       value: data.value,
@@ -165,7 +165,7 @@ export const adminDeleteText = createServerFn({ method: "POST" })
     z.object({ key: z.string().min(1).max(120) }).parse(d),
   )
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin
       .from("ui_texts")
       .delete()
@@ -180,7 +180,7 @@ export const adminDeleteText = createServerFn({ method: "POST" })
 
 export const adminListSubstanceOverrides = createServerFn({ method: "GET" }).handler(
   async () => {
-    if (!(await requireAdmin())) return [];
+    if (!(await useAdminSessionGate())) return [];
     const { data, error } = await supabaseAdmin
       .from("substance_overrides")
       .select("*")
@@ -198,7 +198,7 @@ const SubstancePatch = z.object({
 export const adminUpsertSubstanceOverride = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SubstancePatch.parse(d))
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("substance_overrides").upsert({
       slug: data.slug,
       patch: data.patch as never,
@@ -213,7 +213,7 @@ export const adminDeleteSubstanceOverride = createServerFn({ method: "POST" })
     z.object({ slug: z.string().min(1).max(120) }).parse(d),
   )
   .handler(async ({ data }) => {
-    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin
       .from("substance_overrides")
       .delete()
