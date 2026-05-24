@@ -84,11 +84,15 @@ async function getAdminSession() {
 
 async function requireAdmin() {
   const s = await getAdminSession();
-  if (!s.data.admin) throw new Error("Unauthorized");
+  if (!s.data.admin) {
+    // Throw a Response so TanStack treats this as an HTTP 401 (control flow)
+    // rather than an uncaught runtime error in the dev overlay.
+    throw new Response("Unauthorized", { status: 401 });
+  }
   // 24h enforce
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
-    throw new Error("Session expired");
+    throw new Response("Session expired", { status: 401 });
   }
   return s;
 }
