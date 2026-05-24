@@ -5,6 +5,7 @@ import {
   Clock,
   GitMerge,
   Heart,
+  HeartPulse,
   MapPin,
   MessageCircle,
   Shield,
@@ -18,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
+import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -124,6 +126,42 @@ function Home() {
         </div>
       </section>
 
+      {/* Akute Hilfe — Zwischenstufe zwischen normal und 112 */}
+      <section className="mt-6">
+        <Link
+          to="/akut"
+          className="group block rounded-2xl glass p-5 border border-secondary/30 hover:border-secondary/60 transition flex items-start gap-4"
+        >
+          <div className="h-12 w-12 shrink-0 rounded-xl bg-secondary/20 grid place-items-center text-secondary">
+            <HeartPulse className="h-6 w-6" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs uppercase tracking-wider text-secondary font-semibold">
+                Akute Hilfe
+              </span>
+              <span className="text-[10px] text-muted-foreground">
+                zwischen Alltag und 112
+              </span>
+            </div>
+            <h2 className="font-semibold mt-1 leading-tight">
+              Wenn's gerade nicht gut ist — atme, du bist hier richtig.
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Überforderung, schlechter Trip, Comedown-Crash. Ruhige Schritte, in Sekunden zur Hand.
+            </p>
+          </div>
+        </Link>
+      </section>
+
+      {/* Mobiler Detail-Level-Switch (auf Desktop ist er im Header) */}
+      <section className="mt-6 md:hidden flex items-center justify-between gap-3 rounded-2xl glass p-3 px-4">
+        <div className="text-xs text-muted-foreground">
+          Informations­tiefe
+        </div>
+        <DetailLevelSwitch size="sm" />
+      </section>
+
       {/* Direkter Quick-Hub — keine versteckten Accordions */}
       <section className="mt-8 space-y-3">
         <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
@@ -131,6 +169,7 @@ function Home() {
         </h2>
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
+          <QuickTile to="/akut" icon={HeartPulse} title="Akute Hilfe" desc="Atmung, Erden, Comedown." />
           <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="aurora" />
           <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe, gruppiert.`} />
           <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung tracken." />
