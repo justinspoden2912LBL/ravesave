@@ -1,80 +1,156 @@
-# Großes Update — Plan
+# RaveSave — Produktreife-Plan
 
-Ziel: Die in deiner Analyse priorisierten Lücken schließen, ohne den bestehenden Routen-/Datenkern zu zerschlagen. Alles bleibt lokal-first, DE/AT/CH, kein Tracking.
+Vor der Umsetzung: ich habe einen Runtime-Fehler im Preview gesehen (`Invariant failed: Expected to find a match below the root match in SPA mode`) — wahrscheinlich fehlt ein `<Outlet />` oder eine Route. Das fixe ich als allerersten Schritt, **bevor** irgendetwas anderes passiert.
 
-## Status-Check vorab (was schon existiert)
-- Routen `/notfall`, `/substances`, `/mix`, `/log`, `/stats`, `/about`, `/aftercare`, `/drugchecking`, `/reagenztest`, `/tolerance`, `/session/active` sind bereits da → **kein Routing-Rebuild nötig**, Fokus auf Inhalte + Sichtbarkeit.
-- Spotlight (⌘K), ActiveSessionHUD, Backup, Onboarding existieren → behalten, nicht duplizieren.
+---
 
-## P1 — Startseite & Notfall-Sichtbarkeit
-- Index-Hero: 3 CTAs visuell hierarchisieren — **Notfall als dominanter roter Button** (groß, Puls, Sticky-Variante im Header bleibt).
-- Unter dem Hero ein **2×2-Quick-Tile-Grid** (Wiki, Mix-Check, Protokoll, Notfall) mit Icon + 1-Zeiler — direkt klickbar, kein Accordion-Zwischenschritt.
-- Header bekommt einen permanent sichtbaren `Notfall`-Pill (mobile + desktop), Puls-Animation via Tailwind keyframes.
+## 1. Audit der aktuellen App
 
-## P2 — Notfall-Seite (/notfall) ausbauen
-- Großer „112 anrufen"-Button ganz oben (`tel:112`).
-- Tabs nach Substanzklasse: **Stimulanzien · Opioide · Depressiva (GHB/Benzos/Alkohol) · Psychedelika/Dissoziativa · Mischintoxikation**.
-- Pro Tab: Symptome (Bullets) + Sofortmaßnahmen (nummeriert).
-- **Hyperthermie vs. Serotonin-Syndrom** — eigener Abschnitt mit klarer Differenzierung (Kühlen vs. Cyproheptadin/medizinisch).
-- **GHB-Entzug-Warnung** (>6 h ohne Dosis bei Daily-User → 112).
-- **Fentanyl-Kontamination** Hinweis + Verlinkung zu Reagenztest/Drug-Checking.
-- Kontakte: 112, 110, Giftnotruf Berlin (030 19240), Telefonseelsorge (0800 111 0 111), Sucht-/Krisendienste AT/CH.
+### Funktioniert gut
+- Routen-Kern: `/notfall`, `/substances`, `/mix`, `/log`, `/aftercare`, `/drugchecking`, `/reagenztest`, `/tolerance`, `/session/active`, `/safety-plan`, `/chat`, `/stats`, `/erfahrungen`.
+- Lokale Persistenz: Logbuch, Safety-Plan, Emergency-Info, Aftercare — alles `localStorage`, sauber getrennt.
+- Active-Session-HUD, Spotlight (⌘K), Backup, Onboarding, Marleen-AI mit Modi (Einfach/Normal/Experte) für den Chat.
+- Substanzdatenbank mit Mechanismus, Onset, Dauer, Dosierung, Quellen.
 
-## P3 — Wiki: neue Substanzen + Feinjustierung
-Neu in `src/lib/substances.ts` (mit Dosis-Tabelle, Onset/Peak/Dauer, ROAs, Risiken, 1–2 Quellen):
-- **GHB/GBL** (Umrechnung, enge therapeutische Breite, Entzug)
-- **Ketamin** (k-hole, K-bladder bei >2×/Woche)
-- **Lachgas / N₂O** (B12-Defizienz, Asphyxie)
-- **Tramadol** (dual: Serotonin + µ-Opioid)
-- **Pregabalin / Gabapentin** (Opioid-Potenzierung)
-- **HHC / THCP / H4CBD** (Graubereich, unklare Toxizität)
-- **4-FA** (Neurotox, in DE verboten)
-- **Clonidin** (Comedown, RR-Abfall)
-- **Designer-Benzos** (Flualprazolam, Clonazolam)
-- **Kokain**: Levamisol-Hinweis ergänzen, Cocaethylen ist bereits Override.
+### Vorhanden, aber schwach
+- **Expertenmodus** existiert nur im Chat (`aiContext.ts → AiMode`) — **nicht** in Substanzprofilen, Mix-Checker, Notfall, Recovery. Der Anspruch „abgestufte Informationsdichte überall" ist nicht eingelöst.
+- **Startseite-Hierarchie**: Hero + 2×4 QuickTiles ist besser als Accordion, aber „Akute Hilfe" als Zwischenstufe zwischen normal und 112 fehlt komplett.
+- **Notfall-Seite**: hat Tabs, aber keine klare Differenzierung Hyperthermie ↔ Serotonin-Syndrom als eigenständiger Block, und kein „Akut-aber-nicht-112"-Modus (Panik, Comedown-Krise, Überforderung).
+- **Recovery/Aftercare**: existiert, aber keine sofort scanbare Karte für die häufigsten 4 Bedürfnisse (Wasser, Essen, Schlaf, Reize runter).
+- **Vertrauensblock**: Disclaimer im Footer kurz, aber nirgendwo prominent „keine Cloud, kein Tracking, alles lokal" sichtbar.
 
-Bestehende Einträge: ROA-Hinweis bei MDMA (nasal vs. oral), Amphetamin Sulfat vs. Base (×1.5), Fentanyl-Teststreifen-Empfehlung. Optional pro Substanz: „Dosis nach Körpergewicht" (nutzt bereits vorhandenes `lib/dose.ts`).
+### Fehlt komplett
+- **Akute Hilfe** (`/akut` o. ä.): ruhige Soforthilfe-Seite zwischen Alltag und Notfall — Atemtechnik, „du bist sicher", Symptom-Triage.
+- **Pre-Rave-Checkliste**: existiert nicht eigenständig (nur im Safety-Plan eingebettet).
+- **Warnsignale-Karten**: Hyperthermie/Dehydration/Panik/Atemprobleme als wiederverwendbare, einzeln verlinkbare Karten.
+- **Favoriten/Merkliste**: keine Möglichkeit, Substanzen oder Notfallkarten lokal zu pinnen.
+- **Globaler Detail-Level-Switch** für Inhaltsseiten.
 
-## P4 — Mix-Check-Overrides
-Erweiterungen in der Mischmatrix (rote/orange/gelbe Overrides + Erklärtext):
-- GHB + Alkohol/Benzos/Ketamin → ROT (Atemdepression)
-- Tramadol + MDMA → ROT (Serotonin-Syndrom + Krampfschwelle)
-- Tramadol + Alkohol/Benzos → ROT
-- Pregabalin/Gabapentin + Opioide → ROT
-- Kokain + Alkohol → ORANGE (Cocaethylen — schon vorhanden, Text präzisieren)
-- N₂O + Dissoziativa → GELB
-- Designer-Benzos + alles Sedierende → ROT (lange HWZ)
+### Nur kosmetisch / nicht funktional
+- Einige QuickTiles auf der Startseite (z. B. „Statistik", „Toleranz") führen zu Seiten, die kaum mehr als ein Header sind — niedriger Nutzwert vs. Sichtbarkeit.
 
-Unter dem Ergebnis: kleine Datenbasis-Zeile „TripSit Combo Chart v3 + klinische Review (EMCDDA, PubMed)".
+---
 
-## P5 — Design-Politur (Aurora)
-- `src/styles.css`: Aurora-Gradient als sehr langsamer (~24 s) Loop hinter dem Body, `#080810` Basis, Lila/Teal-Tokens.
-- Cards einheitlich `glass`-Klasse: `bg-white/5`, `backdrop-blur-xl`, `border-white/10`.
-- Notfall-Rot-Token + `pulse-emergency` Keyframe.
-- Touch-Targets ≥ 48 px (icon-buttons bekommen `min-h-11 min-w-11`).
-- Kontrast-Pass: alle `text-muted-foreground/50` etc. ersetzen durch Tokens mit ≥ 4.5:1.
+## 2. Expertenmodus (das Kernstück)
 
-## P6 — PWA (installierbar, nicht offline-first)
-- `public/manifest.webmanifest` ergänzen (Name, Icons 192/512, theme_color, `display: standalone`, `start_url: /`).
-- Icons generieren (Aurora-Logo).
-- **Kein Service Worker** — gemäß PWA-Knowledge-Regel (Preview-Iframes brechen mit SW). Reine „Add to Home Screen"-Installierbarkeit.
-- Meta-Tags `apple-touch-icon`, `theme-color` in `__root.tsx`.
+### Architektur
+Erweitere `aiContext.ts` zu einem allgemeinen `useDetailLevel()`-Hook (oder neu: `src/lib/detailLevel.ts`):
 
-## P7 — Vertrauen & Recht
-- Sichtbarer Footer-Disclaimer: „ravesave.fun ersetzt keine medizinische Beratung. Im Notfall: 112. Alle Daten bleiben lokal auf deinem Gerät."
-- About-Seite: Datenbasis-Transparenz (TripSit, EMCDDA, checkit!, Saferparty, PubMed) — teils vorhanden, ergänzen.
-- „AI-Begleitung" (Marleen-Chat) auf Index klar labeln: „Optional, läuft über verschlüsseltes Lovable-AI-Gateway — keine Speicherung deiner Eingaben."
+```ts
+type DetailLevel = "basic" | "extended" | "expert";
+// localStorage-Key: ravesave.detailLevel.v1
+// Default: "basic"
+```
+
+Globaler Toggle in der Top-Nav (Segment-Control: Basis · Mehr · Experte). Existierender `AiMode` wird ein Alias auf denselben Store, damit Marleen weiter funktioniert.
+
+### Wirkungsbereiche
+| Bereich | Basis | Erweitert | Experte |
+|---|---|---|---|
+| **Substanzprofil** | Was ist es, Wirkdauer grob, 3 Risiken | + Dosis-Tabelle, ROAs, Onset/Peak/Comedown | + Mechanismus, HWZ, CYP-Interaktionen, Quellen |
+| **Mix-Checker** | Ampel + 1-Satz-Erklärung | + Mechanismus warum riskant | + Pharmakologische Details, klinische Marker |
+| **Notfall** | Symptome + 3 Schritte + 112 | + Differentialdiagnose | + Vital-Schwellen, Antidot-Hinweise (info, keine Anleitung) |
+| **Recovery** | 4 Karten (Wasser/Essen/Schlaf/Reize) | + Timing, Mengen | + Neurochemie der Erholung, B12/5-HT-Refill |
+| **Marleen** | bereits vorhanden | bereits vorhanden | bereits vorhanden |
+
+Jede Seite bekommt ein einheitliches `<DetailGate level="expert">…</DetailGate>` Wrapping.
+
+---
+
+## 3. Neue Bereiche & Verbesserungen
+
+### A. Akute Hilfe — neue Route `/akut`
+Zwischen normal & 112. 4 Sofort-Karten:
+- „Mir wird's zu viel" — Atemtechnik (Box 4-4-4-4), Reize runter.
+- „Schlechter Trip" — Erden, Person dabei, sicher hinsetzen.
+- „Comedown-Crash" — Wasser, Wärme, Reize runter, kein weiterer Konsum.
+- „Ich bin nicht sicher, ob ich 112 brauche" — Triage-Liste → wenn ja, ein Tap zu `/notfall`.
+
+Verlinkung prominent auf Startseite (rote Karte direkt unter dem 112-Pill).
+
+### B. Recovery polishen (`/aftercare`)
+4 große Karten mit Icon + Mikro-Aktion. Im Experten-Level: Refill-Tabelle (Magnesium, B-Komplex, 5-HTP-Kontroverse mit Quellenhinweis).
+
+### C. Pre-Rave-Checkliste — neue Route `/checkliste`
+Interaktive Liste mit lokalem Persist (genau wie Aftercare). Auch im Spotlight erreichbar.
+
+### D. Warnsignale-Karten
+Eigene Komponente `<WarnSign type="hyperthermia" />`, wiederverwendet auf Notfall-Seite und auf Akut-Seite.
+
+### E. Favoriten
+`src/lib/favorites.ts` (lokal). Stern-Icon auf Substanz-Detail, Notfall-Karten, Akut-Karten. Eigene Sektion auf Startseite („Deine Pins") — nur sichtbar, wenn nicht leer.
+
+### F. Vertrauensblock
+Komponente `<TrustBadge />` — eine kompakte 1-Zeile-Variante (Footer/Header) und eine ausführliche auf der About-Seite. Inhalt: keine Cloud, kein Tracking, kein Backend für Nutzerdaten, Open about Lovable-AI-Gateway.
+
+---
+
+## 4. UI/UX-Politur
+- Startseite-Reihenfolge **neu**: Notfall → Akute Hilfe → Safer Use (Wiki) → Mix → Logbuch → Recovery → Tools (Drug-Checking/Reagent/Toleranz/Statistik in „Praxis"-Block).
+- Touch-Targets ≥ 48 px durchsetzen (audit + fix wo nötig).
+- Kontrast-Pass: alle `text-muted-foreground/50` ersetzen.
+- Konsistente `glass`-Karten-Klasse auf allen Hauptseiten.
+- Detail-Level-Switch sichtbar in Header (Desktop) / Settings (Mobile, plus FAB-Button auf Wiki-Seiten).
+
+---
+
+## 5. Inhaltliche Feinschliffe
+- Mix-Checker: 1-Absatz „Warum Mischkonsum besonders riskant ist" (Synergie, Maskierung, Pharmakokinetik) — nur in Erweitert/Experte.
+- Drug-Checking-Seite: Sprache prüfen — ist HR-Hinweis, keine Anleitung. (vermutlich schon ok, kurzer Review.)
+
+---
+
+## 6. Betroffene Dateien
+
+**Neu**
+- `src/lib/detailLevel.ts` (Store + Hook)
+- `src/lib/favorites.ts` (lokal)
+- `src/components/DetailLevelSwitch.tsx`
+- `src/components/DetailGate.tsx`
+- `src/components/TrustBadge.tsx`
+- `src/components/WarnSign.tsx`
+- `src/components/FavoriteButton.tsx`
+- `src/routes/akut.tsx`
+- `src/routes/checkliste.tsx`
+
+**Edits**
+- `src/routes/__root.tsx` (Header-Switch, Trust-Badge)
+- `src/routes/index.tsx` (neue Reihenfolge, Akut-Karte, Pins-Sektion)
+- `src/routes/substances.tsx` + Detail-View (DetailGate)
+- `src/routes/mix.tsx` (DetailGate + Erklärabsatz)
+- `src/routes/notfall.tsx` (WarnSign-Komponenten, DetailGate)
+- `src/routes/aftercare.tsx` (4-Karten-Layout)
+- `src/lib/aiContext.ts` (AiMode → DetailLevel-Alias)
+- `src/components/Spotlight.tsx` (neue Routen registrieren)
+- `src/lib/spotlight.ts`
+- evtl. `src/components/Nav.tsx` / `BottomNav.tsx`
+
+---
+
+## 7. Reihenfolge der Umsetzung (inkrementell)
+
+1. **Runtime-Fix**: SPA-Match-Fehler beheben (vermutlich fehlender `<Outlet />` oder kaputte Route nach letzten Edits).
+2. **Detail-Level-System**: `detailLevel.ts` + Switch + Gate + Alias zu AiMode.
+3. **DetailGate auf Substanz-Detail**: erste echte Anwendung, als Referenzimplementierung.
+4. **Akute-Hilfe-Seite** + Startseiten-Karte.
+5. **Recovery-Karten-Layout**.
+6. **Pre-Rave-Checkliste**.
+7. **Warnsignal-Karten** + Einbau in Notfall + Akut.
+8. **Favoriten-System** + Pins-Sektion auf Startseite.
+9. **TrustBadge** sichtbar machen.
+10. **Mix-Checker Erklärung + DetailGate**.
+11. **UI-Polish-Pass**: Touch-Targets, Kontrast, Konsistenz.
+
+Jeder Schritt ist ein eigener kleiner Commit, einzeln testbar. Nach jedem Schritt kannst du im Preview prüfen, ob es sich richtig anfühlt, bevor wir weitermachen.
+
+---
 
 ## Was NICHT angefasst wird
-- Bestehende Routen-Architektur, Auth, Backup-Logik, Spotlight, Active-Session-HUD.
+- Auth, Supabase-Schema, Backup-Logik, Active-Session-HUD-Kern, Spotlight-Engine.
+- Keine neuen Server-Abhängigkeiten — alle neuen Daten (Detail-Level, Favoriten, Checkliste) lokal.
+- Kein Service Worker.
 - `routeTree.gen.ts`, Supabase-Clients.
-- Kein Service Worker, kein Offline-Cache (bewusste Entscheidung).
 
-## Technisch / Dateien (Größenordnung)
-- Edits: `src/routes/index.tsx`, `src/routes/notfall.tsx`, `src/routes/mix.tsx`, `src/routes/about.tsx`, `src/routes/__root.tsx`, `src/lib/substances.ts`, `src/lib/mix.ts` (oder wo Overrides liegen), `src/styles.css`, `public/manifest.webmanifest`.
-- Neu: 2–3 kleine Komponenten (`QuickTiles`, `EmergencyHeroButton`, `EmergencyTabs`), evtl. `src/components/Disclaimer.tsx`.
-- Icons: 1–2 generierte PNGs unter `public/`.
+---
 
-Aufwand grob: passt in das verbleibende Credit-Budget; Wiki-Erweiterung ist der größte Posten.
-
-Wenn du grünes Licht gibst, baue ich in der Reihenfolge P1 → P2 → P4 → P3 → P5 → P6 → P7 (sichtbarste Wirkung zuerst).
+**Sag mir bitte: Plan ok, oder willst du Schwerpunkte verschieben?** Z. B. wenn dir der Expertenmodus wichtiger ist als Favoriten, mache ich Schritt 2–3 zuerst und ziehe Favoriten ans Ende.

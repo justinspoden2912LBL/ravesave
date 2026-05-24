@@ -5,6 +5,7 @@ import {
   FlaskConical,
   GitMerge,
   HandHeart,
+  Heart,
   Home,
   Info,
   MessageCircle,
@@ -12,9 +13,11 @@ import {
   Settings as SettingsIcon,
   ShieldAlert,
 } from "lucide-react";
+import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/akut", label: "Akute Hilfe", icon: Heart },
   { to: "/log", label: "Protokoll", icon: Activity },
   { to: "/mix", label: "Mix-Check", icon: GitMerge },
   { to: "/risks", label: "Risiken", icon: ShieldAlert },
@@ -74,6 +77,9 @@ export function Nav() {
           {/* Edge fade hint that it's scrollable */}
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-background/80 to-transparent" />
         </nav>
+        <div className="hidden md:block shrink-0">
+          <DetailLevelSwitch size="sm" />
+        </div>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent("ravesave:open-spotlight"))}
           className="shrink-0 inline-flex items-center justify-center rounded-full p-2 min-h-9 min-w-9 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition"

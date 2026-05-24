@@ -26,6 +26,7 @@ import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as AkutRouteImport } from './routes/akut'
 import { Route as AftercareRouteImport } from './routes/aftercare'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -120,6 +121,11 @@ const ChatRoute = ChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AkutRoute = AkutRouteImport.update({
+  id: '/akut',
+  path: '/akut',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AftercareRoute = AftercareRouteImport.update({
   id: '/aftercare',
   path: '/aftercare',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/aftercare': typeof AftercareRoute
+  '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/aftercare': typeof AftercareRoute
+  '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
@@ -221,6 +229,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/aftercare': typeof AftercareRoute
+  '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/aftercare'
+    | '/akut'
     | '/chat'
     | '/drugchecking'
     | '/erfahrungen'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/aftercare'
+    | '/akut'
     | '/chat'
     | '/drugchecking'
     | '/erfahrungen'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/aftercare'
+    | '/akut'
     | '/chat'
     | '/drugchecking'
     | '/erfahrungen'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AftercareRoute: typeof AftercareRoute
+  AkutRoute: typeof AkutRoute
   ChatRoute: typeof ChatRoute
   DrugcheckingRoute: typeof DrugcheckingRoute
   ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
@@ -475,6 +488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/akut': {
+      id: '/akut'
+      path: '/akut'
+      fullPath: '/akut'
+      preLoaderRoute: typeof AkutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aftercare': {
       id: '/aftercare'
       path: '/aftercare'
@@ -551,6 +571,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AftercareRoute: AftercareRoute,
+  AkutRoute: AkutRoute,
   ChatRoute: ChatRoute,
   DrugcheckingRoute: DrugcheckingRoute,
   ErfahrungenRoute: ErfahrungenRouteWithChildren,
@@ -575,13 +596,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
