@@ -4,9 +4,11 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Nav, Footer } from "../components/Nav";
@@ -14,6 +16,8 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
+import { trackPageView } from "@/lib/analytics";
+import { initI18n, refreshI18n } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
