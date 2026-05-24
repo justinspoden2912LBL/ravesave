@@ -218,3 +218,60 @@ export const adminDeleteSubstanceOverride = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ─────────────────────────────────────────────────────────────────────────
+// FEATURE FLAGS
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminListFeatureFlags = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) return [];
+  const { data, error } = await supabaseAdmin
+    .from("feature_flags")
+    .select("*")
+    .order("label", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+const FlagInput = z.object({
+  key: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-zA-Z0-9._-]+$/),
+  page: z.string().min(1).max(80),
+  label: z.string().min(1).max(120),
+  description: z.string().max(500).nullable().optional(),
+  enabled: z.boolean(),
+});
+
+export const adminUpsertFeatureFlag = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => FlagInput.parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("feature_flags").upsert({
+      key: data.key,
+      page: data.page,
+      label: data.label,
+      description: data.description ?? null,
+      enabled: data.enabled,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminToggleFeatureFlag = createServerFn({ method: "POST" })
+  .inputValidator((d: { key: string; enabled: boolean }) =>
+    z.object({ key: z.string().min(1).max(120), enabled: z.boolean() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin
+      .from("feature_flags")
+      .update({ enabled: data.enabled, updated_at: new Date().toISOString() })
+      .eq("key", data.key);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+

@@ -19,6 +19,9 @@ import { BottomNav } from "../components/BottomNav";
 import { trackPageView } from "@/lib/analytics";
 import { initI18n, refreshI18n } from "@/lib/i18n";
 import { initSubstanceOverrides, refreshSubstanceOverrides } from "@/lib/substancesRuntime";
+import { initFeatureFlags, refreshFeatureFlags } from "@/lib/featureFlags";
+import { PathFeatureGate } from "@/components/FeatureGate";
+
 
 function NotFoundComponent() {
   return (
@@ -159,12 +162,14 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  // Boot: hydrate i18n cache + refresh from server.
+  // Boot: hydrate i18n + flag caches and refresh from server.
   useEffect(() => {
     initI18n();
     initSubstanceOverrides();
+    initFeatureFlags();
     void refreshI18n();
     void refreshSubstanceOverrides();
+    void refreshFeatureFlags();
   }, []);
 
   // Page-view tracking.
@@ -177,7 +182,9 @@ function RootComponent() {
       <div className="flex min-h-screen flex-col">
         <Nav />
         <main className="flex-1 pb-bottomnav">
-          <Outlet />
+          <PathFeatureGate pathname={pathname}>
+            <Outlet />
+          </PathFeatureGate>
         </main>
         <Footer />
         <EmergencyButton />
@@ -188,3 +195,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
