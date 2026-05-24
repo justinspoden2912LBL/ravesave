@@ -73,8 +73,8 @@ function InstallPage() {
           title="So geht's auf dem iPhone (Safari)"
           steps={[
             { icon: <Share className="h-4 w-4" />, text: "Tippe auf das Teilen-Symbol unten in der Mitte." },
-            { icon: <Plus className="h-4 w-4" />, text: '„Zum Home-Bildschirm" auswählen.' },
-            { icon: <CheckCircle2 className="h-4 w-4" />, text: "Mit „Hinzufügen" bestätigen — fertig." },
+            { icon: <Plus className="h-4 w-4" />, text: "Zum Home-Bildschirm auswaehlen." },
+            { icon: <CheckCircle2 className="h-4 w-4" />, text: "Mit Hinzufuegen bestaetigen - fertig." },
           ]}
           note="Funktioniert nur in Safari, nicht in Chrome/Firefox auf iOS."
         />
