@@ -35,7 +35,7 @@ function saveCache(rows: CacheRow[]) {
 function applyAll(rows: CacheRow[]) {
   for (const { slug, patch } of rows) {
     const idx = SUBSTANCES.findIndex(
-      (s) => s.id === slug || s.slug === slug || s.name?.toLowerCase() === slug.toLowerCase(),
+      (s) => s.id === slug || s.name?.toLowerCase() === slug.toLowerCase(),
     );
     if (idx === -1) continue;
     SUBSTANCES[idx] = { ...SUBSTANCES[idx], ...(patch as Partial<Substance>) };
