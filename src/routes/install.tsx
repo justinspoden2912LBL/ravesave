@@ -84,7 +84,7 @@ function InstallPage() {
           title="So geht's auf Android (Chrome)"
           steps={[
             { icon: <MoreVertical className="h-4 w-4" />, text: "Tippe oben rechts auf die drei Punkte." },
-            { icon: <Plus className="h-4 w-4" />, text: '„App installieren" oder „Zum Startbildschirm hinzufügen" wählen.' },
+            { icon: <Plus className="h-4 w-4" />, text: "App installieren oder Zum Startbildschirm hinzufuegen waehlen." },
             { icon: <CheckCircle2 className="h-4 w-4" />, text: "Bestätigen — die App erscheint wie eine native App." },
           ]}
         />
