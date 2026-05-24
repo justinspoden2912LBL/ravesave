@@ -5,7 +5,6 @@ import {
   Clock,
   GitMerge,
   Heart,
-  HeartPulse,
   MapPin,
   MessageCircle,
   Shield,
