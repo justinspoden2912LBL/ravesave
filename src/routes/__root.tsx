@@ -14,6 +14,8 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
+import { Spotlight } from "../components/Spotlight";
+import { ActiveSessionHUD } from "../components/ActiveSessionHUD";
 
 function NotFoundComponent() {
   return (
@@ -161,6 +163,8 @@ function RootComponent() {
         <AiAskButton />
         <BottomNav />
         <WelcomeOnboarding />
+        <ActiveSessionHUD />
+        <Spotlight />
       </div>
     </QueryClientProvider>
   );
