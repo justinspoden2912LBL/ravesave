@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
   BookOpen,
-  ChevronDown,
   Clock,
   GitMerge,
   Heart,
