@@ -94,7 +94,7 @@ function InstallPage() {
           title="So geht's am Desktop (Chrome/Edge)"
           steps={[
             { icon: <Download className="h-4 w-4" />, text: "Klicke auf das Installations-Symbol rechts in der Adressleiste." },
-            { icon: <CheckCircle2 className="h-4 w-4" />, text: "Mit „Installieren" bestätigen." },
+            { icon: <CheckCircle2 className="h-4 w-4" />, text: "Mit Installieren bestaetigen." },
           ]}
         />
       )}
