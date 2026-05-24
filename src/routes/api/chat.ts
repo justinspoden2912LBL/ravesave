@@ -94,9 +94,9 @@ export const Route = createFileRoute("/api/chat")({
           });
           return result.toUIMessageStreamResponse({ originalMessages: safeMessages as UIMessage[] });
         } catch (e: any) {
-          const msg = e?.message ?? "AI Gateway error";
-          const status = e?.statusCode ?? 500;
-          return new Response(msg, { status });
+          const status = typeof e?.statusCode === "number" ? e.statusCode : 500;
+          console.error("[Chat] AI gateway error", e);
+          return new Response("AI service unavailable", { status });
         }
       },
     },
