@@ -85,14 +85,12 @@ async function getAdminSession() {
 async function requireAdmin() {
   const s = await getAdminSession();
   if (!s.data.admin) {
-    // Throw a Response so TanStack treats this as an HTTP 401 (control flow)
-    // rather than an uncaught runtime error in the dev overlay.
-    throw new Response("Unauthorized", { status: 401 });
+    return null;
   }
   // 24h enforce
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
-    throw new Response("Session expired", { status: 401 });
+    return null;
   }
   return s;
 }
@@ -135,7 +133,7 @@ export const adminWhoami = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const adminListPosts = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAdmin();
+  if (!(await requireAdmin())) return [];
   const { data, error } = await supabaseAdmin
     .from("posts")
     .select("*")
@@ -157,7 +155,7 @@ const PostInput = z.object({
 export const adminUpsertPost = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => PostInput.parse(d))
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const now = new Date().toISOString();
     if (data.id) {
       const { data: existing } = await supabaseAdmin
@@ -206,7 +204,7 @@ export const adminTogglePublish = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { data: existing, error: e1 } = await supabaseAdmin
       .from("posts")
       .select("published, published_at")
@@ -231,7 +229,7 @@ export const adminDeletePost = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin.from("posts").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
