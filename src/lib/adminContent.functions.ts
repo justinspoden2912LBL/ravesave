@@ -31,12 +31,24 @@ function sessionConfig() {
 
 async function requireAdmin() {
   const s = await useSession<AdminSession>(sessionConfig());
-  if (!s.data.admin) throw new Response("Unauthorized", { status: 401 });
+  if (!s.data.admin) return null;
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
-    throw new Response("Session expired", { status: 401 });
+    return null;
   }
   return s;
+}
+
+function emptyStats(days: number, authRequired = false) {
+  return {
+    days,
+    authRequired,
+    totals: { views: 0, sessions: 0, events: 0 },
+    topPaths: [] as { key: string; count: number }[],
+    topCountries: [] as { key: string; count: number }[],
+    topEvents: [] as { key: string; count: number }[],
+    byDay: [] as { day: string; count: number }[],
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -48,7 +60,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
     z.object({ days: z.number().int().min(1).max(365).default(30) }).parse(d ?? {}),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
+    if (!(await requireAdmin())) return emptyStats(data.days, true);
     const since = new Date(Date.now() - data.days * 86400_000).toISOString();
 
     const [{ data: views, error: e1 }, { data: events, error: e2 }] =
@@ -93,6 +105,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
 
     return {
       days: data.days,
+      authRequired: false,
       totals: {
         views: views?.length ?? 0,
         sessions: sessions.size,
