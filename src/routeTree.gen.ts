@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ToleranceRouteImport } from './routes/tolerance'
 import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -16,20 +17,29 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SafetyPlanRouteImport } from './routes/safety-plan'
 import { Route as RisksRouteImport } from './routes/risks'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ReagenztestRouteImport } from './routes/reagenztest'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotfallRouteImport } from './routes/notfall'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
+import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as AftercareRouteImport } from './routes/aftercare'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
+const ToleranceRoute = ToleranceRouteImport.update({
+  id: '/tolerance',
+  path: '/tolerance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubstancesRoute = SubstancesRouteImport.update({
   id: '/substances',
   path: '/substances',
@@ -65,6 +75,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReagenztestRoute = ReagenztestRouteImport.update({
+  id: '/reagenztest',
+  path: '/reagenztest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -95,9 +110,19 @@ const ErfahrungenRoute = ErfahrungenRouteImport.update({
   path: '/erfahrungen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrugcheckingRoute = DrugcheckingRouteImport.update({
+  id: '/drugchecking',
+  path: '/drugchecking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AftercareRoute = AftercareRouteImport.update({
+  id: '/aftercare',
+  path: '/aftercare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -113,6 +138,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SessionActiveRoute = SessionActiveRouteImport.update({
+  id: '/session/active',
+  path: '/session/active',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
@@ -135,13 +165,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/aftercare': typeof AftercareRoute
   '/chat': typeof ChatRoute
+  '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
+  '/reagenztest': typeof ReagenztestRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/safety-plan': typeof SafetyPlanRoute
@@ -149,21 +182,26 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
+  '/tolerance': typeof ToleranceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/session/active': typeof SessionActiveRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/aftercare': typeof AftercareRoute
   '/chat': typeof ChatRoute
+  '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
+  '/reagenztest': typeof ReagenztestRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/safety-plan': typeof SafetyPlanRoute
@@ -171,22 +209,27 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
+  '/tolerance': typeof ToleranceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/session/active': typeof SessionActiveRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/aftercare': typeof AftercareRoute
   '/chat': typeof ChatRoute
+  '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
+  '/reagenztest': typeof ReagenztestRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risks': typeof RisksRoute
   '/safety-plan': typeof SafetyPlanRoute
@@ -194,9 +237,11 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
+  '/tolerance': typeof ToleranceRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/session/active': typeof SessionActiveRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -204,13 +249,16 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/aftercare'
     | '/chat'
+    | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
     | '/notfall'
     | '/onboarding'
+    | '/reagenztest'
     | '/reset-password'
     | '/risks'
     | '/safety-plan'
@@ -218,21 +266,26 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/stats'
     | '/substances'
+    | '/tolerance'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
+    | '/session/active'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/admin'
+    | '/aftercare'
     | '/chat'
+    | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
     | '/notfall'
     | '/onboarding'
+    | '/reagenztest'
     | '/reset-password'
     | '/risks'
     | '/safety-plan'
@@ -240,21 +293,26 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/stats'
     | '/substances'
+    | '/tolerance'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
+    | '/session/active'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
+    | '/aftercare'
     | '/chat'
+    | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
     | '/log'
     | '/mix'
     | '/notfall'
     | '/onboarding'
+    | '/reagenztest'
     | '/reset-password'
     | '/risks'
     | '/safety-plan'
@@ -262,22 +320,27 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/stats'
     | '/substances'
+    | '/tolerance'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
+    | '/session/active'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  AftercareRoute: typeof AftercareRoute
   ChatRoute: typeof ChatRoute
+  DrugcheckingRoute: typeof DrugcheckingRoute
   ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
   NotfallRoute: typeof NotfallRoute
   OnboardingRoute: typeof OnboardingRoute
+  ReagenztestRoute: typeof ReagenztestRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RisksRoute: typeof RisksRoute
   SafetyPlanRoute: typeof SafetyPlanRoute
@@ -285,12 +348,21 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
+  ToleranceRoute: typeof ToleranceRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiTtsRoute: typeof ApiTtsRoute
+  SessionActiveRoute: typeof SessionActiveRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tolerance': {
+      id: '/tolerance'
+      path: '/tolerance'
+      fullPath: '/tolerance'
+      preLoaderRoute: typeof ToleranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/substances': {
       id: '/substances'
       path: '/substances'
@@ -340,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reagenztest': {
+      id: '/reagenztest'
+      path: '/reagenztest'
+      fullPath: '/reagenztest'
+      preLoaderRoute: typeof ReagenztestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -382,11 +461,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErfahrungenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drugchecking': {
+      id: '/drugchecking'
+      path: '/drugchecking'
+      fullPath: '/drugchecking'
+      preLoaderRoute: typeof DrugcheckingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aftercare': {
+      id: '/aftercare'
+      path: '/aftercare'
+      fullPath: '/aftercare'
+      preLoaderRoute: typeof AftercareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -408,6 +501,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/session/active': {
+      id: '/session/active'
+      path: '/session/active'
+      fullPath: '/session/active'
+      preLoaderRoute: typeof SessionActiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/erfahrungen/$slug': {
@@ -450,13 +550,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  AftercareRoute: AftercareRoute,
   ChatRoute: ChatRoute,
+  DrugcheckingRoute: DrugcheckingRoute,
   ErfahrungenRoute: ErfahrungenRouteWithChildren,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
   NotfallRoute: NotfallRoute,
   OnboardingRoute: OnboardingRoute,
+  ReagenztestRoute: ReagenztestRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RisksRoute: RisksRoute,
   SafetyPlanRoute: SafetyPlanRoute,
@@ -464,19 +567,11 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
+  ToleranceRoute: ToleranceRoute,
   ApiChatRoute: ApiChatRoute,
   ApiTtsRoute: ApiTtsRoute,
+  SessionActiveRoute: SessionActiveRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
