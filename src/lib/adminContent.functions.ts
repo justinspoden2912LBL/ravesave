@@ -63,19 +63,18 @@ export const adminGetStats = createServerFn({ method: "POST" })
     if (!(await useAdminSessionGate())) return emptyStats(data.days, true);
     const since = new Date(Date.now() - data.days * 86400_000).toISOString();
 
-    const [{ data: views, error: e1 }, { data: events, error: e2 }] =
-      await Promise.all([
-        supabaseAdmin
-          .from("page_views")
-          .select("path,country,session_id,created_at")
-          .gte("created_at", since)
-          .limit(20000),
-        supabaseAdmin
-          .from("usage_events")
-          .select("event_type,detail,created_at")
-          .gte("created_at", since)
-          .limit(20000),
-      ]);
+    const [{ data: views, error: e1 }, { data: events, error: e2 }] = await Promise.all([
+      supabaseAdmin
+        .from("page_views")
+        .select("path,country,session_id,created_at")
+        .gte("created_at", since)
+        .limit(20000),
+      supabaseAdmin
+        .from("usage_events")
+        .select("event_type,detail,created_at")
+        .gte("created_at", since)
+        .limit(20000),
+    ]);
 
     if (e1) throw new Error(e1.message);
     if (e2) throw new Error(e2.message);
@@ -100,8 +99,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
       byEvent.set(e.event_type, (byEvent.get(e.event_type) ?? 0) + 1);
     }
 
-    const sortDesc = <T,>(m: Map<T, number>) =>
-      [...m.entries()].sort((a, b) => b[1] - a[1]);
+    const sortDesc = <T>(m: Map<T, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]);
 
     return {
       days: data.days,
@@ -111,7 +109,9 @@ export const adminGetStats = createServerFn({ method: "POST" })
         sessions: sessions.size,
         events: events?.length ?? 0,
       },
-      topPaths: sortDesc(byPath).slice(0, 30).map(([k, v]) => ({ key: k, count: v })),
+      topPaths: sortDesc(byPath)
+        .slice(0, 30)
+        .map(([k, v]) => ({ key: k, count: v })),
       topCountries: sortDesc(byCountry)
         .slice(0, 30)
         .map(([k, v]) => ({ key: k, count: v })),
@@ -126,20 +126,22 @@ export const adminGetStats = createServerFn({ method: "POST" })
 // UI TEXTS
 // ─────────────────────────────────────────────────────────────────────────
 
-export const adminListTexts = createServerFn({ method: "GET" }).handler(
-  async () => {
-    if (!(await useAdminSessionGate())) return [];
-    const { data, error } = await supabaseAdmin
-      .from("ui_texts")
-      .select("*")
-      .order("key", { ascending: true });
-    if (error) throw new Error(error.message);
-    return data ?? [];
-  },
-);
+export const adminListTexts = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) return [];
+  const { data, error } = await supabaseAdmin
+    .from("ui_texts")
+    .select("*")
+    .order("key", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
 
 const TextInput = z.object({
-  key: z.string().min(1).max(120).regex(/^[a-zA-Z0-9._-]+$/),
+  key: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-zA-Z0-9._-]+$/),
   value: z.string().max(20000),
   description: z.string().max(500).nullable().optional(),
   category: z.string().max(80).nullable().optional(),
@@ -161,15 +163,10 @@ export const adminUpsertText = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteText = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string }) =>
-    z.object({ key: z.string().min(1).max(120) }).parse(d),
-  )
+  .inputValidator((d: { key: string }) => z.object({ key: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
-    const { error } = await supabaseAdmin
-      .from("ui_texts")
-      .delete()
-      .eq("key", data.key);
+    const { error } = await supabaseAdmin.from("ui_texts").delete().eq("key", data.key);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -178,20 +175,22 @@ export const adminDeleteText = createServerFn({ method: "POST" })
 // SUBSTANCE OVERRIDES (JSON patch per slug)
 // ─────────────────────────────────────────────────────────────────────────
 
-export const adminListSubstanceOverrides = createServerFn({ method: "GET" }).handler(
-  async () => {
-    if (!(await useAdminSessionGate())) return [];
-    const { data, error } = await supabaseAdmin
-      .from("substance_overrides")
-      .select("*")
-      .order("slug", { ascending: true });
-    if (error) throw new Error(error.message);
-    return data ?? [];
-  },
-);
+export const adminListSubstanceOverrides = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) return [];
+  const { data, error } = await supabaseAdmin
+    .from("substance_overrides")
+    .select("*")
+    .order("slug", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
 
 const SubstancePatch = z.object({
-  slug: z.string().min(1).max(120).regex(/^[a-zA-Z0-9._-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-zA-Z0-9._-]+$/),
   patch: z.record(z.string(), z.unknown()),
 });
 
@@ -209,9 +208,7 @@ export const adminUpsertSubstanceOverride = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteSubstanceOverride = createServerFn({ method: "POST" })
-  .inputValidator((d: { slug: string }) =>
-    z.object({ slug: z.string().min(1).max(120) }).parse(d),
-  )
+  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
     const { error } = await supabaseAdmin
