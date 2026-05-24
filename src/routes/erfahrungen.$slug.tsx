@@ -42,8 +42,8 @@ export const Route = createFileRoute("/erfahrungen/$slug")({
     const post = loaderData?.post;
     const url = `https://ravesave.fun/erfahrungen/${params.slug}`;
     const title = post
-      ? `${post.title} — Erfahrungsbericht — Rave Safe, have Fun`
-      : `Erfahrungsbericht — Rave Safe, have Fun`;
+      ? `${post.title} — RaveSave`
+      : `Erfahrungsbericht — RaveSave`;
     const rawDesc =
       post?.excerpt ||
       (post?.content

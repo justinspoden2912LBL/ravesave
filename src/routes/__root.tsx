@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
-      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
+      { name: "description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama, nur Fakten" },
       { name: "author", content: "Rave Safe, have Fun" },
       { name: "theme-color", content: "#0c0a1c" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
@@ -93,8 +93,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/549e0f68-4709-4dfe-86d2-63618f64ad0b" },
       { property: "og:title", content: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
       { name: "twitter:title", content: "Rave Safe, have Fun — Wissen statt Bauchgefühl - ohne Drama" },
-      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
-      { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama,nur Fakten" },
+      { property: "og:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama, nur Fakten" },
+      { name: "twitter:description", content: "Konsum-Protokoll, Mischkonsum-Risiko-Check und evidenzbasierte Substanz-Infos. Ohne Drama, nur Fakten" },
     ],
     links: [
       {
