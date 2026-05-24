@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Trash2, Edit3, Sparkles, GraduationCap, Download, Volume2, BookOpen, History as HistoryIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Trash2, Edit3, Sparkles, GraduationCap, Download, Upload, Volume2, BookOpen, History as HistoryIcon } from "lucide-react";
 import { isSoundEnabled, setSoundEnabled } from "@/lib/sound";
 import { clearAllSessions, listSessions } from "@/lib/chatHistory";
-import { loadEntries } from "@/lib/log";
+import { downloadBackup, readBackupFile, applyBackup } from "@/lib/backup";
 import {
   clearProfile,
   loadProfile,
@@ -80,23 +80,26 @@ function SettingsPage() {
     setP(next);
   }
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   function exportLog() {
-    const entries = loadEntries();
-    const payload = {
-      app: "Rave Safe, have Fun",
-      exportedAt: new Date().toISOString(),
-      profile: p ?? null,
-      entries,
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ravesafe-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadBackup();
+  }
+
+  async function handleImportFile(file: File) {
+    try {
+      const bundle = await readBackupFile(file);
+      const mode = confirm(
+        "Backup importieren:\n\nOK = Mit aktuellen Daten zusammenführen\nAbbrechen = Vorhandene App-Daten ersetzen",
+      )
+        ? "merge"
+        : "replace";
+      const { imported } = applyBackup(bundle, mode);
+      alert(`${imported} Einträge importiert. App wird neu geladen.`);
+      location.reload();
+    } catch (err) {
+      alert("Import fehlgeschlagen: " + (err instanceof Error ? err.message : String(err)));
+    }
   }
 
   const detail = p ? getDetailLevel(p) : "lay";
@@ -193,8 +196,25 @@ function SettingsPage() {
                 onClick={exportLog}
                 className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-2 text-sm text-secondary hover:bg-secondary/30"
               >
-                <Download className="h-4 w-4" /> Daten exportieren (JSON)
+                <Download className="h-4 w-4" /> Backup exportieren
               </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 rounded-full bg-muted/30 px-4 py-2 text-sm hover:bg-muted/50"
+              >
+                <Upload className="h-4 w-4" /> Backup importieren
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImportFile(f);
+                  e.target.value = "";
+                }}
+              />
               <button
                 onClick={reset}
                 className="inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm text-destructive hover:bg-destructive/30"
