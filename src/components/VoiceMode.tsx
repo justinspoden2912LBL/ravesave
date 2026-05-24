@@ -51,7 +51,7 @@ export function VoiceMode({ open, onClose }: VoiceModeProps) {
   // auto-stop on close
   useEffect(() => {
     if (!open && isConnected) {
-      conversation.endSession().catch(() => {});
+      void conversation.endSession();
     }
   }, [open, isConnected, conversation]);
 
