@@ -52,7 +52,7 @@ const RECOVERY_CARDS = [
     title: "Energie & Stimmung",
     short: "Tageslicht, sanfte Bewegung, Geduld.",
     extended:
-      "„Suicide Tuesday" nach MDMA ist normal und vorübergehend. 20 Minuten Sonne, ein Spaziergang, ein vertrauter Mensch. Keine wichtigen Entscheidungen oder Konflikte — Wahrnehmung ist verzerrt.",
+      "„Suicide Tuesday“ nach MDMA ist normal und vorübergehend. 20 Minuten Sonne, ein Spaziergang, ein vertrauter Mensch. Keine wichtigen Entscheidungen oder Konflikte — Wahrnehmung ist verzerrt.",
     expert:
       "Serotonin-Depletion senkt 5-HT-Tonus für 2–7 Tage; Dopamin-Erholung schneller. Lichttherapie und moderate Bewegung erhöhen BDNF. Bei wiederholtem Tief > 2 Wochen oder Suizidgedanken → fachliche Hilfe (Telefonseelsorge 0800 111 0 111).",
   },
