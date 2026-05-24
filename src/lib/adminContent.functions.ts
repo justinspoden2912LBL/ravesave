@@ -31,10 +31,10 @@ function sessionConfig() {
 
 async function requireAdmin() {
   const s = await useSession<AdminSession>(sessionConfig());
-  if (!s.data.admin) throw new Error("Unauthorized");
+  if (!s.data.admin) throw new Response("Unauthorized", { status: 401 });
   if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
     await s.clear();
-    throw new Error("Session expired");
+    throw new Response("Session expired", { status: 401 });
   }
   return s;
 }
