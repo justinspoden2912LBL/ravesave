@@ -70,11 +70,12 @@ export const Route = createFileRoute("/admin")({
 
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
-type Tab = "stats" | "texts" | "substances" | "posts";
+type Tab = "pages" | "stats" | "texts" | "substances" | "posts";
 
 function AdminPage() {
   const [authState, setAuthState] = useState<"checking" | "in" | "out">("checking");
-  const [tab, setTab] = useState<Tab>("stats");
+  const [tab, setTab] = useState<Tab>("pages");
+
 
   async function check() {
     try {
