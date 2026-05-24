@@ -11,9 +11,9 @@ export const Route = createFileRoute("/aftercare")({
       { name: "description", content: "Tag danach: Schlaf, Elektrolyte, Stimmungstief. Allgemein und pro Substanz." },
       { property: "og:title", content: "Aftercare & Comedown — Rave Safe, have Fun" },
       { property: "og:description", content: "Erholung nach dem Konsum — evidenznahe Tipps." },
-      { property: "og:url", content: "https://ravesave.lovable.app/aftercare" },
+      { property: "og:url", content: "https://ravesave.fun/aftercare" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/aftercare" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/aftercare" }],
   }),
 });
 

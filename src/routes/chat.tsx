@@ -23,9 +23,9 @@ export const Route = createFileRoute("/chat")({
       { name: "description", content: "Stelle Fragen zur Studienlage, lade Dokumente hoch und chatte direkt mit der KI über Substanzen und Harm Reduction." },
       { property: "og:title", content: "KI-Chat — Rave Safe, have Fun" },
       { property: "og:description", content: "KI-gestützter Chat zu Pharmakologie, Studien und Harm Reduction." },
-      { property: "og:url", content: "https://ravesave.lovable.app/chat" },
+      { property: "og:url", content: "https://ravesave.fun/chat" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/chat" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/chat" }],
   }),
 });
 

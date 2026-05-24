@@ -11,9 +11,9 @@ export const Route = createFileRoute("/stats")({
       { name: "description", content: "Muster, Häufigkeiten und Trends aus deinem lokalen Konsumprotokoll." },
       { property: "og:title", content: "Statistik — Rave Safe, have Fun" },
       { property: "og:description", content: "Auswertung deines lokalen Konsumprotokolls." },
-      { property: "og:url", content: "https://ravesave.lovable.app/stats" },
+      { property: "og:url", content: "https://ravesave.fun/stats" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/stats" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/stats" }],
   }),
 });
 

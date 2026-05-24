@@ -33,9 +33,9 @@ export const Route = createFileRoute("/notfall")({
         property: "og:description",
         content: "112, stabile Seitenlage, Naloxon, Talkdown — schnell und ruhig erklärt.",
       },
-      { property: "og:url", content: "https://ravesave.lovable.app/notfall" },
+      { property: "og:url", content: "https://ravesave.fun/notfall" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.lovable.app/notfall" }],
+    links: [{ rel: "canonical", href: "https://ravesave.fun/notfall" }],
   }),
 });
 
