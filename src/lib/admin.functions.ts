@@ -97,6 +97,8 @@ export const adminLogin = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.ADMIN_ACCESS_KEY;
     if (!expected) throw new Error("Admin key not configured");
+    const ckey = clientKey();
+    checkLockout(ckey);
     // constant-time-ish compare
     const a = Buffer.from(data.key);
     const b = Buffer.from(expected);
@@ -105,7 +107,11 @@ export const adminLogin = createServerFn({ method: "POST" })
     for (let i = 0; i < len; i++) ok = ok && a[i] === b[i];
     // small delay to slow brute force
     await new Promise((r) => setTimeout(r, 250));
-    if (!ok) throw new Error("Ungültiger Admin-Schlüssel");
+    if (!ok) {
+      recordFailure(ckey);
+      throw new Error("Ungültiger Admin-Schlüssel");
+    }
+    recordSuccess(ckey);
     const s = await getAdminSession();
     await s.update({ admin: true, loginAt: Date.now() });
     return { ok: true };
