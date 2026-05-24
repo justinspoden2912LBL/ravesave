@@ -32,6 +32,8 @@ import {
 import { AdminStatsTab } from "@/components/admin/AdminStatsTab";
 import { AdminTextsTab } from "@/components/admin/AdminTextsTab";
 import { AdminSubstancesTab } from "@/components/admin/AdminSubstancesTab";
+import { AdminPagesTab } from "@/components/admin/AdminPagesTab";
+
 
 const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
 const ADMIN_LOCKOUT_KEY = "ravesave_admin_lockout_until";
