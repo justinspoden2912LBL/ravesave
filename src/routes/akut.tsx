@@ -72,6 +72,9 @@ function AkutPage() {
     setError(null);
     setAdvice(null);
     try {
+      void import("@/lib/analytics").then((m) =>
+        m.trackEvent("akut_coach", payload.scenario || "custom"),
+      );
       const resp = await fetch("/api/akut-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
