@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Trash2, Plus, Clock, AlertTriangle, RotateCcw, Info } from "lucide-react";
+import { Trash2, Plus, Clock, AlertTriangle, RotateCcw, Info, Activity } from "lucide-react";
 import { SUBSTANCES, assessPair, RISK_META } from "@/lib/substances";
 import { addEntry, deleteEntry, loadEntries, type LogEntry } from "@/lib/log";
+import { isActive, markActive, unmarkActive } from "@/lib/session";
 import { useRegisterAiContext } from "@/lib/aiContext";
 
 
@@ -66,7 +67,7 @@ function LogPage() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!dose.trim()) return;
-    addEntry({
+    const created = addEntry({
       substanceId,
       dose: dose.trim(),
       unit,
@@ -75,6 +76,10 @@ function LogPage() {
       notes: notes.trim() || undefined,
       mood,
     });
+    // Wenn der Eintrag in den letzten 30 Min. gesetzt wurde, automatisch als aktiv markieren.
+    if (Math.abs(Date.now() - created.timestamp) < 30 * 60 * 1000) {
+      markActive(created.id);
+    }
     setEntries(loadEntries());
     setDose("");
     setNotes("");
@@ -82,7 +87,14 @@ function LogPage() {
   }
 
   function remove(id: string) {
+    unmarkActive(id);
     deleteEntry(id);
+    setEntries(loadEntries());
+  }
+
+  function toggleActive(id: string) {
+    if (isActive(id)) unmarkActive(id);
+    else markActive(id);
     setEntries(loadEntries());
   }
 
@@ -318,10 +330,22 @@ function LogPage() {
                     </div>
                     {e.notes && <p className="mt-2 text-sm whitespace-pre-wrap">{e.notes}</p>}
                   </div>
-                  <div className="flex flex-col items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition">
+                  <div className="flex flex-col items-center gap-1">
+                    <button
+                      onClick={() => toggleActive(e.id)}
+                      className={`rounded-full p-2 ${
+                        isActive(e.id)
+                          ? "bg-secondary/30 text-secondary ring-1 ring-secondary/50"
+                          : "hover:bg-secondary/20 text-muted-foreground hover:text-secondary"
+                      }`}
+                      aria-label={isActive(e.id) ? "Als beendet markieren" : "Als aktive Session markieren"}
+                      title={isActive(e.id) ? "Aktive Session — beenden" : "Als aktive Session markieren"}
+                    >
+                      <Activity className={`h-4 w-4 ${isActive(e.id) ? "animate-pulse" : ""}`} />
+                    </button>
                     <button
                       onClick={() => repeat(e)}
-                      className="rounded-full p-2 hover:bg-secondary/20 text-muted-foreground hover:text-secondary"
+                      className="rounded-full p-2 hover:bg-secondary/20 text-muted-foreground hover:text-secondary sm:opacity-0 sm:group-hover:opacity-100 transition"
                       aria-label="Erneut dosieren (Formular ausfüllen)"
                       title="Wiederholen / Re-Dose"
                     >
@@ -329,7 +353,7 @@ function LogPage() {
                     </button>
                     <button
                       onClick={() => remove(e.id)}
-                      className="rounded-full p-2 hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+                      className="rounded-full p-2 hover:bg-destructive/20 text-muted-foreground hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 transition"
                       aria-label="Löschen"
                     >
                       <Trash2 className="h-4 w-4" />
