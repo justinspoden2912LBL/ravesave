@@ -4,7 +4,6 @@ import {
   BookOpen,
   ChevronDown,
   Clock,
-  FlaskConical,
   GitMerge,
   Heart,
   HeartPulse,
