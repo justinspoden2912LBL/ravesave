@@ -8,6 +8,7 @@ import {
   Heart,
   Home,
   Info,
+  ListChecks,
   MessageCircle,
   Search,
   Settings as SettingsIcon,
@@ -18,6 +19,7 @@ import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 const links = [
   { to: "/", label: "Home", icon: Home },
   { to: "/akut", label: "Akute Hilfe", icon: Heart },
+  { to: "/checkliste", label: "Checkliste", icon: ListChecks },
   { to: "/log", label: "Protokoll", icon: Activity },
   { to: "/mix", label: "Mix-Check", icon: GitMerge },
   { to: "/risks", label: "Risiken", icon: ShieldAlert },

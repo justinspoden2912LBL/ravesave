@@ -25,6 +25,7 @@ import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
+import { Route as ChecklisteRouteImport } from './routes/checkliste'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AkutRouteImport } from './routes/akut'
 import { Route as AftercareRouteImport } from './routes/aftercare'
@@ -116,6 +117,11 @@ const DrugcheckingRoute = DrugcheckingRouteImport.update({
   path: '/drugchecking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChecklisteRoute = ChecklisteRouteImport.update({
+  id: '/checkliste',
+  path: '/checkliste',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
+  '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
+  '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
+  '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/knigge': typeof KniggeRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/aftercare'
     | '/akut'
     | '/chat'
+    | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/aftercare'
     | '/akut'
     | '/chat'
+    | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/aftercare'
     | '/akut'
     | '/chat'
+    | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
     | '/knigge'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   AftercareRoute: typeof AftercareRoute
   AkutRoute: typeof AkutRoute
   ChatRoute: typeof ChatRoute
+  ChecklisteRoute: typeof ChecklisteRoute
   DrugcheckingRoute: typeof DrugcheckingRoute
   ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
   KniggeRoute: typeof KniggeRoute
@@ -481,6 +494,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrugcheckingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkliste': {
+      id: '/checkliste'
+      path: '/checkliste'
+      fullPath: '/checkliste'
+      preLoaderRoute: typeof ChecklisteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
@@ -573,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   AftercareRoute: AftercareRoute,
   AkutRoute: AkutRoute,
   ChatRoute: ChatRoute,
+  ChecklisteRoute: ChecklisteRoute,
   DrugcheckingRoute: DrugcheckingRoute,
   ErfahrungenRoute: ErfahrungenRouteWithChildren,
   KniggeRoute: KniggeRoute,
