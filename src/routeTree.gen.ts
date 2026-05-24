@@ -36,6 +36,7 @@ import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
 
 const ToleranceRoute = ToleranceRouteImport.update({
   id: '/tolerance',
@@ -172,6 +173,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
+  id: '/api/akut-coach',
+  path: '/api/akut-coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
@@ -256,6 +264,7 @@ export interface FileRoutesById {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/erfahrungen/$slug'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
   ToleranceRoute: typeof ToleranceRoute
+  ApiAkutCoachRoute: typeof ApiAkutCoachRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiTtsRoute: typeof ApiTtsRoute
   SessionActiveRoute: typeof SessionActiveRoute
@@ -571,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/akut-coach': {
+      id: '/api/akut-coach'
+      path: '/api/akut-coach'
+      fullPath: '/api/akut-coach'
+      preLoaderRoute: typeof ApiAkutCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -610,6 +630,7 @@ const rootRouteChildren: RootRouteChildren = {
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
   ToleranceRoute: ToleranceRoute,
+  ApiAkutCoachRoute: ApiAkutCoachRoute,
   ApiChatRoute: ApiChatRoute,
   ApiTtsRoute: ApiTtsRoute,
   SessionActiveRoute: SessionActiveRoute,
@@ -617,3 +638,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
