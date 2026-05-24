@@ -57,7 +57,7 @@ export function Spotlight() {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Substanz, Seite, Aktion… (z. B. „Pep" oder „Reagent")"
+            placeholder='Substanz, Seite, Aktion… (z. B. "Pep" oder "Reagent")'
             className="flex-1 bg-transparent outline-none text-sm"
           />
           <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground" aria-label="Schließen">
