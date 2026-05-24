@@ -23,6 +23,7 @@ import { Route as NotfallRouteImport } from './routes/notfall'
 import { Route as MixRouteImport } from './routes/mix'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
+import { Route as InstallRouteImport } from './routes/install'
 import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
 import { Route as ChecklisteRouteImport } from './routes/checkliste'
@@ -38,6 +39,7 @@ import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
 const ToleranceRoute = ToleranceRouteImport.update({
   id: '/tolerance',
@@ -107,6 +109,11 @@ const LogRoute = LogRouteImport.update({
 const KniggeRoute = KniggeRouteImport.update({
   id: '/knigge',
   path: '/knigge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ErfahrungenRoute = ErfahrungenRouteImport.update({
@@ -184,6 +191,11 @@ const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   path: '/api/akut-coach',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -215,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -226,6 +240,7 @@ export interface FileRoutesByTo {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -246,6 +261,7 @@ export interface FileRoutesByTo {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -258,6 +274,7 @@ export interface FileRoutesById {
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
   '/erfahrungen': typeof ErfahrungenRouteWithChildren
+  '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
   '/mix': typeof MixRoute
@@ -278,6 +295,7 @@ export interface FileRoutesById {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -291,6 +309,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -311,6 +330,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -322,6 +342,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -342,6 +363,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   id:
     | '__root__'
     | '/'
@@ -353,6 +375,7 @@ export interface FileRouteTypes {
     | '/checkliste'
     | '/drugchecking'
     | '/erfahrungen'
+    | '/install'
     | '/knigge'
     | '/log'
     | '/mix'
@@ -373,6 +396,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -385,6 +409,7 @@ export interface RootRouteChildren {
   ChecklisteRoute: typeof ChecklisteRoute
   DrugcheckingRoute: typeof DrugcheckingRoute
   ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
+  InstallRoute: typeof InstallRoute
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
   MixRoute: typeof MixRoute
@@ -404,6 +429,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   SessionActiveRoute: typeof SessionActiveRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -504,6 +530,13 @@ declare module '@tanstack/react-router' {
       path: '/knigge'
       fullPath: '/knigge'
       preLoaderRoute: typeof KniggeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/erfahrungen': {
@@ -611,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAkutCoachRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -636,6 +676,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChecklisteRoute: ChecklisteRoute,
   DrugcheckingRoute: DrugcheckingRoute,
   ErfahrungenRoute: ErfahrungenRouteWithChildren,
+  InstallRoute: InstallRoute,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
   MixRoute: MixRoute,
@@ -655,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   SessionActiveRoute: SessionActiveRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

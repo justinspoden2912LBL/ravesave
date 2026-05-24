@@ -4,9 +4,11 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Nav, Footer } from "../components/Nav";
@@ -14,6 +16,9 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
+import { trackPageView } from "@/lib/analytics";
+import { initI18n, refreshI18n } from "@/lib/i18n";
+import { initSubstanceOverrides, refreshSubstanceOverrides } from "@/lib/substancesRuntime";
 
 function NotFoundComponent() {
   return (
@@ -152,6 +157,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Boot: hydrate i18n cache + refresh from server.
+  useEffect(() => {
+    initI18n();
+    initSubstanceOverrides();
+    void refreshI18n();
+    void refreshSubstanceOverrides();
+  }, []);
+
+  // Page-view tracking.
+  useEffect(() => {
+    if (pathname) trackPageView(pathname);
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

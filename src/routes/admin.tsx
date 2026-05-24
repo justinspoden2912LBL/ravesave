@@ -29,6 +29,9 @@ import {
   labelFor as auditLabel,
   type AdminAuditEntry,
 } from "@/lib/adminAudit";
+import { AdminStatsTab } from "@/components/admin/AdminStatsTab";
+import { AdminTextsTab } from "@/components/admin/AdminTextsTab";
+import { AdminSubstancesTab } from "@/components/admin/AdminSubstancesTab";
 
 const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
 const ADMIN_LOCKOUT_KEY = "ravesave_admin_lockout_until";
@@ -65,8 +68,87 @@ export const Route = createFileRoute("/admin")({
 
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
+type Tab = "stats" | "texts" | "substances" | "posts";
+
 function AdminPage() {
-  return <Dashboard onLogout={() => {}} />;
+  const [authState, setAuthState] = useState<"checking" | "in" | "out">("checking");
+  const [tab, setTab] = useState<Tab>("stats");
+
+  async function check() {
+    try {
+      const r = await adminWhoami();
+      setAuthState(r.isAdmin ? "in" : "out");
+    } catch {
+      setAuthState("out");
+    }
+  }
+  useEffect(() => {
+    void check();
+  }, []);
+
+  if (authState === "checking") {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16 text-center text-sm text-muted-foreground">
+        Prüfe Admin-Sitzung…
+      </div>
+    );
+  }
+  if (authState === "out") {
+    return <LoginCard onSuccess={() => setAuthState("in")} />;
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8 space-y-5">
+      <header className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Admin</h1>
+          <p className="text-xs text-muted-foreground">Statistik · Texte · Substanzen · Beiträge</p>
+        </div>
+        <button
+          onClick={async () => {
+            try {
+              await adminLogout();
+            } catch {
+              /* ignore */
+            }
+            logAdminAudit("logout");
+            setAuthState("out");
+          }}
+          className="inline-flex items-center gap-2 rounded-full glass px-3 py-2 text-xs"
+        >
+          <LogOut className="h-3.5 w-3.5" /> Abmelden
+        </button>
+      </header>
+
+      <nav className="flex gap-1 overflow-x-auto -mx-4 px-4 pb-1" aria-label="Admin-Bereiche">
+        {(
+          [
+            { id: "stats", label: "Statistik" },
+            { id: "texts", label: "Texte" },
+            { id: "substances", label: "Substanzen" },
+            { id: "posts", label: "Beiträge" },
+          ] as { id: Tab; label: string }[]
+        ).map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+              tab === t.id
+                ? "bg-primary text-primary-foreground"
+                : "glass text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "stats" && <AdminStatsTab />}
+      {tab === "texts" && <AdminTextsTab />}
+      {tab === "substances" && <AdminSubstancesTab />}
+      {tab === "posts" && <Dashboard onLogout={() => setAuthState("out")} />}
+    </div>
+  );
 }
 
 function LoginCard({ onSuccess }: { onSuccess: () => void }) {
