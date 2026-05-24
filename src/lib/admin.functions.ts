@@ -1,7 +1,59 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useSession } from "@tanstack/react-start/server";
+import { useSession, getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+// Server-side brute-force protection (best-effort, per-isolate in-memory).
+// Acts in addition to any client-side UX lockout — cannot be bypassed by
+// clearing localStorage or hitting the endpoint with curl from one origin.
+const SERVER_MAX_ATTEMPTS = 5;
+const SERVER_LOCKOUT_MS = 15 * 60 * 1000;
+const SERVER_WINDOW_MS = 15 * 60 * 1000;
+type AttemptRec = { count: number; firstAt: number; lockedUntil: number };
+const attempts = new Map<string, AttemptRec>();
+
+function clientKey(): string {
+  try {
+    const ip = getRequestIP({ xForwardedFor: true });
+    if (ip) return `ip:${ip}`;
+  } catch {
+    /* ignore */
+  }
+  try {
+    const fwd = getRequestHeader("x-forwarded-for");
+    if (fwd) return `xff:${fwd.split(",")[0].trim()}`;
+  } catch {
+    /* ignore */
+  }
+  return "global";
+}
+
+function checkLockout(key: string) {
+  const now = Date.now();
+  const rec = attempts.get(key);
+  if (!rec) return;
+  if (rec.lockedUntil > now) {
+    throw new Error("Zu viele Fehlversuche. Bitte später erneut versuchen.");
+  }
+  if (now - rec.firstAt > SERVER_WINDOW_MS) {
+    attempts.delete(key);
+  }
+}
+
+function recordFailure(key: string) {
+  const now = Date.now();
+  const rec = attempts.get(key);
+  if (!rec || now - rec.firstAt > SERVER_WINDOW_MS) {
+    attempts.set(key, { count: 1, firstAt: now, lockedUntil: 0 });
+    return;
+  }
+  rec.count += 1;
+  if (rec.count >= SERVER_MAX_ATTEMPTS) rec.lockedUntil = now + SERVER_LOCKOUT_MS;
+}
+
+function recordSuccess(key: string) {
+  attempts.delete(key);
+}
 
 type AdminSession = { admin?: boolean; loginAt?: number };
 
@@ -45,6 +97,8 @@ export const adminLogin = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.ADMIN_ACCESS_KEY;
     if (!expected) throw new Error("Admin key not configured");
+    const ckey = clientKey();
+    checkLockout(ckey);
     // constant-time-ish compare
     const a = Buffer.from(data.key);
     const b = Buffer.from(expected);
@@ -53,7 +107,11 @@ export const adminLogin = createServerFn({ method: "POST" })
     for (let i = 0; i < len; i++) ok = ok && a[i] === b[i];
     // small delay to slow brute force
     await new Promise((r) => setTimeout(r, 250));
-    if (!ok) throw new Error("Ungültiger Admin-Schlüssel");
+    if (!ok) {
+      recordFailure(ckey);
+      throw new Error("Ungültiger Admin-Schlüssel");
+    }
+    recordSuccess(ckey);
     const s = await getAdminSession();
     await s.update({ admin: true, loginAt: Date.now() });
     return { ok: true };
