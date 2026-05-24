@@ -38,6 +38,7 @@ import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
 const ToleranceRoute = ToleranceRouteImport.update({
   id: '/tolerance',
@@ -184,6 +185,11 @@ const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   path: '/api/akut-coach',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -311,6 +320,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   id:
     | '__root__'
     | '/'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/api/public/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -404,6 +416,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   SessionActiveRoute: typeof SessionActiveRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -611,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAkutCoachRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -655,6 +675,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   SessionActiveRoute: SessionActiveRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
