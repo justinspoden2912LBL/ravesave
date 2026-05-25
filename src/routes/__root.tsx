@@ -172,6 +172,31 @@ function RootComponent() {
     void refreshFeatureFlags();
   }, []);
 
+  // PWA install tracking
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Schon installiert (Standalone-Modus)?
+    const isStandalone =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      (window.navigator as { standalone?: boolean }).standalone === true;
+    try {
+      const KEY = "rs_pwa_standalone_reported";
+      if (isStandalone && !localStorage.getItem(KEY)) {
+        trackEvent("pwa_standalone_open");
+        localStorage.setItem(KEY, "1");
+      }
+    } catch { /* ignore */ }
+
+    const onBeforeInstall = () => trackEvent("pwa_install_prompt_shown");
+    const onInstalled = () => trackEvent("pwa_installed");
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
   // Page-view tracking.
   useEffect(() => {
     if (pathname) trackPageView(pathname);
