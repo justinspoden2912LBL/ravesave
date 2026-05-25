@@ -34,6 +34,7 @@ import { AdminTextsTab } from "@/components/admin/AdminTextsTab";
 import { AdminSubstancesTab } from "@/components/admin/AdminSubstancesTab";
 import { AdminPagesTab } from "@/components/admin/AdminPagesTab";
 import { AdminSessionsTab } from "@/components/admin/AdminSessionsTab";
+import { AdminSiteContentTab } from "@/components/admin/AdminSiteContentTab";
 
 
 const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
