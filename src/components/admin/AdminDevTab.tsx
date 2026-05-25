@@ -295,7 +295,90 @@ export function AdminDevTab() {
         </div>
       </section>
 
+      {/* Inhalts-Snapshot (Backup / Restore) */}
+      <section className="rounded-2xl glass p-5 space-y-3 border border-primary/20">
+        <div className="flex items-center gap-2">
+          <FileJson className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Inhalts-Snapshot (Backup)</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Lädt alle Admin-Inhalte (Feature-Flags, UI-Texte, Info-Texte,
+          Substanz-Overrides, Beiträge) als eine JSON-Datei runter — perfekt
+          als Backup oder zum manuellen Hinzufügen ins Git-Repo. Wiederherstellung
+          per Upload.
+        </p>
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button
+            onClick={() => void handleExportSnapshot()}
+            disabled={snapBusy !== null}
+            className="flex flex-col items-start gap-1 rounded-xl bg-aurora animate-aurora p-4 text-primary-foreground glow disabled:opacity-50"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              {snapBusy === "export" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              Snapshot herunterladen
+            </span>
+            <span className="text-[11px] opacity-90 text-left">
+              Datei: <code>ravesafe-content-YYYY-MM-DD.json</code>
+            </span>
+          </button>
+
+          <label
+            className={`flex flex-col items-start gap-1 rounded-xl glass p-4 border border-foreground/10 cursor-pointer ${snapBusy ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              {snapBusy === "import" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Snapshot einspielen
+            </span>
+            <span className="text-[11px] text-muted-foreground text-left">
+              JSON-Datei auswählen — vorhandene Einträge werden{" "}
+              {importMode === "replace" ? "ersetzt" : "aktualisiert"}.
+            </span>
+            <input
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";
+                if (f) void handleImportSnapshot(f);
+              }}
+            />
+          </label>
+        </div>
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">Import-Modus:</span>
+          <label className="inline-flex items-center gap-1.5">
+            <input
+              type="radio"
+              checked={importMode === "merge"}
+              onChange={() => setImportMode("merge")}
+            />
+            <span>Merge (sicher)</span>
+          </label>
+          <label className="inline-flex items-center gap-1.5">
+            <input
+              type="radio"
+              checked={importMode === "replace"}
+              onChange={() => setImportMode("replace")}
+            />
+            <span className="text-destructive">Replace (alles ersetzen)</span>
+          </label>
+        </div>
+      </section>
+
       {/* PWA-Installationen */}
+
+
 
       <section className="rounded-2xl glass p-5 space-y-3">
         <div className="flex items-center gap-2">
