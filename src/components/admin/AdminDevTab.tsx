@@ -106,7 +106,122 @@ export function AdminDevTab() {
         </p>
       </section>
 
+      {/* Neues GitHub-Repo erstellen & verbinden */}
+      <section className="rounded-2xl glass p-5 space-y-3 border border-secondary/30">
+        <div className="flex items-center gap-2">
+          <Github className="h-5 w-5 text-secondary" />
+          <h2 className="text-lg font-semibold">
+            Neues GitHub-Repo erstellen & verbinden
+          </h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Geführter 3-Schritt-Assistent. Aus Sicherheitsgründen kann die
+          laufende App das Repo nicht eigenständig erstellen — sie führt dich
+          aber per Ein-Klick durch jeden Schritt.
+        </p>
+
+        {/* Schritt 1 — Repo-Name */}
+        <div className="rounded-xl bg-muted/20 p-3 space-y-2">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Schritt 1 — Repository-Name wählen
+          </div>
+          <input
+            type="text"
+            value={repoName}
+            onChange={(e) =>
+              setRepoName(
+                e.target.value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9-_]/g, "-")
+                  .slice(0, 80),
+              )
+            }
+            className="w-full rounded-lg bg-background/60 border border-foreground/10 px-3 py-2 text-sm font-mono"
+            placeholder="mein-repo-name"
+          />
+          <div className="flex flex-wrap gap-1">
+            {SUGGESTED_REPO_NAMES.map((s) => (
+              <button
+                key={s}
+                onClick={() => setRepoName(s)}
+                className={`text-[11px] rounded-full px-2.5 py-1 border ${
+                  repoName === s
+                    ? "bg-secondary/20 border-secondary/40 text-secondary"
+                    : "border-foreground/10 hover:bg-muted/40"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+            <button
+              onClick={() => copy(repoName, "repo")}
+              className="ml-auto inline-flex items-center gap-1 text-[11px] rounded-full px-2.5 py-1 border border-foreground/10 hover:bg-muted/40"
+            >
+              {copied === "repo" ? (
+                <Check className="h-3 w-3 text-secondary" />
+              ) : (
+                <Copy className="h-3 w-3" />
+              )}
+              Namen kopieren
+            </button>
+          </div>
+        </div>
+
+        {/* Schritt 2 — Im Lovable-Editor verbinden */}
+        <div className="rounded-xl bg-muted/20 p-3 space-y-2">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Schritt 2 — Lovable-Editor öffnen & GitHub verbinden
+          </div>
+          <p className="text-xs text-foreground/90">
+            Klick auf den Button → im Editor unten links auf{" "}
+            <strong>+ Menü → GitHub → Connect project</strong> →
+            GitHub-Authorisierung erlauben.
+          </p>
+          <a
+            href={LOVABLE_PROJECT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-4 py-2 text-xs font-semibold text-primary-foreground glow"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Lovable-Editor öffnen
+          </a>
+        </div>
+
+        {/* Schritt 3 — Repo erstellen */}
+        <div className="rounded-xl bg-muted/20 p-3 space-y-2">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Schritt 3 — Repo anlegen
+          </div>
+          <p className="text-xs text-foreground/90">
+            Wähle dein GitHub-Konto, füge oben den kopierten Namen{" "}
+            <code className="rounded bg-background/60 px-1 py-0.5 font-mono text-[11px]">
+              {repoName || "mein-repo"}
+            </code>{" "}
+            ein und klicke <strong>„Create Repository"</strong>. Lovable
+            überträgt den kompletten Code und aktiviert die Live-Sync — ab
+            jetzt landet jede Änderung automatisch auf GitHub.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`https://github.com/new?name=${encodeURIComponent(repoName)}&description=${encodeURIComponent("Ravesafe – harm-reduction web app")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs border border-foreground/10"
+            >
+              <Github className="h-3.5 w-3.5" />
+              Repo-Name auf GitHub reservieren (optional)
+            </a>
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Optional: Reserviert den Namen schon auf github.com — Lovable
+            verbindet sich danach im Schritt 2 mit genau diesem Repo.
+          </p>
+        </div>
+      </section>
+
       {/* PWA-Installationen */}
+
       <section className="rounded-2xl glass p-5 space-y-3">
         <div className="flex items-center gap-2">
           <Smartphone className="h-5 w-5 text-secondary" />
