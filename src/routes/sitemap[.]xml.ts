@@ -13,28 +13,30 @@ interface SitemapEntry {
 
 const STATIC_ENTRIES: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/log", changefreq: "monthly", priority: "0.8" },
-  { path: "/mix", changefreq: "monthly", priority: "0.9" },
-  { path: "/risks", changefreq: "monthly", priority: "0.8" },
-  { path: "/substances", changefreq: "weekly", priority: "0.9" },
-  { path: "/knigge", changefreq: "monthly", priority: "0.7" },
-  { path: "/chat", changefreq: "monthly", priority: "0.6" },
-  { path: "/stats", changefreq: "monthly", priority: "0.5" },
   { path: "/about", changefreq: "yearly", priority: "0.5" },
-  { path: "/notfall", changefreq: "yearly", priority: "0.7" },
-  { path: "/safety-plan", changefreq: "monthly", priority: "0.6" },
-  { path: "/erfahrungen", changefreq: "weekly", priority: "0.6" },
-  { path: "/onboarding", changefreq: "yearly", priority: "0.4" },
-  { path: "/settings", changefreq: "yearly", priority: "0.3" },
   { path: "/aftercare", changefreq: "monthly", priority: "0.7" },
-  { path: "/drugchecking", changefreq: "monthly", priority: "0.7" },
-  { path: "/reagenztest", changefreq: "monthly", priority: "0.7" },
-  { path: "/tolerance", changefreq: "monthly", priority: "0.6" },
-  { path: "/session/active", changefreq: "monthly", priority: "0.5" },
   { path: "/akut", changefreq: "monthly", priority: "0.8" },
   { path: "/checkliste", changefreq: "monthly", priority: "0.7" },
-
+  { path: "/chat", changefreq: "monthly", priority: "0.6" },
+  { path: "/drugchecking", changefreq: "monthly", priority: "0.7" },
+  { path: "/erfahrungen", changefreq: "weekly", priority: "0.6" },
+  { path: "/install", changefreq: "yearly", priority: "0.4" },
+  { path: "/knigge", changefreq: "monthly", priority: "0.7" },
+  { path: "/log", changefreq: "monthly", priority: "0.8" },
+  { path: "/mix", changefreq: "monthly", priority: "0.9" },
+  { path: "/notfall", changefreq: "yearly", priority: "0.7" },
+  { path: "/onboarding", changefreq: "yearly", priority: "0.4" },
+  { path: "/reagenztest", changefreq: "monthly", priority: "0.7" },
+  { path: "/reset-password", changefreq: "yearly", priority: "0.3" },
+  { path: "/risks", changefreq: "monthly", priority: "0.8" },
+  { path: "/safety-plan", changefreq: "monthly", priority: "0.6" },
+  { path: "/session/active", changefreq: "monthly", priority: "0.5" },
+  { path: "/settings", changefreq: "yearly", priority: "0.3" },
+  { path: "/stats", changefreq: "monthly", priority: "0.5" },
+  { path: "/substances", changefreq: "weekly", priority: "0.9" },
+  { path: "/tolerance", changefreq: "monthly", priority: "0.6" },
 ];
+
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
