@@ -429,7 +429,14 @@ const SNAPSHOT_TABLES = [
   "posts",
 ] as const;
 
-type JsonRow = Record<string, unknown>;
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [k: string]: JsonValue }
+  | JsonValue[];
+type JsonRow = { [k: string]: JsonValue };
 type SnapshotPayload = {
   ok: true;
   app: "ravesafe";
