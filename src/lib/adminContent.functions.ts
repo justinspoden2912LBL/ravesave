@@ -429,25 +429,38 @@ const SNAPSHOT_TABLES = [
   "posts",
 ] as const;
 
-export const adminExportSnapshot = createServerFn({ method: "POST" }).handler(async () => {
-  if (!(await useAdminSessionGate())) {
-    return { ok: false as const, authRequired: true as const };
-  }
-  const out: Record<string, unknown[]> = {};
-  for (const t of SNAPSHOT_TABLES) {
-    const { data, error } = await supabaseAdmin.from(t).select("*");
-    if (error) throw new Error(`${t}: ${error.message}`);
-    out[t] = data ?? [];
-  }
-  return {
-    ok: true as const,
-    app: "ravesafe",
-    kind: "content-snapshot" as const,
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    tables: out,
-  };
-});
+type JsonRow = Record<string, unknown>;
+type SnapshotPayload = {
+  ok: true;
+  app: "ravesafe";
+  kind: "content-snapshot";
+  version: 1;
+  exportedAt: string;
+  tables: Record<string, JsonRow[]>;
+};
+type SnapshotAuthFail = { ok: false; authRequired: true };
+
+export const adminExportSnapshot = createServerFn({ method: "POST" }).handler(
+  async (): Promise<SnapshotPayload | SnapshotAuthFail> => {
+    if (!(await useAdminSessionGate())) {
+      return { ok: false, authRequired: true };
+    }
+    const out: Record<string, JsonRow[]> = {};
+    for (const t of SNAPSHOT_TABLES) {
+      const { data, error } = await supabaseAdmin.from(t).select("*");
+      if (error) throw new Error(`${t}: ${error.message}`);
+      out[t] = (data ?? []) as JsonRow[];
+    }
+    return {
+      ok: true,
+      app: "ravesafe",
+      kind: "content-snapshot",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      tables: out,
+    };
+  },
+);
 
 const SnapshotInput = z.object({
   app: z.literal("ravesafe"),
@@ -459,40 +472,47 @@ const SnapshotInput = z.object({
 
 export const adminImportSnapshot = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SnapshotInput.parse(d))
-  .handler(async ({ data }) => {
-    if (!(await useAdminSessionGate())) {
-      return { ok: false as const, authRequired: true as const };
-    }
-    const counts: Record<string, number> = {};
-    for (const t of SNAPSHOT_TABLES) {
-      const rows = data.tables[t];
-      if (!rows || rows.length === 0) {
-        counts[t] = 0;
-        continue;
+  .handler(
+    async ({
+      data,
+    }): Promise<
+      { ok: true; counts: Record<string, number> } | SnapshotAuthFail
+    > => {
+      if (!(await useAdminSessionGate())) {
+        return { ok: false, authRequired: true };
       }
-      if (data.mode === "replace") {
-        const { error: delErr } = await supabaseAdmin
+      const counts: Record<string, number> = {};
+      for (const t of SNAPSHOT_TABLES) {
+        const rows = data.tables[t];
+        if (!rows || rows.length === 0) {
+          counts[t] = 0;
+          continue;
+        }
+        if (data.mode === "replace") {
+          const guard =
+            t === "posts"
+              ? "id.neq.00000000-0000-0000-0000-000000000000"
+              : t === "substance_overrides"
+                ? "slug.neq.__never__"
+                : "key.neq.__never__";
+          const { error: delErr } = await supabaseAdmin.from(t).delete().or(guard);
+          if (delErr) throw new Error(`${t} clear: ${delErr.message}`);
+        }
+        const conflictKey =
+          t === "posts" ? "id" : t === "substance_overrides" ? "slug" : "key";
+        // Snapshot rows are validated by Zod; cast to bypass generated row type
+        // since we round-trip the exact shape that came from the same table.
+        const { error } = await supabaseAdmin
           .from(t)
-          .delete()
-          .not("created_at", "is", null)
-          // delete-all guard: this matches every row that has created_at,
-          // and for tables without created_at we fall back to a wildcard.
-          .or(t === "posts" ? "id.neq.00000000-0000-0000-0000-000000000000" : "key.neq.__never__");
-        if (delErr) throw new Error(`${t} clear: ${delErr.message}`);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .upsert(rows as any, { onConflict: conflictKey });
+        if (error) throw new Error(`${t}: ${error.message}`);
+        counts[t] = rows.length;
       }
-      const { error } = await supabaseAdmin.from(t).upsert(rows, {
-        onConflict:
-          t === "posts"
-            ? "id"
-            : t === "substance_overrides"
-              ? "slug"
-              : "key",
-      });
-      if (error) throw new Error(`${t}: ${error.message}`);
-      counts[t] = rows.length;
-    }
-    return { ok: true as const, counts };
-  });
+      return { ok: true, counts };
+    },
+  );
+
 
 
 
