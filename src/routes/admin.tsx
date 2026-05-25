@@ -73,7 +73,7 @@ export const Route = createFileRoute("/admin")({
 
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
-type Tab = "pages" | "info" | "sessions" | "stats" | "texts" | "substances" | "posts";
+type Tab = "pages" | "info" | "sessions" | "stats" | "texts" | "substances" | "posts" | "dev";
 
 function AdminPage() {
   const [authState, setAuthState] = useState<"checking" | "in" | "out">("checking");
