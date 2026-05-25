@@ -417,4 +417,109 @@ export const adminDeleteSiteContent = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ─────────────────────────────────────────────────────────────────────────
+// CONTENT SNAPSHOT (Export / Import all admin-managed data as JSON)
+// ─────────────────────────────────────────────────────────────────────────
+
+const SNAPSHOT_TABLES = [
+  "feature_flags",
+  "ui_texts",
+  "site_content",
+  "substance_overrides",
+  "posts",
+] as const;
+
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [k: string]: JsonValue }
+  | JsonValue[];
+type JsonRow = { [k: string]: JsonValue };
+type SnapshotPayload = {
+  ok: true;
+  app: "ravesafe";
+  kind: "content-snapshot";
+  version: 1;
+  exportedAt: string;
+  tables: Record<string, JsonRow[]>;
+};
+type SnapshotAuthFail = { ok: false; authRequired: true };
+
+export const adminExportSnapshot = createServerFn({ method: "POST" }).handler(
+  async (): Promise<SnapshotPayload | SnapshotAuthFail> => {
+    if (!(await useAdminSessionGate())) {
+      return { ok: false, authRequired: true };
+    }
+    const out: Record<string, JsonRow[]> = {};
+    for (const t of SNAPSHOT_TABLES) {
+      const { data, error } = await supabaseAdmin.from(t).select("*");
+      if (error) throw new Error(`${t}: ${error.message}`);
+      out[t] = JSON.parse(JSON.stringify(data ?? [])) as JsonRow[];
+    }
+    return {
+      ok: true,
+      app: "ravesafe",
+      kind: "content-snapshot",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      tables: out,
+    };
+  },
+);
+
+const SnapshotInput = z.object({
+  app: z.literal("ravesafe"),
+  kind: z.literal("content-snapshot"),
+  version: z.literal(1),
+  tables: z.record(z.string(), z.array(z.record(z.string(), z.unknown()))),
+  mode: z.enum(["merge", "replace"]).default("merge"),
+});
+
+export const adminImportSnapshot = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => SnapshotInput.parse(d))
+  .handler(
+    async ({
+      data,
+    }): Promise<
+      { ok: true; counts: Record<string, number> } | SnapshotAuthFail
+    > => {
+      if (!(await useAdminSessionGate())) {
+        return { ok: false, authRequired: true };
+      }
+      const counts: Record<string, number> = {};
+      for (const t of SNAPSHOT_TABLES) {
+        const rows = data.tables[t];
+        if (!rows || rows.length === 0) {
+          counts[t] = 0;
+          continue;
+        }
+        if (data.mode === "replace") {
+          const guard =
+            t === "posts"
+              ? "id.neq.00000000-0000-0000-0000-000000000000"
+              : t === "substance_overrides"
+                ? "slug.neq.__never__"
+                : "key.neq.__never__";
+          const { error: delErr } = await supabaseAdmin.from(t).delete().or(guard);
+          if (delErr) throw new Error(`${t} clear: ${delErr.message}`);
+        }
+        const conflictKey =
+          t === "posts" ? "id" : t === "substance_overrides" ? "slug" : "key";
+        // Snapshot rows are validated by Zod; cast to bypass generated row type
+        // since we round-trip the exact shape that came from the same table.
+        const { error } = await supabaseAdmin
+          .from(t)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .upsert(rows as any, { onConflict: conflictKey });
+        if (error) throw new Error(`${t}: ${error.message}`);
+        counts[t] = rows.length;
+      }
+      return { ok: true, counts };
+    },
+  );
+
+
+
 

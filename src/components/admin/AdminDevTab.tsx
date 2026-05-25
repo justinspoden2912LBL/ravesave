@@ -8,8 +8,16 @@ import {
   Check,
   Code2,
   BookOpen,
+  Upload,
+  FileJson,
+  Loader2,
 } from "lucide-react";
-import { adminGetStats } from "@/lib/adminContent.functions";
+import {
+  adminGetStats,
+  adminExportSnapshot,
+  adminImportSnapshot,
+} from "@/lib/adminContent.functions";
+import { toast } from "sonner";
 
 const PROJECT_ID = "91fcc3dc-3809-4b8b-b992-beef8f90afa1";
 const LOVABLE_PROJECT_URL = `https://lovable.dev/projects/${PROJECT_ID}`;
@@ -29,6 +37,8 @@ export function AdminDevTab() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const [repoName, setRepoName] = useState<string>(SUGGESTED_REPO_NAMES[0]);
+  const [snapBusy, setSnapBusy] = useState<"export" | "import" | null>(null);
+  const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
 
   useEffect(() => {
     void (async () => {
@@ -54,6 +64,71 @@ export function AdminDevTab() {
     setCopied(key);
     setTimeout(() => setCopied(null), 1500);
   }
+
+  async function handleExportSnapshot() {
+    setSnapBusy("export");
+    try {
+      const res = await adminExportSnapshot();
+      if (!res.ok) {
+        toast.error("Nicht angemeldet — bitte Admin-Schlüssel erneut eingeben.");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(res, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ravesafe-content-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      const totals = Object.values(res.tables).reduce((s, r) => s + r.length, 0);
+      toast.success(`Snapshot heruntergeladen (${totals} Einträge).`);
+    } catch (e) {
+      toast.error(`Export fehlgeschlagen: ${(e as Error).message}`);
+    } finally {
+      setSnapBusy(null);
+    }
+  }
+
+  async function handleImportSnapshot(file: File) {
+    setSnapBusy("import");
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (parsed?.app !== "ravesafe" || parsed?.kind !== "content-snapshot") {
+        toast.error("Ungültige Datei — kein Ravesafe-Snapshot.");
+        return;
+      }
+      const confirmMsg =
+        importMode === "replace"
+          ? "REPLACE-Modus überschreibt ALLE Admin-Inhalte. Wirklich fortfahren?"
+          : "Snapshot jetzt einspielen (vorhandene Einträge werden aktualisiert)?";
+      if (!window.confirm(confirmMsg)) return;
+      const res = await adminImportSnapshot({
+        data: {
+          app: parsed.app,
+          kind: parsed.kind,
+          version: parsed.version,
+          tables: parsed.tables,
+          mode: importMode,
+        },
+      });
+      if (!res.ok) {
+        toast.error("Nicht angemeldet — bitte Admin-Schlüssel erneut eingeben.");
+        return;
+      }
+      const total = Object.values(res.counts).reduce((s, n) => s + n, 0);
+      toast.success(`Snapshot eingespielt (${total} Einträge).`);
+    } catch (e) {
+      toast.error(`Import fehlgeschlagen: ${(e as Error).message}`);
+    } finally {
+      setSnapBusy(null);
+    }
+  }
+
 
   return (
     <div className="space-y-5">
@@ -220,7 +295,90 @@ export function AdminDevTab() {
         </div>
       </section>
 
+      {/* Inhalts-Snapshot (Backup / Restore) */}
+      <section className="rounded-2xl glass p-5 space-y-3 border border-primary/20">
+        <div className="flex items-center gap-2">
+          <FileJson className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Inhalts-Snapshot (Backup)</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Lädt alle Admin-Inhalte (Feature-Flags, UI-Texte, Info-Texte,
+          Substanz-Overrides, Beiträge) als eine JSON-Datei runter — perfekt
+          als Backup oder zum manuellen Hinzufügen ins Git-Repo. Wiederherstellung
+          per Upload.
+        </p>
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button
+            onClick={() => void handleExportSnapshot()}
+            disabled={snapBusy !== null}
+            className="flex flex-col items-start gap-1 rounded-xl bg-aurora animate-aurora p-4 text-primary-foreground glow disabled:opacity-50"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              {snapBusy === "export" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              Snapshot herunterladen
+            </span>
+            <span className="text-[11px] opacity-90 text-left">
+              Datei: <code>ravesafe-content-YYYY-MM-DD.json</code>
+            </span>
+          </button>
+
+          <label
+            className={`flex flex-col items-start gap-1 rounded-xl glass p-4 border border-foreground/10 cursor-pointer ${snapBusy ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              {snapBusy === "import" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Snapshot einspielen
+            </span>
+            <span className="text-[11px] text-muted-foreground text-left">
+              JSON-Datei auswählen — vorhandene Einträge werden{" "}
+              {importMode === "replace" ? "ersetzt" : "aktualisiert"}.
+            </span>
+            <input
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";
+                if (f) void handleImportSnapshot(f);
+              }}
+            />
+          </label>
+        </div>
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">Import-Modus:</span>
+          <label className="inline-flex items-center gap-1.5">
+            <input
+              type="radio"
+              checked={importMode === "merge"}
+              onChange={() => setImportMode("merge")}
+            />
+            <span>Merge (sicher)</span>
+          </label>
+          <label className="inline-flex items-center gap-1.5">
+            <input
+              type="radio"
+              checked={importMode === "replace"}
+              onChange={() => setImportMode("replace")}
+            />
+            <span className="text-destructive">Replace (alles ersetzen)</span>
+          </label>
+        </div>
+      </section>
+
       {/* PWA-Installationen */}
+
+
 
       <section className="rounded-2xl glass p-5 space-y-3">
         <div className="flex items-center gap-2">
