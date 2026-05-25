@@ -154,6 +154,7 @@ function AdminPage() {
       </nav>
 
       {tab === "pages" && <AdminPagesTab />}
+      {tab === "info" && <AdminSiteContentTab />}
       {tab === "sessions" && <AdminSessionsTab />}
       {tab === "stats" && <AdminStatsTab />}
       {tab === "texts" && <AdminTextsTab />}
