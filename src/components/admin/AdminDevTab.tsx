@@ -8,8 +8,16 @@ import {
   Check,
   Code2,
   BookOpen,
+  Upload,
+  FileJson,
+  Loader2,
 } from "lucide-react";
-import { adminGetStats } from "@/lib/adminContent.functions";
+import {
+  adminGetStats,
+  adminExportSnapshot,
+  adminImportSnapshot,
+} from "@/lib/adminContent.functions";
+import { toast } from "sonner";
 
 const PROJECT_ID = "91fcc3dc-3809-4b8b-b992-beef8f90afa1";
 const LOVABLE_PROJECT_URL = `https://lovable.dev/projects/${PROJECT_ID}`;
