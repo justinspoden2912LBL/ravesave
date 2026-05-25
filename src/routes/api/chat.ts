@@ -6,12 +6,12 @@ import { createGroqProvider, GROQ_DEFAULT_MODEL } from "@/lib/groq-provider";
 import { SUBSTANCES, CATEGORY_LABEL } from "@/lib/substances";
 import { AI_MODEL, AI_PERSONA_BLOCK } from "@/lib/ai-config";
 
-const substanceContext = SUBSTANCES.map((s) => {
-  const ev = s.evidence?.length
-    ? "\n    Quellen: " + s.evidence.map((e) => `[${e.label}](${e.url})`).join(" · ")
-    : "";
-  return `- ${s.name} (${CATEGORY_LABEL[s.category]}) — ${s.shortDescription} Onset ${s.onset}, Dauer ${s.duration}.${ev}`;
-}).join("\n");
+// Kompakter Index: nur Name + Kategorie + 1-Zeiler. Evidenz-Links holt sich
+// das Modell bei Bedarf über den Verweis auf /substances — sonst sprengt der
+// System-Prompt die TPM-Limits (Groq free = 12k TPM).
+const substanceContext = SUBSTANCES.map(
+  (s) => `- ${s.name} (${CATEGORY_LABEL[s.category]}) — ${s.shortDescription} Onset ${s.onset}, Dauer ${s.duration}.`,
+).join("\n");
 
 const SYSTEM_PROMPT = `${AI_PERSONA_BLOCK}
 
