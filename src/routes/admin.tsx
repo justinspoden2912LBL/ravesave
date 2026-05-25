@@ -131,6 +131,7 @@ function AdminPage() {
         {(
           [
             { id: "pages", label: "Seiten" },
+            { id: "info", label: "Info-Texte" },
             { id: "sessions", label: "Live-Sessions" },
             { id: "stats", label: "Statistik" },
             { id: "texts", label: "Alle Texte" },
