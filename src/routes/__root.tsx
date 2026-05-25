@@ -16,7 +16,7 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
-import { trackPageView } from "@/lib/analytics";
+import { trackPageView, trackEvent } from "@/lib/analytics";
 import { initI18n, refreshI18n } from "@/lib/i18n";
 import { initSubstanceOverrides, refreshSubstanceOverrides } from "@/lib/substancesRuntime";
 import { initFeatureFlags, refreshFeatureFlags } from "@/lib/featureFlags";
@@ -170,6 +170,31 @@ function RootComponent() {
     void refreshI18n();
     void refreshSubstanceOverrides();
     void refreshFeatureFlags();
+  }, []);
+
+  // PWA install tracking
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Schon installiert (Standalone-Modus)?
+    const isStandalone =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      (window.navigator as { standalone?: boolean }).standalone === true;
+    try {
+      const KEY = "rs_pwa_standalone_reported";
+      if (isStandalone && !localStorage.getItem(KEY)) {
+        trackEvent("pwa_standalone_open");
+        localStorage.setItem(KEY, "1");
+      }
+    } catch { /* ignore */ }
+
+    const onBeforeInstall = () => trackEvent("pwa_install_prompt_shown");
+    const onInstalled = () => trackEvent("pwa_installed");
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
   }, []);
 
   // Page-view tracking.

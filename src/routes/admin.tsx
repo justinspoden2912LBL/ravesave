@@ -35,6 +35,7 @@ import { AdminSubstancesTab } from "@/components/admin/AdminSubstancesTab";
 import { AdminPagesTab } from "@/components/admin/AdminPagesTab";
 import { AdminSessionsTab } from "@/components/admin/AdminSessionsTab";
 import { AdminSiteContentTab } from "@/components/admin/AdminSiteContentTab";
+import { AdminDevTab } from "@/components/admin/AdminDevTab";
 
 
 const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/admin")({
 
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
-type Tab = "pages" | "info" | "sessions" | "stats" | "texts" | "substances" | "posts";
+type Tab = "pages" | "info" | "sessions" | "stats" | "texts" | "substances" | "posts" | "dev";
 
 function AdminPage() {
   const [authState, setAuthState] = useState<"checking" | "in" | "out">("checking");
@@ -137,6 +138,7 @@ function AdminPage() {
             { id: "texts", label: "Alle Texte" },
             { id: "substances", label: "Substanzen" },
             { id: "posts", label: "Beiträge" },
+            { id: "dev", label: "Entwickler & App" },
           ] as { id: Tab; label: string }[]
         ).map((t) => (
           <button
@@ -160,6 +162,7 @@ function AdminPage() {
       {tab === "texts" && <AdminTextsTab />}
       {tab === "substances" && <AdminSubstancesTab />}
       {tab === "posts" && <Dashboard onLogout={() => setAuthState("out")} />}
+      {tab === "dev" && <AdminDevTab />}
     </div>
   );
 }
