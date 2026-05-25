@@ -138,6 +138,7 @@ function AdminPage() {
             { id: "texts", label: "Alle Texte" },
             { id: "substances", label: "Substanzen" },
             { id: "posts", label: "Beiträge" },
+            { id: "dev", label: "Entwickler & App" },
           ] as { id: Tab; label: string }[]
         ).map((t) => (
           <button
