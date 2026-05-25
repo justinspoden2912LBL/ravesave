@@ -162,6 +162,7 @@ function AdminPage() {
       {tab === "texts" && <AdminTextsTab />}
       {tab === "substances" && <AdminSubstancesTab />}
       {tab === "posts" && <Dashboard onLogout={() => setAuthState("out")} />}
+      {tab === "dev" && <AdminDevTab />}
     </div>
   );
 }
