@@ -2,6 +2,7 @@ import "@tanstack/react-start";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway";
+import { createGroqProvider, GROQ_DEFAULT_MODEL } from "@/lib/groq-provider";
 import { SUBSTANCES, CATEGORY_LABEL } from "@/lib/substances";
 import { AI_MODEL, AI_PERSONA_BLOCK } from "@/lib/ai-config";
 
@@ -56,11 +57,17 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("no valid messages", { status: 400 });
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
-
-        const gateway = createLovableAiGatewayProvider(key);
-        const model = gateway(AI_MODEL);
+        // Bevorzugt Groq (kostenlos, hohe Limits). Fallback: Lovable AI.
+        const groqKey = process.env.GROQ_API_KEY;
+        const lovableKey = process.env.LOVABLE_API_KEY;
+        let model;
+        if (groqKey) {
+          model = createGroqProvider(groqKey)(GROQ_DEFAULT_MODEL);
+        } else if (lovableKey) {
+          model = createLovableAiGatewayProvider(lovableKey)(AI_MODEL);
+        } else {
+          return new Response("Missing AI provider key", { status: 500 });
+        }
 
         const sanitize = (v: unknown, max: number) =>
           typeof v === "string" ? v.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").slice(0, max) : "";
