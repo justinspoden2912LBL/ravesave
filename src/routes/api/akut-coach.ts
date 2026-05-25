@@ -107,11 +107,13 @@ export const Route = createFileRoute("/api/akut-coach")({
                 ? "\n\nAntwort-Tiefe = MEHR: Mechanismus / Setting-Effekt darf in 'deeper' kurz erklärt werden."
                 : "\n\nAntwort-Tiefe = EXPERTE: 'deeper' darf pharmakologisch / physiologisch konkret werden (Rezeptoren, Vagus, Sympathikus, Halbwertszeit).";
 
-          const useGroq = !!groqKey;
+          // Bevorzugt Lovable AI (Gemini 2.5 Flash — günstig, großer Context,
+          // Gratis-Quota). Groq nur als Fallback (12k TPM auf Free-Tier).
+          const useGroq = !lovableKey && !!groqKey;
           const endpoint = useGroq
             ? "https://api.groq.com/openai/v1/chat/completions"
             : "https://ai.gateway.lovable.dev/v1/chat/completions";
-          const modelName = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-pro";
+          const modelName = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-flash";
           const authKey = useGroq ? groqKey! : lovableKey!;
 
           const resp = await fetch(endpoint, {
