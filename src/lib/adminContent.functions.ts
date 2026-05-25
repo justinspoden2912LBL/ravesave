@@ -417,4 +417,82 @@ export const adminDeleteSiteContent = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ─────────────────────────────────────────────────────────────────────────
+// CONTENT SNAPSHOT (Export / Import all admin-managed data as JSON)
+// ─────────────────────────────────────────────────────────────────────────
+
+const SNAPSHOT_TABLES = [
+  "feature_flags",
+  "ui_texts",
+  "site_content",
+  "substance_overrides",
+  "posts",
+] as const;
+
+export const adminExportSnapshot = createServerFn({ method: "POST" }).handler(async () => {
+  if (!(await useAdminSessionGate())) {
+    return { ok: false as const, authRequired: true as const };
+  }
+  const out: Record<string, unknown[]> = {};
+  for (const t of SNAPSHOT_TABLES) {
+    const { data, error } = await supabaseAdmin.from(t).select("*");
+    if (error) throw new Error(`${t}: ${error.message}`);
+    out[t] = data ?? [];
+  }
+  return {
+    ok: true as const,
+    app: "ravesafe",
+    kind: "content-snapshot" as const,
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    tables: out,
+  };
+});
+
+const SnapshotInput = z.object({
+  app: z.literal("ravesafe"),
+  kind: z.literal("content-snapshot"),
+  version: z.literal(1),
+  tables: z.record(z.string(), z.array(z.record(z.string(), z.unknown()))),
+  mode: z.enum(["merge", "replace"]).default("merge"),
+});
+
+export const adminImportSnapshot = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => SnapshotInput.parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) {
+      return { ok: false as const, authRequired: true as const };
+    }
+    const counts: Record<string, number> = {};
+    for (const t of SNAPSHOT_TABLES) {
+      const rows = data.tables[t];
+      if (!rows || rows.length === 0) {
+        counts[t] = 0;
+        continue;
+      }
+      if (data.mode === "replace") {
+        const { error: delErr } = await supabaseAdmin
+          .from(t)
+          .delete()
+          .not("created_at", "is", null)
+          // delete-all guard: this matches every row that has created_at,
+          // and for tables without created_at we fall back to a wildcard.
+          .or(t === "posts" ? "id.neq.00000000-0000-0000-0000-000000000000" : "key.neq.__never__");
+        if (delErr) throw new Error(`${t} clear: ${delErr.message}`);
+      }
+      const { error } = await supabaseAdmin.from(t).upsert(rows, {
+        onConflict:
+          t === "posts"
+            ? "id"
+            : t === "substance_overrides"
+              ? "slug"
+              : "key",
+      });
+      if (error) throw new Error(`${t}: ${error.message}`);
+      counts[t] = rows.length;
+    }
+    return { ok: true as const, counts };
+  });
+
+
 
