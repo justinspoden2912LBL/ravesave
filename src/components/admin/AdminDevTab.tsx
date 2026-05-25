@@ -28,6 +28,7 @@ export function AdminDevTab() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
+  const [repoName, setRepoName] = useState<string>(SUGGESTED_REPO_NAMES[0]);
 
   useEffect(() => {
     void (async () => {
