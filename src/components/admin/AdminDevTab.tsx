@@ -13,6 +13,12 @@ import { adminGetStats } from "@/lib/adminContent.functions";
 
 const PROJECT_ID = "91fcc3dc-3809-4b8b-b992-beef8f90afa1";
 const LOVABLE_PROJECT_URL = `https://lovable.dev/projects/${PROJECT_ID}`;
+const SUGGESTED_REPO_NAMES = [
+  "ravesafe-life",
+  "ravesafe-app",
+  "ravesafe-web",
+  "ravesafe-fun",
+];
 
 export function AdminDevTab() {
   const [installs, setInstalls] = useState<{
