@@ -57,14 +57,16 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("no valid messages", { status: 400 });
         }
 
-        // Bevorzugt Groq (kostenlos, hohe Limits). Fallback: Lovable AI.
+        // Bevorzugt Lovable AI (Gemini 2.5 Flash — großer Context, eingebaute
+        // Gratis-Quota, sehr günstig). Fallback: Groq (kostenlos, aber nur
+        // 12k TPM auf der Free-Tier).
         const groqKey = process.env.GROQ_API_KEY;
         const lovableKey = process.env.LOVABLE_API_KEY;
         let model;
-        if (groqKey) {
+        if (lovableKey) {
+          model = createLovableAiGatewayProvider(lovableKey)("google/gemini-2.5-flash");
+        } else if (groqKey) {
           model = createGroqProvider(groqKey)(GROQ_DEFAULT_MODEL);
-        } else if (lovableKey) {
-          model = createLovableAiGatewayProvider(lovableKey)(AI_MODEL);
         } else {
           return new Response("Missing AI provider key", { status: 500 });
         }
