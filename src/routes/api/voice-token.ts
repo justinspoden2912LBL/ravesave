@@ -18,9 +18,10 @@ export const Route = createFileRoute("/api/voice-token")({
             { headers: { "xi-api-key": apiKey } },
           );
           if (!res.ok) {
-            const text = await res.text();
+            const text = await res.text().catch(() => "");
+            console.error("[voice-token] ElevenLabs error", res.status, text);
             return new Response(
-              JSON.stringify({ error: "ElevenLabs error", detail: text }),
+              JSON.stringify({ error: "Voice token unavailable" }),
               { status: 502, headers: { "Content-Type": "application/json" } },
             );
           }
