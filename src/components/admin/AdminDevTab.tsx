@@ -50,6 +50,55 @@ export function AdminDevTab() {
 
   return (
     <div className="space-y-5">
+      {/* Quick-Access: Aktuellster Code für GitHub */}
+      <section className="rounded-2xl glass p-5 space-y-3 border border-primary/30">
+        <div className="flex items-center gap-2">
+          <Download className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Aktuellsten Quellcode holen</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Immer die neueste Version — vollständiger TypeScript-Quellcode,
+          direkt für GitHub nutzbar. Zwei Ein-Klick-Wege:
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <a
+            href={LOVABLE_PROJECT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col gap-1 rounded-xl bg-aurora animate-aurora p-4 text-primary-foreground glow"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <Download className="h-4 w-4" />
+              Code als ZIP herunterladen
+            </span>
+            <span className="text-[11px] opacity-90">
+              Öffnet Lovable → Code-Ansicht → „Download codebase". Enthält den
+              kompletten Quellcode, fertig zum Hochladen auf GitHub.
+            </span>
+          </a>
+          <a
+            href={LOVABLE_PROJECT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col gap-1 rounded-xl glass p-4 border border-foreground/10"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <Github className="h-4 w-4" />
+              GitHub-Repo verbinden / öffnen
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              Einmal verbinden (+ Menü → GitHub) — danach pusht jede Änderung
+              automatisch live in dein Repository.
+            </span>
+          </a>
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          Hinweis: Aus Sicherheitsgründen kann die laufende Web-App den
+          Quellcode nicht selbst ausliefern — sie kennt nur ihren kompilierten
+          Build. Beide Buttons führen direkt zum echten, immer aktuellen Code.
+        </p>
+      </section>
+
       {/* PWA-Installationen */}
       <section className="rounded-2xl glass p-5 space-y-3">
         <div className="flex items-center gap-2">
