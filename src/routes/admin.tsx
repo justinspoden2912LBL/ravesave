@@ -34,6 +34,7 @@ import { AdminTextsTab } from "@/components/admin/AdminTextsTab";
 import { AdminSubstancesTab } from "@/components/admin/AdminSubstancesTab";
 import { AdminPagesTab } from "@/components/admin/AdminPagesTab";
 import { AdminSessionsTab } from "@/components/admin/AdminSessionsTab";
+import { AdminSiteContentTab } from "@/components/admin/AdminSiteContentTab";
 
 
 const ADMIN_FAILED_KEY = "ravesave_admin_failed_count";
@@ -71,7 +72,7 @@ export const Route = createFileRoute("/admin")({
 
 type Mode = { type: "list" } | { type: "edit"; post: Post } | { type: "new" };
 
-type Tab = "pages" | "sessions" | "stats" | "texts" | "substances" | "posts";
+type Tab = "pages" | "info" | "sessions" | "stats" | "texts" | "substances" | "posts";
 
 function AdminPage() {
   const [authState, setAuthState] = useState<"checking" | "in" | "out">("checking");
@@ -130,6 +131,7 @@ function AdminPage() {
         {(
           [
             { id: "pages", label: "Seiten" },
+            { id: "info", label: "Info-Texte" },
             { id: "sessions", label: "Live-Sessions" },
             { id: "stats", label: "Statistik" },
             { id: "texts", label: "Alle Texte" },
@@ -152,6 +154,7 @@ function AdminPage() {
       </nav>
 
       {tab === "pages" && <AdminPagesTab />}
+      {tab === "info" && <AdminSiteContentTab />}
       {tab === "sessions" && <AdminSessionsTab />}
       {tab === "stats" && <AdminStatsTab />}
       {tab === "texts" && <AdminTextsTab />}
