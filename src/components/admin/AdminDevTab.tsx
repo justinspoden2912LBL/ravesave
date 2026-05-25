@@ -65,6 +65,71 @@ export function AdminDevTab() {
     setTimeout(() => setCopied(null), 1500);
   }
 
+  async function handleExportSnapshot() {
+    setSnapBusy("export");
+    try {
+      const res = await adminExportSnapshot();
+      if (!res.ok) {
+        toast.error("Nicht angemeldet — bitte Admin-Schlüssel erneut eingeben.");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(res, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ravesafe-content-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      const totals = Object.values(res.tables).reduce((s, r) => s + r.length, 0);
+      toast.success(`Snapshot heruntergeladen (${totals} Einträge).`);
+    } catch (e) {
+      toast.error(`Export fehlgeschlagen: ${(e as Error).message}`);
+    } finally {
+      setSnapBusy(null);
+    }
+  }
+
+  async function handleImportSnapshot(file: File) {
+    setSnapBusy("import");
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (parsed?.app !== "ravesafe" || parsed?.kind !== "content-snapshot") {
+        toast.error("Ungültige Datei — kein Ravesafe-Snapshot.");
+        return;
+      }
+      const confirmMsg =
+        importMode === "replace"
+          ? "REPLACE-Modus überschreibt ALLE Admin-Inhalte. Wirklich fortfahren?"
+          : "Snapshot jetzt einspielen (vorhandene Einträge werden aktualisiert)?";
+      if (!window.confirm(confirmMsg)) return;
+      const res = await adminImportSnapshot({
+        data: {
+          app: parsed.app,
+          kind: parsed.kind,
+          version: parsed.version,
+          tables: parsed.tables,
+          mode: importMode,
+        },
+      });
+      if (!res.ok) {
+        toast.error("Nicht angemeldet — bitte Admin-Schlüssel erneut eingeben.");
+        return;
+      }
+      const total = Object.values(res.counts).reduce((s, n) => s + n, 0);
+      toast.success(`Snapshot eingespielt (${total} Einträge).`);
+    } catch (e) {
+      toast.error(`Import fehlgeschlagen: ${(e as Error).message}`);
+    } finally {
+      setSnapBusy(null);
+    }
+  }
+
+
   return (
     <div className="space-y-5">
       {/* Quick-Access: Aktuellster Code für GitHub */}
