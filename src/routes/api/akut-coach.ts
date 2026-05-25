@@ -73,8 +73,11 @@ export const Route = createFileRoute("/api/akut-coach")({
       POST: async ({ request }: { request: Request }) => {
         try {
           const body = (await request.json()) as Body;
-          const key = process.env.LOVABLE_API_KEY;
-          if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+          const groqKey = process.env.GROQ_API_KEY;
+          const lovableKey = process.env.LOVABLE_API_KEY;
+          if (!groqKey && !lovableKey) {
+            return new Response("Missing AI provider key", { status: 500 });
+          }
 
           const sanitize = (v: unknown, max: number) =>
             typeof v === "string"
@@ -104,14 +107,21 @@ export const Route = createFileRoute("/api/akut-coach")({
                 ? "\n\nAntwort-Tiefe = MEHR: Mechanismus / Setting-Effekt darf in 'deeper' kurz erklärt werden."
                 : "\n\nAntwort-Tiefe = EXPERTE: 'deeper' darf pharmakologisch / physiologisch konkret werden (Rezeptoren, Vagus, Sympathikus, Halbwertszeit).";
 
-          const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          const useGroq = !!groqKey;
+          const endpoint = useGroq
+            ? "https://api.groq.com/openai/v1/chat/completions"
+            : "https://ai.gateway.lovable.dev/v1/chat/completions";
+          const modelName = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-pro";
+          const authKey = useGroq ? groqKey! : lovableKey!;
+
+          const resp = await fetch(endpoint, {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${key}`,
+              Authorization: `Bearer ${authKey}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: "google/gemini-2.5-pro",
+              model: modelName,
               messages: [
                 { role: "system", content: SYSTEM_PROMPT + modeHint },
                 { role: "user", content: userPrompt },

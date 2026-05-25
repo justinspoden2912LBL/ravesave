@@ -3,14 +3,24 @@ import { Link } from "@tanstack/react-router";
 import { Activity, X, Droplets, AlertTriangle } from "lucide-react";
 import { getActiveSessions, formatMin, unmarkActive } from "@/lib/session";
 import { SUBSTANCES } from "@/lib/substances";
+import { trackEvent } from "@/lib/analytics";
 
 export function ActiveSessionHUD() {
   const [sessions, setSessions] = useState(() => getActiveSessions());
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    const tick = () => setSessions(getActiveSessions());
-    const id = window.setInterval(tick, 30_000);
+    const tick = () => {
+      const next = getActiveSessions();
+      setSessions(next);
+      // Heartbeat → Admin Live-Sessions Übersicht
+      for (const { entry } of next) {
+        const sub = SUBSTANCES.find((s) => s.id === entry.substanceId);
+        trackEvent("substance_active", sub?.name ?? entry.substanceId);
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 60_000);
     const onChange = () => tick();
     window.addEventListener("ravesave:active-changed", onChange);
     return () => {

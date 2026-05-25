@@ -275,3 +275,100 @@ export const adminToggleFeatureFlag = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ─────────────────────────────────────────────────────────────────────────
+// AKTIVE SESSIONS (Live-Übersicht)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminGetActiveSessions = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) {
+    return {
+      authRequired: true as const,
+      liveVisitors: [],
+      authUsers: [],
+      substanceSessions: [],
+    };
+  }
+
+  const fiveMinAgo = new Date(Date.now() - 5 * 60_000).toISOString();
+  const thirtyMinAgo = new Date(Date.now() - 30 * 60_000).toISOString();
+
+  // 1) Live-Besucher: page_views der letzten 5 Min, gruppiert nach session_id
+  const { data: views } = await supabaseAdmin
+    .from("page_views")
+    .select("path,country,session_id,created_at,referrer")
+    .gte("created_at", fiveMinAgo)
+    .order("created_at", { ascending: false })
+    .limit(2000);
+
+  const liveMap = new Map<
+    string,
+    { sid: string; path: string; country: string | null; lastSeen: string; views: number; referrer: string | null }
+  >();
+  for (const v of views ?? []) {
+    const sid = v.session_id || "anon";
+    const existing = liveMap.get(sid);
+    if (existing) {
+      existing.views += 1;
+    } else {
+      liveMap.set(sid, {
+        sid,
+        path: v.path,
+        country: v.country,
+        lastSeen: v.created_at as string,
+        views: 1,
+        referrer: v.referrer,
+      });
+    }
+  }
+  const liveVisitors = [...liveMap.values()].sort((a, b) =>
+    a.lastSeen < b.lastSeen ? 1 : -1,
+  );
+
+  // 2) Eingeloggte Auth-User (letzte Aktivität < 30 Min)
+  let authUsers: { id: string; email: string | null; lastSignIn: string | null }[] = [];
+  try {
+    const { data } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    authUsers = (data?.users ?? [])
+      .filter((u) => u.last_sign_in_at && u.last_sign_in_at >= thirtyMinAgo)
+      .map((u) => ({ id: u.id, email: u.email ?? null, lastSignIn: u.last_sign_in_at ?? null }))
+      .sort((a, b) => (a.lastSignIn! < b.lastSignIn! ? 1 : -1));
+  } catch (e) {
+    console.error("listUsers failed", e);
+  }
+
+  // 3) Aktive Substanz-Sessions: usage_events mit event_type='substance_active' < 5 Min
+  const { data: subEvents } = await supabaseAdmin
+    .from("usage_events")
+    .select("session_id,detail,created_at")
+    .eq("event_type", "substance_active")
+    .gte("created_at", fiveMinAgo)
+    .order("created_at", { ascending: false })
+    .limit(1000);
+
+  const subMap = new Map<
+    string,
+    { sid: string; substance: string; lastSeen: string }
+  >();
+  for (const e of subEvents ?? []) {
+    const sid = e.session_id || "anon";
+    const key = `${sid}::${e.detail}`;
+    if (!subMap.has(key)) {
+      subMap.set(key, {
+        sid,
+        substance: e.detail || "?",
+        lastSeen: e.created_at as string,
+      });
+    }
+  }
+  const substanceSessions = [...subMap.values()].sort((a, b) =>
+    a.lastSeen < b.lastSeen ? 1 : -1,
+  );
+
+  return {
+    authRequired: false as const,
+    liveVisitors,
+    authUsers,
+    substanceSessions,
+  };
+});
+
