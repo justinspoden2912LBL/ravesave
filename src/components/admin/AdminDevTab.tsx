@@ -37,6 +37,8 @@ export function AdminDevTab() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const [repoName, setRepoName] = useState<string>(SUGGESTED_REPO_NAMES[0]);
+  const [snapBusy, setSnapBusy] = useState<"export" | "import" | null>(null);
+  const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
 
   useEffect(() => {
     void (async () => {
