@@ -16,7 +16,7 @@ import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
 import { BottomNav } from "../components/BottomNav";
-import { trackPageView } from "@/lib/analytics";
+import { trackPageView, trackEvent } from "@/lib/analytics";
 import { initI18n, refreshI18n } from "@/lib/i18n";
 import { initSubstanceOverrides, refreshSubstanceOverrides } from "@/lib/substancesRuntime";
 import { initFeatureFlags, refreshFeatureFlags } from "@/lib/featureFlags";
