@@ -456,7 +456,7 @@ export const adminExportSnapshot = createServerFn({ method: "POST" }).handler(
     for (const t of SNAPSHOT_TABLES) {
       const { data, error } = await supabaseAdmin.from(t).select("*");
       if (error) throw new Error(`${t}: ${error.message}`);
-      out[t] = (data ?? []) as JsonRow[];
+      out[t] = JSON.parse(JSON.stringify(data ?? [])) as JsonRow[];
     }
     return {
       ok: true,
