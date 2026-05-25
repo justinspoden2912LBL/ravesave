@@ -372,3 +372,49 @@ export const adminGetActiveSessions = createServerFn({ method: "GET" }).handler(
   };
 });
 
+// ─────────────────────────────────────────────────────────────────────────
+// SITE CONTENT (longform editorial blocks: about_intro, etc.)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminListSiteContent = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) return [];
+  const { data, error } = await supabaseAdmin
+    .from("site_content")
+    .select("key,content,updated_at")
+    .order("key", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+const SiteContentInput = z.object({
+  key: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-zA-Z0-9._-]+$/),
+  content: z.string().max(50000),
+});
+
+export const adminUpsertSiteContent = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => SiteContentInput.parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("site_content").upsert({
+      key: data.key,
+      content: data.content,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteSiteContent = createServerFn({ method: "POST" })
+  .inputValidator((d: { key: string }) => z.object({ key: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("site_content").delete().eq("key", data.key);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+
