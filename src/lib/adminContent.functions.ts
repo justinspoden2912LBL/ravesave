@@ -43,12 +43,34 @@ function emptyStats(days: number, authRequired = false) {
   return {
     days,
     authRequired,
-    totals: { views: 0, sessions: 0, events: 0 },
+    totals: {
+      views: 0,
+      sessions: 0,
+      events: 0,
+      newSessions: 0,
+      returningSessions: 0,
+      returningRate: 0,
+      avgViewsPerSession: 0,
+      bounceRate: 0,
+    },
     topPaths: [] as { key: string; count: number }[],
     topCountries: [] as { key: string; count: number }[],
     topEvents: [] as { key: string; count: number }[],
+    topReferrers: [] as { key: string; count: number }[],
     byDay: [] as { day: string; count: number }[],
+    sessionsByDay: [] as { day: string; count: number }[],
+    byHour: [] as { hour: number; count: number }[],
   };
+}
+
+function normalizeReferrer(raw: string | null | undefined): string {
+  if (!raw) return "(direkt)";
+  try {
+    const u = new URL(raw);
+    return u.hostname.replace(/^www\./, "");
+  } catch {
+    return "(direkt)";
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -66,7 +88,7 @@ export const adminGetStats = createServerFn({ method: "POST" })
     const [{ data: views, error: e1 }, { data: events, error: e2 }] = await Promise.all([
       supabaseAdmin
         .from("page_views")
-        .select("path,country,session_id,created_at")
+        .select("path,country,session_id,referrer,created_at")
         .gte("created_at", since)
         .limit(20000),
       supabaseAdmin
@@ -79,19 +101,39 @@ export const adminGetStats = createServerFn({ method: "POST" })
     if (e1) throw new Error(e1.message);
     if (e2) throw new Error(e2.message);
 
-    // Aggregate by path
     const byPath = new Map<string, number>();
     const byCountry = new Map<string, number>();
-    const sessions = new Set<string>();
+    const byReferrer = new Map<string, number>();
     const byDay = new Map<string, number>();
+    const sessionsByDay = new Map<string, Set<string>>();
+    const byHour = new Map<number, number>();
+
+    // Per-session aggregation for returning + bounce metrics
+    const sessionDays = new Map<string, Set<string>>();
+    const sessionViews = new Map<string, number>();
 
     for (const v of views ?? []) {
       byPath.set(v.path, (byPath.get(v.path) ?? 0) + 1);
       const c = v.country || "??";
       byCountry.set(c, (byCountry.get(c) ?? 0) + 1);
-      if (v.session_id) sessions.add(v.session_id);
-      const day = (v.created_at as string).slice(0, 10);
+      byReferrer.set(
+        normalizeReferrer(v.referrer),
+        (byReferrer.get(normalizeReferrer(v.referrer)) ?? 0) + 1,
+      );
+      const createdAt = v.created_at as string;
+      const day = createdAt.slice(0, 10);
       byDay.set(day, (byDay.get(day) ?? 0) + 1);
+      const hour = new Date(createdAt).getUTCHours();
+      byHour.set(hour, (byHour.get(hour) ?? 0) + 1);
+
+      if (v.session_id) {
+        const sid = v.session_id;
+        sessionViews.set(sid, (sessionViews.get(sid) ?? 0) + 1);
+        if (!sessionDays.has(sid)) sessionDays.set(sid, new Set());
+        sessionDays.get(sid)!.add(day);
+        if (!sessionsByDay.has(day)) sessionsByDay.set(day, new Set());
+        sessionsByDay.get(day)!.add(sid);
+      }
     }
 
     const byEvent = new Map<string, number>();
@@ -99,15 +141,34 @@ export const adminGetStats = createServerFn({ method: "POST" })
       byEvent.set(e.event_type, (byEvent.get(e.event_type) ?? 0) + 1);
     }
 
+    // Returning session = same session_id appears on 2+ distinct days in window
+    let returningSessions = 0;
+    let bounceSessions = 0;
+    for (const [, days] of sessionDays) {
+      if (days.size >= 2) returningSessions += 1;
+    }
+    for (const [sid, count] of sessionViews) {
+      if (count <= 1) bounceSessions += 1;
+      void sid;
+    }
+    const totalSessions = sessionDays.size;
+    const newSessions = Math.max(0, totalSessions - returningSessions);
+    const totalViews = views?.length ?? 0;
+
     const sortDesc = <T>(m: Map<T, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]);
 
     return {
       days: data.days,
       authRequired: false,
       totals: {
-        views: views?.length ?? 0,
-        sessions: sessions.size,
+        views: totalViews,
+        sessions: totalSessions,
         events: events?.length ?? 0,
+        newSessions,
+        returningSessions,
+        returningRate: totalSessions > 0 ? returningSessions / totalSessions : 0,
+        avgViewsPerSession: totalSessions > 0 ? totalViews / totalSessions : 0,
+        bounceRate: totalSessions > 0 ? bounceSessions / totalSessions : 0,
       },
       topPaths: sortDesc(byPath)
         .slice(0, 30)
@@ -116,11 +177,19 @@ export const adminGetStats = createServerFn({ method: "POST" })
         .slice(0, 30)
         .map(([k, v]) => ({ key: k, count: v })),
       topEvents: sortDesc(byEvent).map(([k, v]) => ({ key: k, count: v })),
+      topReferrers: sortDesc(byReferrer)
+        .slice(0, 15)
+        .map(([k, v]) => ({ key: k, count: v })),
       byDay: [...byDay.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([k, v]) => ({ day: k, count: v })),
+      sessionsByDay: [...sessionsByDay.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([k, v]) => ({ day: k, count: v.size })),
+      byHour: Array.from({ length: 24 }, (_, h) => ({ hour: h, count: byHour.get(h) ?? 0 })),
     };
   });
+
 
 // ─────────────────────────────────────────────────────────────────────────
 // UI TEXTS
