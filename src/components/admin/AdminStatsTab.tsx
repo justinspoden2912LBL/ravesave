@@ -283,14 +283,28 @@ export function AdminStatsTab() {
   );
 }
 
-function Card({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+function Card({
+  icon,
+  label,
+  value,
+  hint,
+  format,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  hint?: string;
+  format?: (n: number) => string;
+}) {
+  const display = format ? format(value) : value.toLocaleString("de-DE");
   return (
     <div className="rounded-2xl glass p-3 text-center">
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         {icon}
         {label}
       </div>
-      <div className="mt-1 text-xl font-bold tabular-nums">{value.toLocaleString("de-DE")}</div>
+      <div className="mt-1 text-xl font-bold tabular-nums">{display}</div>
+      {hint && <div className="text-[10px] text-muted-foreground mt-0.5">{hint}</div>}
     </div>
   );
 }
