@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Globe2, Activity, RefreshCw } from "lucide-react";
+import { BarChart3, Globe2, Activity, RefreshCw, Users, Repeat, MousePointerClick, Clock, ExternalLink } from "lucide-react";
+
 import { adminGetStats } from "@/lib/adminContent.functions";
 
 type Stats = Awaited<ReturnType<typeof adminGetStats>>;
