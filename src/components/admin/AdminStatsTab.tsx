@@ -61,6 +61,13 @@ export function AdminStatsTab() {
   }, [days]);
 
   const maxByDay = useMemo(() => Math.max(1, ...(stats?.byDay ?? []).map((d) => d.count)), [stats]);
+  const maxSessionsByDay = useMemo(
+    () => Math.max(1, ...(stats?.sessionsByDay ?? []).map((d) => d.count)),
+    [stats],
+  );
+  const maxByHour = useMemo(() => Math.max(1, ...(stats?.byHour ?? []).map((d) => d.count)), [stats]);
+  const fmtPct = (n: number) => `${(n * 100).toFixed(1)}%`;
+  const fmtNum = (n: number) => n.toLocaleString("de-DE", { maximumFractionDigits: 1 });
 
   return (
     <div className="space-y-5">
