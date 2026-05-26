@@ -122,25 +122,109 @@ export function AdminStatsTab() {
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-2">
+            <Card
+              icon={<Users className="h-4 w-4" />}
+              label="Neue Besucher"
+              value={stats.totals.newSessions}
+            />
+            <Card
+              icon={<Repeat className="h-4 w-4" />}
+              label="Wiederkehrend"
+              value={stats.totals.returningSessions}
+              hint={fmtPct(stats.totals.returningRate)}
+            />
+            <Card
+              icon={<MousePointerClick className="h-4 w-4" />}
+              label="Ø Aufrufe/Session"
+              value={stats.totals.avgViewsPerSession}
+              format={fmtNum}
+            />
+            <Card
+              icon={<Activity className="h-4 w-4" />}
+              label="Bounce-Rate"
+              value={stats.totals.bounceRate}
+              format={fmtPct}
+            />
+          </div>
+
           {stats.byDay.length > 0 && (
             <section className="rounded-2xl glass p-4">
-              <h3 className="text-sm font-semibold mb-3">Verlauf</h3>
+              <h3 className="text-sm font-semibold mb-3">Verlauf (Aufrufe vs. Sessions)</h3>
               <div className="flex items-end gap-1 h-28">
-                {stats.byDay.map((d) => (
-                  <div
-                    key={d.day}
-                    className="flex-1 bg-primary/40 hover:bg-primary/70 rounded-t-sm relative group"
-                    style={{ height: `${(d.count / maxByDay) * 100}%` }}
-                    title={`${d.day}: ${d.count}`}
-                  />
-                ))}
+                {stats.byDay.map((d, i) => {
+                  const sess = stats.sessionsByDay[i]?.count ?? 0;
+                  return (
+                    <div key={d.day} className="flex-1 flex flex-col-reverse gap-0.5 h-full">
+                      <div
+                        className="bg-primary/40 hover:bg-primary/70 rounded-t-sm"
+                        style={{ height: `${(d.count / maxByDay) * 100}%` }}
+                        title={`${d.day}: ${d.count} Aufrufe`}
+                      />
+                      <div
+                        className="bg-secondary/50 hover:bg-secondary/80 rounded-t-sm"
+                        style={{ height: `${(sess / maxSessionsByDay) * 60}%` }}
+                        title={`${d.day}: ${sess} Sessions`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground tabular-nums">
                 <span>{stats.byDay[0]?.day}</span>
                 <span>{stats.byDay[stats.byDay.length - 1]?.day}</span>
               </div>
+              <div className="mt-2 flex gap-3 text-[10px] text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-sm bg-primary/60" /> Aufrufe
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-sm bg-secondary/70" /> Sessions
+                </span>
+              </div>
             </section>
           )}
+
+          {stats.byHour.some((h) => h.count > 0) && (
+            <section className="rounded-2xl glass p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Clock className="h-4 w-4" /> Tageszeit (UTC)
+              </h3>
+              <div className="flex items-end gap-1 h-20">
+                {stats.byHour.map((h) => (
+                  <div
+                    key={h.hour}
+                    className="flex-1 bg-primary/40 hover:bg-primary/70 rounded-t-sm"
+                    style={{ height: `${(h.count / maxByHour) * 100}%` }}
+                    title={`${h.hour}:00 — ${h.count} Aufrufe`}
+                  />
+                ))}
+              </div>
+              <div className="mt-1 flex justify-between text-[10px] text-muted-foreground tabular-nums">
+                <span>00</span>
+                <span>06</span>
+                <span>12</span>
+                <span>18</span>
+                <span>23</span>
+              </div>
+            </section>
+          )}
+
+          <section className="rounded-2xl glass p-4">
+            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <ExternalLink className="h-4 w-4" /> Top Referrer
+            </h3>
+            {stats.topReferrers.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Noch keine Referrer.</p>
+            ) : (
+              <ul className="space-y-1.5">
+                {stats.topReferrers.map((r) => (
+                  <Bar key={r.key} label={r.key} value={r.count} max={stats.topReferrers[0].count} />
+                ))}
+              </ul>
+            )}
+          </section>
+
 
           <section className="rounded-2xl glass p-4">
             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
