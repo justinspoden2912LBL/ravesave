@@ -589,6 +589,194 @@ export const adminImportSnapshot = createServerFn({ method: "POST" })
     },
   );
 
+// ─────────────────────────────────────────────────────────────────────────
+// USER MANAGEMENT (Auth-Nutzer + Rollen)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminListAuthUsers = createServerFn({ method: "POST" })
+  .inputValidator((d: { page?: number; perPage?: number; search?: string }) =>
+    z
+      .object({
+        page: z.number().int().min(1).max(500).default(1),
+        perPage: z.number().int().min(1).max(200).default(50),
+        search: z.string().max(200).optional(),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate()))
+      return { authRequired: true as const, users: [], total: 0, adminIds: [] as string[] };
+    const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: data.page,
+      perPage: data.perPage,
+    });
+    if (error) throw new Error(error.message);
+    const q = data.search?.toLowerCase().trim();
+    const filtered = q
+      ? (list?.users ?? []).filter(
+          (u) =>
+            (u.email ?? "").toLowerCase().includes(q) ||
+            u.id.toLowerCase().includes(q),
+        )
+      : (list?.users ?? []);
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id,role")
+      .eq("role", "admin");
+    const adminIds = (roles ?? []).map((r) => r.user_id);
+    return {
+      authRequired: false as const,
+      total: list?.users?.length ?? 0,
+      adminIds,
+      users: filtered.map((u) => ({
+        id: u.id,
+        email: u.email ?? null,
+        createdAt: u.created_at ?? null,
+        lastSignIn: u.last_sign_in_at ?? null,
+        emailConfirmed: !!u.email_confirmed_at,
+        banned: !!(u as { banned_until?: string }).banned_until,
+        provider: u.app_metadata?.provider ?? null,
+      })),
+    };
+  });
+
+export const adminDeleteAuthUser = createServerFn({ method: "POST" })
+  .inputValidator((d: { userId: string }) =>
+    z.object({ userId: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminSendPasswordReset = createServerFn({ method: "POST" })
+  .inputValidator((d: { email: string }) =>
+    z.object({ email: z.string().email().max(320) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "recovery",
+      email: data.email,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminSetUserBan = createServerFn({ method: "POST" })
+  .inputValidator((d: { userId: string; banned: boolean }) =>
+    z
+      .object({ userId: z.string().uuid(), banned: z.boolean() })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      ban_duration: data.banned ? "876000h" : "none", // ~100 Jahre
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminSetAdminRole = createServerFn({ method: "POST" })
+  .inputValidator((d: { userId: string; isAdmin: boolean }) =>
+    z
+      .object({ userId: z.string().uuid(), isAdmin: z.boolean() })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    if (data.isAdmin) {
+      const { error } = await supabaseAdmin
+        .from("user_roles")
+        .upsert(
+          { user_id: data.userId, role: "admin" },
+          { onConflict: "user_id,role" },
+        );
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("user_roles")
+        .delete()
+        .eq("user_id", data.userId)
+        .eq("role", "admin");
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+// ─────────────────────────────────────────────────────────────────────────
+// DATA / ANALYTICS PURGE (DSGVO)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminPurgeAnalytics = createServerFn({ method: "POST" })
+  .inputValidator(
+    (d: { olderThanDays?: number; sessionId?: string; all?: boolean }) =>
+      z
+        .object({
+          olderThanDays: z.number().int().min(1).max(3650).optional(),
+          sessionId: z.string().min(1).max(200).optional(),
+          all: z.boolean().optional(),
+        })
+        .refine((v) => v.olderThanDays || v.sessionId || v.all, {
+          message: "Mindestens ein Filter erforderlich",
+        })
+        .parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    let deletedViews = 0;
+    let deletedEvents = 0;
+    const tables = ["page_views", "usage_events"] as const;
+    for (const t of tables) {
+      let q = supabaseAdmin.from(t).delete({ count: "exact" });
+      if (data.all) {
+        q = q.neq("id", "00000000-0000-0000-0000-000000000000");
+      } else {
+        if (data.olderThanDays) {
+          const cutoff = new Date(
+            Date.now() - data.olderThanDays * 86400_000,
+          ).toISOString();
+          q = q.lt("created_at", cutoff);
+        }
+        if (data.sessionId) {
+          q = q.eq("session_id", data.sessionId);
+        }
+      }
+      const { error, count } = await q;
+      if (error) throw new Error(`${t}: ${error.message}`);
+      if (t === "page_views") deletedViews = count ?? 0;
+      else deletedEvents = count ?? 0;
+    }
+    return { ok: true, deletedViews, deletedEvents };
+  });
+
+export const adminAnalyticsSummary = createServerFn({ method: "GET" }).handler(
+  async () => {
+    if (!(await useAdminSessionGate()))
+      return { authRequired: true as const, views: 0, events: 0, oldestView: null };
+    const [{ count: views }, { count: events }, { data: oldest }] = await Promise.all([
+      supabaseAdmin.from("page_views").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("usage_events").select("id", { count: "exact", head: true }),
+      supabaseAdmin
+        .from("page_views")
+        .select("created_at")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    return {
+      authRequired: false as const,
+      views: views ?? 0,
+      events: events ?? 0,
+      oldestView: oldest?.created_at ?? null,
+    };
+  },
+);
+
+
 
 
 
