@@ -21,6 +21,7 @@ import { Route as ReagenztestRouteImport } from './routes/reagenztest'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotfallRouteImport } from './routes/notfall'
 import { Route as MixRouteImport } from './routes/mix'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LogRouteImport } from './routes/log'
 import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as InstallRouteImport } from './routes/install'
@@ -39,7 +40,10 @@ import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const ToleranceRoute = ToleranceRouteImport.update({
   id: '/tolerance',
@@ -99,6 +103,11 @@ const NotfallRoute = NotfallRouteImport.update({
 const MixRoute = MixRouteImport.update({
   id: '/mix',
   path: '/mix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogRoute = LogRouteImport.update({
@@ -191,11 +200,29 @@ const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   path: '/api/akut-coach',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -210,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
@@ -222,12 +250,15 @@ export interface FileRoutesByFullPath {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
@@ -243,6 +274,7 @@ export interface FileRoutesByTo {
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
@@ -255,12 +287,15 @@ export interface FileRoutesByTo {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
@@ -277,6 +312,7 @@ export interface FileRoutesById {
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
+  '/mcp': typeof McpRoute
   '/mix': typeof MixRoute
   '/notfall': typeof NotfallRoute
   '/onboarding': typeof OnboardingRoute
@@ -289,12 +325,15 @@ export interface FileRoutesById {
   '/stats': typeof StatsRoute
   '/substances': typeof SubstancesRoute
   '/tolerance': typeof ToleranceRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
@@ -312,6 +351,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/knigge'
     | '/log'
+    | '/mcp'
     | '/mix'
     | '/notfall'
     | '/onboarding'
@@ -324,12 +364,15 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -345,6 +388,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/knigge'
     | '/log'
+    | '/mcp'
     | '/mix'
     | '/notfall'
     | '/onboarding'
@@ -357,12 +401,15 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
   id:
     | '__root__'
@@ -378,6 +425,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/knigge'
     | '/log'
+    | '/mcp'
     | '/mix'
     | '/notfall'
     | '/onboarding'
@@ -390,12 +438,15 @@ export interface FileRouteTypes {
     | '/stats'
     | '/substances'
     | '/tolerance'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
   fileRoutesById: FileRoutesById
 }
@@ -412,6 +463,7 @@ export interface RootRouteChildren {
   InstallRoute: typeof InstallRoute
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
+  McpRoute: typeof McpRoute
   MixRoute: typeof MixRoute
   NotfallRoute: typeof NotfallRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -424,11 +476,14 @@ export interface RootRouteChildren {
   StatsRoute: typeof StatsRoute
   SubstancesRoute: typeof SubstancesRoute
   ToleranceRoute: typeof ToleranceRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiAkutCoachRoute: typeof ApiAkutCoachRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   SessionActiveRoute: typeof SessionActiveRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
@@ -516,6 +571,13 @@ declare module '@tanstack/react-router' {
       path: '/mix'
       fullPath: '/mix'
       preLoaderRoute: typeof MixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/log': {
@@ -644,11 +706,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAkutCoachRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
       fullPath: '/api/public/track'
       preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -679,6 +762,7 @@ const rootRouteChildren: RootRouteChildren = {
   InstallRoute: InstallRoute,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
+  McpRoute: McpRoute,
   MixRoute: MixRoute,
   NotfallRoute: NotfallRoute,
   OnboardingRoute: OnboardingRoute,
@@ -691,11 +775,15 @@ const rootRouteChildren: RootRouteChildren = {
   StatsRoute: StatsRoute,
   SubstancesRoute: SubstancesRoute,
   ToleranceRoute: ToleranceRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiAkutCoachRoute: ApiAkutCoachRoute,
   ApiChatRoute: ApiChatRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   SessionActiveRoute: SessionActiveRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
