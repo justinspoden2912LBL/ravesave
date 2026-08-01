@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
 import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
+import { useText } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -122,6 +123,46 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* Marleen stellt sich vor */}
+      <section className="mt-4 rounded-3xl glass-strong glass-shine p-5">
+        <div className="flex items-start gap-3">
+          <div className="h-11 w-11 shrink-0 rounded-2xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
+            <MessageCircle className="h-6 w-6" />
+          </div>
+          <div className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
+            <p className="text-foreground">
+              {useText(
+                "home.marleen.intro",
+                "Hi, ich bin Marleen — dein Guide zum Thema Schadensminderung (Harm Reduction).",
+              )}
+            </p>
+            <p>
+              {useText(
+                "home.marleen.body",
+                "Ich gebe dir einen realistischen Check über Substanzen, Dosierungen und Risiken — ausschließlich neutral, ohne Bevormundung und ohne Ermutigung. Faktenbasiert, auf Grundlage anerkannter Quellen und Studien.",
+              )}
+            </p>
+            <p>
+              {useText(
+                "home.marleen.mission",
+                "Konsum ist immer ein Risiko. Meine Mission ist nicht, dir etwas auszureden — sondern deine Reise etwas sicherer zu machen.",
+              )}
+            </p>
+            <p className="text-foreground font-medium">
+              {useText("home.marleen.claim", "Ich bin quasi dein Anschnallgurt für Psychonauten.")}
+            </p>
+            <Link
+              to="/chat"
+              className="inline-flex items-center gap-2 rounded-full bg-primary/15 ring-1 ring-primary/30 px-4 py-2 text-xs font-semibold text-primary hover:bg-primary/25 transition"
+            >
+              <MessageCircle className="h-3.5 w-3.5" /> Mit Marleen sprechen
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
 
 
       {/* Featured: Akute Hilfe + Marleen */}

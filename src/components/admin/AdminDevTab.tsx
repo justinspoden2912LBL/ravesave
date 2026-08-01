@@ -506,9 +506,9 @@ export function AdminDevTab() {
           />
           <CopyRow
             label="Feedback-Mail"
-            value="Ravesafe.life@gmail.com"
+            value="Ravesafe.live@gmail.com"
             copied={copied === "mail"}
-            onCopy={() => copy("Ravesafe.life@gmail.com", "mail")}
+            onCopy={() => copy("Ravesafe.live@gmail.com", "mail")}
           />
         </ul>
       </section>

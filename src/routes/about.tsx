@@ -236,10 +236,10 @@ function AboutPage() {
           Bug gefunden, Verbesserungsvorschlag oder einfach Feedback? Immer her damit:
         </p>
         <a
-          href="mailto:Ravesafe.life@gmail.com?subject=Rave%20Safe%20Feedback"
+          href="mailto:Ravesafe.live@gmail.com?subject=Rave%20Safe%20Feedback"
           className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-sm font-medium hover:bg-primary/25 transition"
         >
-          <Mail className="h-4 w-4" /> Ravesafe.life@gmail.com
+          <Mail className="h-4 w-4" /> Ravesafe.live@gmail.com
         </a>
       </section>
 

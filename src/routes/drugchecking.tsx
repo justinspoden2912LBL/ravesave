@@ -88,7 +88,7 @@ function DrugCheckingPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Stelle fehlt? <a className="text-secondary underline" href="mailto:Ravesafe.life@gmail.com?subject=Drug-Checking-Stelle">Schreib uns.</a>
+        Stelle fehlt? <a className="text-secondary underline" href="mailto:Ravesafe.live@gmail.com?subject=Drug-Checking-Stelle">Schreib uns.</a>
       </p>
     </div>
   );
