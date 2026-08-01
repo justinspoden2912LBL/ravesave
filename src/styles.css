@@ -38,7 +38,9 @@
   --color-aurora-2: var(--aurora-2);
   --color-aurora-3: var(--aurora-3);
   --color-aurora-4: var(--aurora-4);
-  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
 }
 
 :root {
