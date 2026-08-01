@@ -29,8 +29,10 @@ export function SplashGreeting() {
       /* ignore */
     }
     setPhase("in");
-    const t1 = setTimeout(() => setPhase("out"), 1500);
-    const t2 = setTimeout(() => setPhase("hidden"), 2100);
+    // bewusst langsam: genug Zeit zum Lesen, ruhiges Ausblenden
+    const t1 = setTimeout(() => setPhase("out"), 3200);
+    const t2 = setTimeout(() => setPhase("hidden"), 4400);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -42,7 +44,7 @@ export function SplashGreeting() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[120] grid place-items-center bg-background/95 backdrop-blur-xl transition-opacity duration-500 print:hidden ${
+      className={`fixed inset-0 z-[120] grid place-items-center bg-background/95 backdrop-blur-xl transition-opacity duration-[1200ms] ease-in-out print:hidden ${
         phase === "out" ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -55,6 +57,7 @@ export function SplashGreeting() {
           {title}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground animate-fade-in">{subtitle}</p>
+
       </div>
     </div>
   );
