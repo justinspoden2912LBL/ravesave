@@ -40,6 +40,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const navigate = useNavigate();
   const [showPrompt, setShowPrompt] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (!loadProfile() && !isDismissed()) {
