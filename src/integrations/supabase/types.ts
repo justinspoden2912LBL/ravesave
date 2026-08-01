@@ -68,6 +68,45 @@ export type Database = {
         }
         Relationships: []
       }
+      post_submissions: {
+        Row: {
+          admin_note: string | null
+          body: string
+          category: string | null
+          contact: string | null
+          created_at: string
+          id: string
+          pseudonym: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          body: string
+          category?: string | null
+          contact?: string | null
+          created_at?: string
+          id?: string
+          pseudonym?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          body?: string
+          category?: string | null
+          contact?: string | null
+          created_at?: string
+          id?: string
+          pseudonym?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string | null
