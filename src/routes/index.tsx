@@ -178,65 +178,52 @@ function Home() {
         </Link>
       </section>
 
-      {/* Schnellzugriff */}
-      <section className="mt-7 space-y-3">
-        <h2 className="section-label">Schnellzugriff</h2>
+      {/* Alle Bereiche — kompakt, ohne Dopplungen */}
+      <section className="mt-6 space-y-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+          <h2 className="section-label">Schnellzugriff</h2>
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="text-[11px] font-semibold text-primary hover:underline shrink-0"
+          >
+            {showAll ? "Weniger anzeigen" : "Alle Bereiche"}
+          </button>
+        </div>
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-          <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
           <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="primary" />
           <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe`} tone="secondary" />
+          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Anflug → Peak → Comedown." tone="primary" />
           <QuickTile to="/checkliste" icon={ListChecks} title="Pre-Rave-Check" desc="Zwei Minuten vorher." tone="accent" />
         </div>
+
+        {showAll && (
+          <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 animate-fade-in">
+            <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung." tone="secondary" />
+            <QuickTile to="/risks" icon={ShieldAlert} title="Risiken" desc="Paarungen pro Substanz." tone="emergency" />
+            <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Stellen DE / AT / CH." tone="accent" />
+            <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke & Co." tone="secondary" />
+            <QuickTile to="/tolerance" icon={Clock} title="Toleranz" desc="Wann ist ok?" tone="accent" />
+            <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Schlaf, Essen, Mood." tone="secondary" />
+            <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze fürs nächste Mal." tone="primary" />
+            <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
+          </div>
+        )}
       </section>
 
-      {/* Während der Session */}
-      <section className="mt-7 space-y-3">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
-          <h2 className="section-label">Während der Session</h2>
-          <span className="text-[11px] text-muted-foreground shrink-0">live &amp; unterwegs</span>
-        </div>
-        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Anflug → Peak → Comedown." tone="primary" />
-          <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung." tone="secondary" />
-          <QuickTile to="/risks" icon={ShieldAlert} title="Risiken" desc="Paarungen pro Substanz." tone="emergency" />
-          <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Stellen DE / AT / CH." tone="accent" />
-        </div>
-      </section>
-
-      {/* Vorher & danach */}
-      <section className="mt-7 space-y-3">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
-          <h2 className="section-label">Vorher &amp; danach</h2>
-          <span className="text-[11px] text-muted-foreground shrink-0">Planung &amp; Erholung</span>
-        </div>
-        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-          <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke & Co." tone="secondary" />
-          <QuickTile to="/tolerance" icon={Clock} title="Toleranz" desc="Wann ist ok?" tone="accent" />
-          <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Schlaf, Essen, Mood." tone="secondary" />
-          <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze fürs nächste Mal." tone="primary" />
-        </div>
-      </section>
-
-      {/* Grundprinzipien */}
-      <section className="mt-8 rounded-3xl glass p-6 md:p-8">
+      {/* Grundprinzipien — kompakt */}
+      <section className="mt-6 rounded-3xl glass p-5">
         <h2 className="section-label flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-accent" /> Grundprinzipien
         </h2>
-        <div className="mt-4 grid gap-5 md:grid-cols-2">
-          <Principle title="Start low, go slow.">
-            Beginne immer mit der niedrigsten Dosis — besonders bei neuen Substanzen oder Chargen.
-          </Principle>
-          <Principle title="Test, was du nimmst.">
-            Drug-Checking-Angebote (z.B. checkit!, Saferparty, DIMS) nutzen. Reagenztests sind ein Minimum.
-          </Principle>
-          <Principle title="Mischkonsum ist der größte Risikofaktor.">
-            Die meisten Notfälle entstehen durch Kombinationen — vor allem Atemdepressiva untereinander.
-          </Principle>
-          <Principle title="Sei nicht allein.">
-            Eine nüchterne Vertrauensperson ist die wirksamste Sicherheitsmaßnahme. Im Notfall: 112.
-          </Principle>
-        </div>
+        <ul className="mt-3 grid gap-2 md:grid-cols-2 text-sm text-muted-foreground">
+          <li><strong className="text-foreground">Start low, go slow.</strong> Niedrig dosieren, besonders bei neuen Chargen.</li>
+          <li><strong className="text-foreground">Test, was du nimmst.</strong> Drug-Checking oder mind. Reagenztest.</li>
+          <li><strong className="text-foreground">Mischkonsum ist Risiko Nr. 1.</strong> Vor allem Atemdepressiva.</li>
+          <li><strong className="text-foreground">Sei nicht allein.</strong> Nüchterne Vertrauensperson. Im Notfall: 112.</li>
+        </ul>
       </section>
+
     </div>
   );
 }
