@@ -19,9 +19,9 @@ export const Route = createFileRoute("/erfahrungen")({
         content: "Persönliche Erfahrungsberichte und Safer-Use-Notizen.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://ravesave.fun/erfahrungen" },
+      { property: "og:url", content: "https://ravesave.de/erfahrungen" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/erfahrungen" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/erfahrungen" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/erfahrungen")({
           name: "Meine Erfahrungen — Ravesave",
           description:
             "Persönliche Erfahrungsberichte, Reflexionen und Safer-Use-Notizen von Justin.",
-          url: "https://ravesave.fun/erfahrungen",
+          url: "https://ravesave.de/erfahrungen",
           inLanguage: "de-DE",
         }),
       },

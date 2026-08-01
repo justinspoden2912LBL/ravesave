@@ -27,9 +27,9 @@ export const Route = createFileRoute("/chat")({
       { name: "description", content: "Marleen ist die KI-Begleiterin von RaveSave. Stelle Fragen zu Substanzen, Mischkonsum und Harm Reduction — ruhig, evidenzbasiert, lokal." },
       { property: "og:title", content: "Marleen — KI-Begleiterin · RaveSave" },
       { property: "og:description", content: "KI-gestützter Chat zu Pharmakologie, Studien und Harm Reduction." },
-      { property: "og:url", content: "https://ravesave.fun/chat" },
+      { property: "og:url", content: "https://ravesave.de/chat" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/chat" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/chat" }],
   }),
 });
 

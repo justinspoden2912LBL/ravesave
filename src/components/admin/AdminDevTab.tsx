@@ -500,9 +500,9 @@ export function AdminDevTab() {
           />
           <CopyRow
             label="Live-URL"
-            value="https://ravesave.fun"
+            value="https://ravesave.de"
             copied={copied === "live"}
-            onCopy={() => copy("https://ravesave.fun", "live")}
+            onCopy={() => copy("https://ravesave.de", "live")}
           />
           <CopyRow
             label="Feedback-Mail"

@@ -15,9 +15,9 @@ export const Route = createFileRoute("/about")({
       },
       { property: "og:title", content: "Über den Entwickler — Rave Safe, have Fun" },
       { property: "og:description", content: "Eine persönliche Notiz von Justin: Motivation, Erfahrung und Harm Reduction." },
-      { property: "og:url", content: "https://ravesave.fun/about" },
+      { property: "og:url", content: "https://ravesave.de/about" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/about" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/about" }],
   }),
 });
 

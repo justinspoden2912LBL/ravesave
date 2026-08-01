@@ -12,9 +12,9 @@ export const Route = createFileRoute("/reagenztest")({
       { name: "description", content: "Marquis, Mecke, Mandelin & Co. — erwartete Farbreaktionen pro Substanz mit Hex-Vorschau." },
       { property: "og:title", content: "Reagent-Test-Guide — Rave Safe, have Fun" },
       { property: "og:description", content: "Farbreaktionen für Marquis/Mecke/Mandelin pro Substanz." },
-      { property: "og:url", content: "https://ravesave.fun/reagenztest" },
+      { property: "og:url", content: "https://ravesave.de/reagenztest" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/reagenztest" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/reagenztest" }],
   }),
 });
 

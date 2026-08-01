@@ -29,9 +29,9 @@ export const Route = createFileRoute("/mix")({
       { name: "description", content: "Prüfe Kombinationen aus 2+ Substanzen mit einer Ampel-Bewertung und detaillierten Hinweisen zu Wechselwirkungen." },
       { property: "og:title", content: "Mischkonsum-Check — Rave Safe, have Fun" },
       { property: "og:description", content: "Ampel-Risikobewertung für Substanzkombinationen mit Quellen und Erklärungen." },
-      { property: "og:url", content: "https://ravesave.fun/mix" },
+      { property: "og:url", content: "https://ravesave.de/mix" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/mix" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/mix" }],
   }),
 });
 

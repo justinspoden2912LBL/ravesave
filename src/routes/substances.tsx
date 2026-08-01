@@ -27,9 +27,9 @@ export const Route = createFileRoute("/substances")({
       { name: "description", content: "Kompakte, scanbare Substanzinfos: Dosis, Wirkdauer und Risiken pro Applikationsweg. Expertenmodus für Pharmakologie." },
       { property: "og:title", content: "Substanz-Wiki — Rave Safe, have Fun" },
       { property: "og:description", content: "Kompakte, scanbare Substanzinfos: Dosis, Wirkdauer und Risiken pro Applikationsweg." },
-      { property: "og:url", content: "https://ravesave.fun/substances" },
+      { property: "og:url", content: "https://ravesave.de/substances" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/substances" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/substances" }],
   }),
 });
 

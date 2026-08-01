@@ -21,9 +21,9 @@ export const Route = createFileRoute("/risks")({
       { name: "description", content: "Alle Mischkonsum-Risiken pro Substanz auf einen Blick — gefiltert nach Kategorie und Risikostufe." },
       { property: "og:title", content: "Risiko-Übersicht — Rave Safe, have Fun" },
       { property: "og:description", content: "Wechselwirkungen pro Substanz, sortiert nach Risikostufe." },
-      { property: "og:url", content: "https://ravesave.fun/risks" },
+      { property: "og:url", content: "https://ravesave.de/risks" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/risks" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/risks" }],
   }),
 });
 
