@@ -62,6 +62,18 @@ function ExperiencesPage() {
         </p>
       </header>
 
+      <Link
+        to="/erfahrungen/einsenden"
+        className="block rounded-2xl border border-secondary/30 bg-secondary/10 p-4 text-sm hover:bg-secondary/15 transition min-h-11"
+      >
+        <div className="font-semibold text-secondary">Eigenen Beitrag einsenden</div>
+        <p className="mt-1 text-foreground/90">
+          Teile deine Erfahrung — die Einsendung ist <strong>nur für den Admin sichtbar</strong>,
+          es werden keine personenbezogenen Daten erhoben, und nichts wird ohne Freigabe
+          veröffentlicht.
+        </p>
+      </Link>
+
       <aside className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
         <div className="flex items-center gap-2 font-semibold text-destructive">
           <ShieldAlert className="h-4 w-4" /> Wichtig
