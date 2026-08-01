@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_settings: {
+        Row: {
+          answer_style: string
+          blocked_topics: string
+          disabled_message: string
+          enabled: boolean
+          extra_rules: string
+          fallback_model: string
+          id: string
+          max_messages: number
+          model: string
+          provider: string
+          rate_limit_per_min: number
+          temperature: number
+          updated_at: string
+        }
+        Insert: {
+          answer_style?: string
+          blocked_topics?: string
+          disabled_message?: string
+          enabled?: boolean
+          extra_rules?: string
+          fallback_model?: string
+          id?: string
+          max_messages?: number
+          model?: string
+          provider?: string
+          rate_limit_per_min?: number
+          temperature?: number
+          updated_at?: string
+        }
+        Update: {
+          answer_style?: string
+          blocked_topics?: string
+          disabled_message?: string
+          enabled?: boolean
+          extra_rules?: string
+          fallback_model?: string
+          id?: string
+          max_messages?: number
+          model?: string
+          provider?: string
+          rate_limit_per_min?: number
+          temperature?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           description: string | null
