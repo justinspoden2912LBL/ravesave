@@ -28,10 +28,10 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { name: "description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
-      { property: "og:title", content: "Rave Safe, have Fun — Harm Reduction Companion" },
-      { property: "og:description", content: "Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser." },
+      { title: "Rave Safe, have Fun — Der Copilot für Psychonauten" },
+      { name: "description", content: "Modernes Safer Use / Harmreduction Tool \nFaktenbasiert / Substanz-Wiki \nKi unterstützt von psychonauten-für psychonauten" },
+      { property: "og:title", content: "Rave Safe, have Fun — Der Copilot für Psychonauten" },
+      { property: "og:description", content: "Modernes Safer Use / Harmreduction Tool \nFaktenbasiert / Substanz-Wiki \nKi unterstützt von psychonauten-für psychonauten" },
       { property: "og:url", content: "https://ravesave.fun/" },
     ],
     links: [{ rel: "canonical", href: "https://ravesave.fun/" }],
