@@ -100,6 +100,7 @@ export const Route = createFileRoute("/api/chat")({
         const useGroq =
           settings.provider !== "lovable" && !!groqKey && (await isGroqHealthy(groqKey));
         const useLovable = settings.provider !== "groq" && !!lovableKey;
+        console.log("[Chat] provider", { useGroq, useLovable, model: settings.model });
         let model;
         if (useGroq) {
           model = createGroqProvider(groqKey!)(settings.model || GROQ_DEFAULT_MODEL);
