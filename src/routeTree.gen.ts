@@ -9,155 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ToleranceRouteImport } from './routes/tolerance'
-import { Route as SubstancesRouteImport } from './routes/substances'
-import { Route as StatsRouteImport } from './routes/stats'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as SafetyPlanRouteImport } from './routes/safety-plan'
-import { Route as RisksRouteImport } from './routes/risks'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ReagenztestRouteImport } from './routes/reagenztest'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as NotfallRouteImport } from './routes/notfall'
-import { Route as MixRouteImport } from './routes/mix'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as LogRouteImport } from './routes/log'
-import { Route as KniggeRouteImport } from './routes/knigge'
-import { Route as InstallRouteImport } from './routes/install'
-import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
-import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
-import { Route as ChecklisteRouteImport } from './routes/checkliste'
-import { Route as ChatRouteImport } from './routes/chat'
-import { Route as AkutRouteImport } from './routes/akut'
-import { Route as AftercareRouteImport } from './routes/aftercare'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SessionActiveRouteImport } from './routes/session.active'
-import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
-import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
-import { Route as ApiTtsRouteImport } from './routes/api/tts'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AftercareRouteImport } from './routes/aftercare'
+import { Route as AkutRouteImport } from './routes/akut'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ChecklisteRouteImport } from './routes/checkliste'
+import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
+import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
+import { Route as InstallRouteImport } from './routes/install'
+import { Route as KniggeRouteImport } from './routes/knigge'
+import { Route as LogRouteImport } from './routes/log'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MixRouteImport } from './routes/mix'
+import { Route as NotfallRouteImport } from './routes/notfall'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ReagenztestRouteImport } from './routes/reagenztest'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RisksRouteImport } from './routes/risks'
+import { Route as SafetyPlanRouteImport } from './routes/safety-plan'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SubstancesRouteImport } from './routes/substances'
+import { Route as ToleranceRouteImport } from './routes/tolerance'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiTtsRouteImport } from './routes/api/tts'
+import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
+import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
+import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
-const ToleranceRoute = ToleranceRouteImport.update({
-  id: '/tolerance',
-  path: '/tolerance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SubstancesRoute = SubstancesRouteImport.update({
-  id: '/substances',
-  path: '/substances',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatsRoute = StatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SafetyPlanRoute = SafetyPlanRouteImport.update({
-  id: '/safety-plan',
-  path: '/safety-plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RisksRoute = RisksRouteImport.update({
-  id: '/risks',
-  path: '/risks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReagenztestRoute = ReagenztestRouteImport.update({
-  id: '/reagenztest',
-  path: '/reagenztest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotfallRoute = NotfallRouteImport.update({
-  id: '/notfall',
-  path: '/notfall',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MixRoute = MixRouteImport.update({
-  id: '/mix',
-  path: '/mix',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogRoute = LogRouteImport.update({
-  id: '/log',
-  path: '/log',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KniggeRoute = KniggeRouteImport.update({
-  id: '/knigge',
-  path: '/knigge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InstallRoute = InstallRouteImport.update({
-  id: '/install',
-  path: '/install',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ErfahrungenRoute = ErfahrungenRouteImport.update({
-  id: '/erfahrungen',
-  path: '/erfahrungen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DrugcheckingRoute = DrugcheckingRouteImport.update({
-  id: '/drugchecking',
-  path: '/drugchecking',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChecklisteRoute = ChecklisteRouteImport.update({
-  id: '/checkliste',
-  path: '/checkliste',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AkutRoute = AkutRouteImport.update({
-  id: '/akut',
-  path: '/akut',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AftercareRoute = AftercareRouteImport.update({
-  id: '/aftercare',
-  path: '/aftercare',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -165,29 +55,136 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SessionActiveRoute = SessionActiveRouteImport.update({
-  id: '/session/active',
-  path: '/session/active',
+const AftercareRoute = AftercareRouteImport.update({
+  id: '/aftercare',
+  path: '/aftercare',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ErfahrungenRoute,
-} as any)
-const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
-  id: '/api/voice-token',
-  path: '/api/voice-token',
+const AkutRoute = AkutRouteImport.update({
+  id: '/akut',
+  path: '/akut',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiTtsRoute = ApiTtsRouteImport.update({
-  id: '/api/tts',
-  path: '/api/tts',
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChecklisteRoute = ChecklisteRouteImport.update({
+  id: '/checkliste',
+  path: '/checkliste',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrugcheckingRoute = DrugcheckingRouteImport.update({
+  id: '/drugchecking',
+  path: '/drugchecking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErfahrungenRoute = ErfahrungenRouteImport.update({
+  id: '/erfahrungen',
+  path: '/erfahrungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KniggeRoute = KniggeRouteImport.update({
+  id: '/knigge',
+  path: '/knigge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogRoute = LogRouteImport.update({
+  id: '/log',
+  path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MixRoute = MixRouteImport.update({
+  id: '/mix',
+  path: '/mix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotfallRoute = NotfallRouteImport.update({
+  id: '/notfall',
+  path: '/notfall',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReagenztestRoute = ReagenztestRouteImport.update({
+  id: '/reagenztest',
+  path: '/reagenztest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RisksRoute = RisksRouteImport.update({
+  id: '/risks',
+  path: '/risks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyPlanRoute = SafetyPlanRouteImport.update({
+  id: '/safety-plan',
+  path: '/safety-plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubstancesRoute = SubstancesRouteImport.update({
+  id: '/substances',
+  path: '/substances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToleranceRoute = ToleranceRouteImport.update({
+  id: '/tolerance',
+  path: '/tolerance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
+  id: '/api/akut-coach',
+  path: '/api/akut-coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -195,26 +192,24 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
-  id: '/api/akut-coach',
-  path: '/api/akut-coach',
+const ApiTtsRoute = ApiTtsRouteImport.update({
+  id: '/api/tts',
+  path: '/api/tts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
-  id: '/api/public/track',
-  path: '/api/public/track',
+const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
+  id: '/api/voice-token',
+  path: '/api/voice-token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ErfahrungenRoute,
+} as any)
+const SessionActiveRoute = SessionActiveRouteImport.update({
+  id: '/session/active',
+  path: '/session/active',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
@@ -223,6 +218,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -489,165 +489,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tolerance': {
-      id: '/tolerance'
-      path: '/tolerance'
-      fullPath: '/tolerance'
-      preLoaderRoute: typeof ToleranceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/substances': {
-      id: '/substances'
-      path: '/substances'
-      fullPath: '/substances'
-      preLoaderRoute: typeof SubstancesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stats': {
-      id: '/stats'
-      path: '/stats'
-      fullPath: '/stats'
-      preLoaderRoute: typeof StatsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/safety-plan': {
-      id: '/safety-plan'
-      path: '/safety-plan'
-      fullPath: '/safety-plan'
-      preLoaderRoute: typeof SafetyPlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/risks': {
-      id: '/risks'
-      path: '/risks'
-      fullPath: '/risks'
-      preLoaderRoute: typeof RisksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reagenztest': {
-      id: '/reagenztest'
-      path: '/reagenztest'
-      fullPath: '/reagenztest'
-      preLoaderRoute: typeof ReagenztestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notfall': {
-      id: '/notfall'
-      path: '/notfall'
-      fullPath: '/notfall'
-      preLoaderRoute: typeof NotfallRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mix': {
-      id: '/mix'
-      path: '/mix'
-      fullPath: '/mix'
-      preLoaderRoute: typeof MixRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/log': {
-      id: '/log'
-      path: '/log'
-      fullPath: '/log'
-      preLoaderRoute: typeof LogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/knigge': {
-      id: '/knigge'
-      path: '/knigge'
-      fullPath: '/knigge'
-      preLoaderRoute: typeof KniggeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/install': {
-      id: '/install'
-      path: '/install'
-      fullPath: '/install'
-      preLoaderRoute: typeof InstallRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/erfahrungen': {
-      id: '/erfahrungen'
-      path: '/erfahrungen'
-      fullPath: '/erfahrungen'
-      preLoaderRoute: typeof ErfahrungenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/drugchecking': {
-      id: '/drugchecking'
-      path: '/drugchecking'
-      fullPath: '/drugchecking'
-      preLoaderRoute: typeof DrugcheckingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkliste': {
-      id: '/checkliste'
-      path: '/checkliste'
-      fullPath: '/checkliste'
-      preLoaderRoute: typeof ChecklisteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/akut': {
-      id: '/akut'
-      path: '/akut'
-      fullPath: '/akut'
-      preLoaderRoute: typeof AkutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/aftercare': {
-      id: '/aftercare'
-      path: '/aftercare'
-      fullPath: '/aftercare'
-      preLoaderRoute: typeof AftercareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -657,60 +503,165 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/session/active': {
-      id: '/session/active'
-      path: '/session/active'
-      fullPath: '/session/active'
-      preLoaderRoute: typeof SessionActiveRouteImport
+    '/aftercare': {
+      id: '/aftercare'
+      path: '/aftercare'
+      fullPath: '/aftercare'
+      preLoaderRoute: typeof AftercareRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/erfahrungen/$slug': {
-      id: '/erfahrungen/$slug'
-      path: '/$slug'
-      fullPath: '/erfahrungen/$slug'
-      preLoaderRoute: typeof ErfahrungenSlugRouteImport
-      parentRoute: typeof ErfahrungenRoute
-    }
-    '/api/voice-token': {
-      id: '/api/voice-token'
-      path: '/api/voice-token'
-      fullPath: '/api/voice-token'
-      preLoaderRoute: typeof ApiVoiceTokenRouteImport
+    '/akut': {
+      id: '/akut'
+      path: '/akut'
+      fullPath: '/akut'
+      preLoaderRoute: typeof AkutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/tts': {
-      id: '/api/tts'
-      path: '/api/tts'
-      fullPath: '/api/tts'
-      preLoaderRoute: typeof ApiTtsRouteImport
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/checkliste': {
+      id: '/checkliste'
+      path: '/checkliste'
+      fullPath: '/checkliste'
+      preLoaderRoute: typeof ChecklisteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/akut-coach': {
-      id: '/api/akut-coach'
-      path: '/api/akut-coach'
-      fullPath: '/api/akut-coach'
-      preLoaderRoute: typeof ApiAkutCoachRouteImport
+    '/drugchecking': {
+      id: '/drugchecking'
+      path: '/drugchecking'
+      fullPath: '/drugchecking'
+      preLoaderRoute: typeof DrugcheckingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/erfahrungen': {
+      id: '/erfahrungen'
+      path: '/erfahrungen'
+      fullPath: '/erfahrungen'
+      preLoaderRoute: typeof ErfahrungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knigge': {
+      id: '/knigge'
+      path: '/knigge'
+      fullPath: '/knigge'
+      preLoaderRoute: typeof KniggeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/log': {
+      id: '/log'
+      path: '/log'
+      fullPath: '/log'
+      preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mix': {
+      id: '/mix'
+      path: '/mix'
+      fullPath: '/mix'
+      preLoaderRoute: typeof MixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notfall': {
+      id: '/notfall'
+      path: '/notfall'
+      fullPath: '/notfall'
+      preLoaderRoute: typeof NotfallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reagenztest': {
+      id: '/reagenztest'
+      path: '/reagenztest'
+      fullPath: '/reagenztest'
+      preLoaderRoute: typeof ReagenztestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risks': {
+      id: '/risks'
+      path: '/risks'
+      fullPath: '/risks'
+      preLoaderRoute: typeof RisksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety-plan': {
+      id: '/safety-plan'
+      path: '/safety-plan'
+      fullPath: '/safety-plan'
+      preLoaderRoute: typeof SafetyPlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/substances': {
+      id: '/substances'
+      path: '/substances'
+      fullPath: '/substances'
+      preLoaderRoute: typeof SubstancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tolerance': {
+      id: '/tolerance'
+      path: '/tolerance'
+      fullPath: '/tolerance'
+      preLoaderRoute: typeof ToleranceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -720,11 +671,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/track': {
-      id: '/api/public/track'
-      path: '/api/public/track'
-      fullPath: '/api/public/track'
-      preLoaderRoute: typeof ApiPublicTrackRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/akut-coach': {
+      id: '/api/akut-coach'
+      path: '/api/akut-coach'
+      fullPath: '/api/akut-coach'
+      preLoaderRoute: typeof ApiAkutCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tts': {
+      id: '/api/tts'
+      path: '/api/tts'
+      fullPath: '/api/tts'
+      preLoaderRoute: typeof ApiTtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/voice-token': {
+      id: '/api/voice-token'
+      path: '/api/voice-token'
+      fullPath: '/api/voice-token'
+      preLoaderRoute: typeof ApiVoiceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/erfahrungen/$slug': {
+      id: '/erfahrungen/$slug'
+      path: '/$slug'
+      fullPath: '/erfahrungen/$slug'
+      preLoaderRoute: typeof ErfahrungenSlugRouteImport
+      parentRoute: typeof ErfahrungenRoute
+    }
+    '/session/active': {
+      id: '/session/active'
+      path: '/session/active'
+      fullPath: '/session/active'
+      preLoaderRoute: typeof SessionActiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -732,6 +725,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/invoke-tool/$tool'
       fullPath: '/.mcp/invoke-tool/$tool'
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
