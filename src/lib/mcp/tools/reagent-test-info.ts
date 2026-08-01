@@ -26,7 +26,7 @@ export default defineTool({
       ? [
           `Reagenztests für ${entry?.substanceId}:`,
           ...reactions.map(
-            (r) => `- ${REAGENT_LABEL[r.reagent]}: ${r.color}${r.note ? ` (${r.note})` : ""}`,
+            (r) => `- ${REAGENT_LABEL[r.reagent]}: ${r.color}${r.notes ? ` (${r.notes})` : ""}`,
           ),
           "Reagenztests zeigen nur an, ob etwas enthalten sein könnte — sie sagen nichts über Dosis, Reinheit oder Beimengungen. Ein Labor-Drug-Checking ist immer aussagekräftiger.",
         ].join("\n")
