@@ -129,12 +129,15 @@ export function Nav() {
   const { ref, canLeft, canRight, scrollBy } = useScrollAffordance();
   const activeRef = useRef<HTMLAnchorElement | null>(null);
 
-  // aktiven Tab in den Sichtbereich scrollen
+  // aktiven Tab horizontal in den Sichtbereich scrollen (ohne Seiten-Scroll)
   useEffect(() => {
     const el = activeRef.current;
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [loc.pathname]);
+    const box = ref.current;
+    if (!el || !box) return;
+    const target = el.offsetLeft - box.clientWidth / 2 + el.offsetWidth / 2;
+    box.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [loc.pathname, ref]);
+
 
   return (
     <header className="sticky top-0 z-40 glass border-b">
