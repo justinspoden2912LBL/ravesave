@@ -44,7 +44,7 @@ export function SplashGreeting() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[120] grid place-items-center bg-background/95 backdrop-blur-xl transition-opacity duration-500 print:hidden ${
+      className={`fixed inset-0 z-[120] grid place-items-center bg-background/95 backdrop-blur-xl transition-opacity duration-[1200ms] ease-in-out print:hidden ${
         phase === "out" ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -57,6 +57,7 @@ export function SplashGreeting() {
           {title}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground animate-fade-in">{subtitle}</p>
+
       </div>
     </div>
   );
