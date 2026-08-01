@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight, ShieldAlert, Sparkles } from "lucide-react";
 import { listPublishedPosts, formatDate, type Post } from "@/lib/posts";
 
-export const Route = createFileRoute("/erfahrungen")({
+export const Route = createFileRoute("/erfahrungen/")({
   component: ExperiencesPage,
   head: () => ({
     meta: [
@@ -61,6 +61,18 @@ function ExperiencesPage() {
           Konsum, Rave-Kultur und das, was ich unterwegs gelernt habe.
         </p>
       </header>
+
+      <Link
+        to="/erfahrungen/einsenden"
+        className="block rounded-2xl border border-secondary/30 bg-secondary/10 p-4 text-sm hover:bg-secondary/15 transition min-h-11"
+      >
+        <div className="font-semibold text-secondary">Eigenen Beitrag einsenden</div>
+        <p className="mt-1 text-foreground/90">
+          Teile deine Erfahrung — die Einsendung ist <strong>nur für den Admin sichtbar</strong>,
+          es werden keine personenbezogenen Daten erhoben, und nichts wird ohne Freigabe
+          veröffentlicht.
+        </p>
+      </Link>
 
       <aside className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
         <div className="flex items-center gap-2 font-semibold text-destructive">
