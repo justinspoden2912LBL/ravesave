@@ -239,3 +239,115 @@ export const adminDeletePost = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------------------------------------------------------------------------
+// Leser:innen-Einsendungen (Blog)
+// ---------------------------------------------------------------------------
+
+const SubmissionInput = z.object({
+  title: z.string().trim().min(3).max(300),
+  body: z.string().trim().min(50).max(20000),
+  category: z.string().trim().max(80).optional().nullable(),
+  pseudonym: z.string().trim().max(80).optional().nullable(),
+  contact: z.string().trim().max(200).optional().nullable(),
+});
+
+const submitWindow = new Map<string, { count: number; firstAt: number }>();
+
+export const submitReaderPost = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => SubmissionInput.parse(d))
+  .handler(async ({ data }) => {
+    // simple abuse guard: max 3 Einsendungen / Stunde pro IP
+    const key = clientKey();
+    const now = Date.now();
+    const rec = submitWindow.get(key);
+    if (!rec || now - rec.firstAt > 60 * 60 * 1000) {
+      submitWindow.set(key, { count: 1, firstAt: now });
+    } else {
+      rec.count += 1;
+      if (rec.count > 3) throw new Error("Zu viele Einsendungen. Bitte später erneut versuchen.");
+    }
+    const { error } = await supabaseAdmin.from("post_submissions").insert({
+      title: data.title,
+      body: data.body,
+      category: data.category || null,
+      pseudonym: data.pseudonym || null,
+      contact: data.contact || null,
+    });
+    if (error) throw new Error("Einsendung konnte nicht gespeichert werden.");
+    return { ok: true };
+  });
+
+export const adminListSubmissions = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await useAdminSessionGate())) return [];
+  const { data, error } = await supabaseAdmin
+    .from("post_submissions")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const adminUpdateSubmission = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["new", "reviewing", "accepted", "rejected"]).optional(),
+        admin_note: z.string().max(2000).nullable().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const patch: Record<string, unknown> = {};
+    if (data.status) patch.status = data.status;
+    if (data.admin_note !== undefined) patch.admin_note = data.admin_note;
+    const { error } = await supabaseAdmin.from("post_submissions").update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteSubmission = createServerFn({ method: "POST" })
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("post_submissions").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Übernimmt eine Einsendung als unveröffentlichten Beitrags-Entwurf. */
+export const adminSubmissionToDraft = createServerFn({ method: "POST" })
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { data: sub, error: e1 } = await supabaseAdmin
+      .from("post_submissions")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (e1) throw new Error(e1.message);
+    if (!sub) throw new Error("Einsendung nicht gefunden");
+    const base =
+      sub.title
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ß/g, "ss")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 70) || "beitrag";
+    const slug = `${base}-${Math.random().toString(36).slice(2, 6)}`;
+    const { error } = await supabaseAdmin.from("posts").insert({
+      title: sub.title,
+      slug,
+      excerpt: sub.body.slice(0, 200),
+      category: sub.category,
+      content: sub.body,
+      published: false,
+    });
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("post_submissions").update({ status: "accepted" }).eq("id", data.id);
+    return { ok: true, slug };
+  });
