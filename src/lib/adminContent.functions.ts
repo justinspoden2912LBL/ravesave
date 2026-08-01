@@ -52,14 +52,23 @@ function emptyStats(days: number, authRequired = false) {
       returningRate: 0,
       avgViewsPerSession: 0,
       bounceRate: 0,
+      avgSessionSeconds: 0,
+      uniquePaths: 0,
+      pwaInstalls: 0,
     },
-    topPaths: [] as { key: string; count: number }[],
+    prev: { views: 0, sessions: 0, events: 0 },
+    delta: { views: 0, sessions: 0, events: 0 },
+    topPaths: [] as { key: string; count: number; sessions: number }[],
+    topEntryPaths: [] as { key: string; count: number }[],
     topCountries: [] as { key: string; count: number }[],
     topEvents: [] as { key: string; count: number }[],
+    topEventDetails: [] as { key: string; count: number }[],
     topReferrers: [] as { key: string; count: number }[],
     byDay: [] as { day: string; count: number }[],
     sessionsByDay: [] as { day: string; count: number }[],
+    eventsByDay: [] as { day: string; count: number }[],
     byHour: [] as { hour: number; count: number }[],
+    byWeekday: [] as { weekday: number; label: string; count: number }[],
   };
 }
 
@@ -73,6 +82,8 @@ function normalizeReferrer(raw: string | null | undefined): string {
   }
 }
 
+const WEEKDAY_LABELS = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+
 // ─────────────────────────────────────────────────────────────────────────
 // STATS
 // ─────────────────────────────────────────────────────────────────────────
@@ -83,48 +94,66 @@ export const adminGetStats = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     if (!(await useAdminSessionGate())) return emptyStats(data.days, true);
-    const since = new Date(Date.now() - data.days * 86400_000).toISOString();
+    const windowMs = data.days * 86400_000;
+    const sinceDate = new Date(Date.now() - windowMs);
+    const since = sinceDate.toISOString();
+    const prevSince = new Date(Date.now() - 2 * windowMs).toISOString();
 
-    const [{ data: views, error: e1 }, { data: events, error: e2 }] = await Promise.all([
+    const [{ data: allViews, error: e1 }, { data: allEvents, error: e2 }] = await Promise.all([
       supabaseAdmin
         .from("page_views")
         .select("path,country,session_id,referrer,created_at")
-        .gte("created_at", since)
-        .limit(20000),
+        .gte("created_at", prevSince)
+        .limit(40000),
       supabaseAdmin
         .from("usage_events")
-        .select("event_type,detail,created_at")
-        .gte("created_at", since)
-        .limit(20000),
+        .select("event_type,detail,session_id,created_at")
+        .gte("created_at", prevSince)
+        .limit(40000),
     ]);
 
     if (e1) throw new Error(e1.message);
     if (e2) throw new Error(e2.message);
 
+    const views = (allViews ?? []).filter((v) => (v.created_at as string) >= since);
+    const events = (allEvents ?? []).filter((e) => (e.created_at as string) >= since);
+    const prevViews = (allViews ?? []).filter((v) => (v.created_at as string) < since);
+    const prevEvents = (allEvents ?? []).filter((e) => (e.created_at as string) < since);
+
     const byPath = new Map<string, number>();
+    const pathSessions = new Map<string, Set<string>>();
     const byCountry = new Map<string, number>();
     const byReferrer = new Map<string, number>();
     const byDay = new Map<string, number>();
     const sessionsByDay = new Map<string, Set<string>>();
+    const eventsByDay = new Map<string, number>();
     const byHour = new Map<number, number>();
+    const byWeekday = new Map<number, number>();
 
-    // Per-session aggregation for returning + bounce metrics
+    // Per-session aggregation for returning + bounce + duration metrics
     const sessionDays = new Map<string, Set<string>>();
     const sessionViews = new Map<string, number>();
+    const sessionFirst = new Map<string, number>();
+    const sessionLast = new Map<string, number>();
+    const sessionEntry = new Map<string, { ts: number; path: string }>();
 
-    for (const v of views ?? []) {
+    const sorted = [...views].sort((a, b) =>
+      (a.created_at as string) < (b.created_at as string) ? -1 : 1,
+    );
+
+    for (const v of sorted) {
       byPath.set(v.path, (byPath.get(v.path) ?? 0) + 1);
       const c = v.country || "??";
       byCountry.set(c, (byCountry.get(c) ?? 0) + 1);
-      byReferrer.set(
-        normalizeReferrer(v.referrer),
-        (byReferrer.get(normalizeReferrer(v.referrer)) ?? 0) + 1,
-      );
+      const ref = normalizeReferrer(v.referrer);
+      byReferrer.set(ref, (byReferrer.get(ref) ?? 0) + 1);
       const createdAt = v.created_at as string;
+      const ts = new Date(createdAt).getTime();
       const day = createdAt.slice(0, 10);
       byDay.set(day, (byDay.get(day) ?? 0) + 1);
-      const hour = new Date(createdAt).getUTCHours();
-      byHour.set(hour, (byHour.get(hour) ?? 0) + 1);
+      byHour.set(new Date(createdAt).getUTCHours(), (byHour.get(new Date(createdAt).getUTCHours()) ?? 0) + 1);
+      const wd = new Date(createdAt).getUTCDay();
+      byWeekday.set(wd, (byWeekday.get(wd) ?? 0) + 1);
 
       if (v.session_id) {
         const sid = v.session_id;
@@ -133,27 +162,57 @@ export const adminGetStats = createServerFn({ method: "POST" })
         sessionDays.get(sid)!.add(day);
         if (!sessionsByDay.has(day)) sessionsByDay.set(day, new Set());
         sessionsByDay.get(day)!.add(sid);
+        if (!pathSessions.has(v.path)) pathSessions.set(v.path, new Set());
+        pathSessions.get(v.path)!.add(sid);
+        if (!sessionFirst.has(sid)) sessionFirst.set(sid, ts);
+        sessionLast.set(sid, ts);
+        if (!sessionEntry.has(sid)) sessionEntry.set(sid, { ts, path: v.path });
       }
     }
 
     const byEvent = new Map<string, number>();
-    for (const e of events ?? []) {
+    const byEventDetail = new Map<string, number>();
+    for (const e of events) {
       byEvent.set(e.event_type, (byEvent.get(e.event_type) ?? 0) + 1);
+      if (e.detail) {
+        const k = `${e.event_type} → ${e.detail}`;
+        byEventDetail.set(k, (byEventDetail.get(k) ?? 0) + 1);
+      }
+      const d = (e.created_at as string).slice(0, 10);
+      eventsByDay.set(d, (eventsByDay.get(d) ?? 0) + 1);
+    }
+
+    const entryPaths = new Map<string, number>();
+    for (const [, entry] of sessionEntry) {
+      entryPaths.set(entry.path, (entryPaths.get(entry.path) ?? 0) + 1);
     }
 
     // Returning session = same session_id appears on 2+ distinct days in window
     let returningSessions = 0;
     let bounceSessions = 0;
-    for (const [, days] of sessionDays) {
-      if (days.size >= 2) returningSessions += 1;
+    let durationSum = 0;
+    let durationCount = 0;
+    for (const [, ds] of sessionDays) {
+      if (ds.size >= 2) returningSessions += 1;
     }
     for (const [sid, count] of sessionViews) {
       if (count <= 1) bounceSessions += 1;
-      void sid;
+      const first = sessionFirst.get(sid);
+      const last = sessionLast.get(sid);
+      if (first != null && last != null && last > first) {
+        durationSum += (last - first) / 1000;
+        durationCount += 1;
+      }
     }
     const totalSessions = sessionDays.size;
     const newSessions = Math.max(0, totalSessions - returningSessions);
-    const totalViews = views?.length ?? 0;
+    const totalViews = views.length;
+
+    const prevSessions = new Set(
+      prevViews.map((v) => v.session_id).filter(Boolean) as string[],
+    ).size;
+    const pct = (now: number, before: number) =>
+      before > 0 ? (now - before) / before : now > 0 ? 1 : 0;
 
     const sortDesc = <T>(m: Map<T, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]);
 
@@ -163,20 +222,39 @@ export const adminGetStats = createServerFn({ method: "POST" })
       totals: {
         views: totalViews,
         sessions: totalSessions,
-        events: events?.length ?? 0,
+        events: events.length,
         newSessions,
         returningSessions,
         returningRate: totalSessions > 0 ? returningSessions / totalSessions : 0,
         avgViewsPerSession: totalSessions > 0 ? totalViews / totalSessions : 0,
         bounceRate: totalSessions > 0 ? bounceSessions / totalSessions : 0,
+        avgSessionSeconds: durationCount > 0 ? durationSum / durationCount : 0,
+        uniquePaths: byPath.size,
+        pwaInstalls: events.filter((e) => e.event_type.includes("install")).length,
+      },
+      prev: {
+        views: prevViews.length,
+        sessions: prevSessions,
+        events: prevEvents.length,
+      },
+      delta: {
+        views: pct(totalViews, prevViews.length),
+        sessions: pct(totalSessions, prevSessions),
+        events: pct(events.length, prevEvents.length),
       },
       topPaths: sortDesc(byPath)
         .slice(0, 30)
+        .map(([k, v]) => ({ key: k, count: v, sessions: pathSessions.get(k)?.size ?? 0 })),
+      topEntryPaths: sortDesc(entryPaths)
+        .slice(0, 15)
         .map(([k, v]) => ({ key: k, count: v })),
       topCountries: sortDesc(byCountry)
         .slice(0, 30)
         .map(([k, v]) => ({ key: k, count: v })),
       topEvents: sortDesc(byEvent).map(([k, v]) => ({ key: k, count: v })),
+      topEventDetails: sortDesc(byEventDetail)
+        .slice(0, 20)
+        .map(([k, v]) => ({ key: k, count: v })),
       topReferrers: sortDesc(byReferrer)
         .slice(0, 15)
         .map(([k, v]) => ({ key: k, count: v })),
@@ -186,9 +264,18 @@ export const adminGetStats = createServerFn({ method: "POST" })
       sessionsByDay: [...sessionsByDay.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([k, v]) => ({ day: k, count: v.size })),
+      eventsByDay: [...eventsByDay.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([k, v]) => ({ day: k, count: v })),
       byHour: Array.from({ length: 24 }, (_, h) => ({ hour: h, count: byHour.get(h) ?? 0 })),
+      byWeekday: Array.from({ length: 7 }, (_, w) => ({
+        weekday: w,
+        label: WEEKDAY_LABELS[w],
+        count: byWeekday.get(w) ?? 0,
+      })),
     };
   });
+
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -780,3 +867,15 @@ export const adminAnalyticsSummary = createServerFn({ method: "GET" }).handler(
 
 
 
+// ─────────────────────────────────────────────────────────────────────────
+// FEATURE FLAG: löschen (Admin kann Seiten/Funktionen selbst entfernen)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
+  .inputValidator((d: { key: string }) => z.object({ key: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("feature_flags").delete().eq("key", data.key);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
