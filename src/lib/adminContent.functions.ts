@@ -867,3 +867,15 @@ export const adminAnalyticsSummary = createServerFn({ method: "GET" }).handler(
 
 
 
+// ─────────────────────────────────────────────────────────────────────────
+// FEATURE FLAG: löschen (Admin kann Seiten/Funktionen selbst entfernen)
+// ─────────────────────────────────────────────────────────────────────────
+
+export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
+  .inputValidator((d: { key: string }) => z.object({ key: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ data }) => {
+    if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
+    const { error } = await supabaseAdmin.from("feature_flags").delete().eq("key", data.key);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
