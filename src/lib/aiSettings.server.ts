@@ -25,3 +25,26 @@ export async function loadAiSettings(): Promise<AiSettings> {
 export function invalidateAiSettingsCache() {
   cache = null;
 }
+
+/**
+ * Prüft (mit 5-Minuten-Cache), ob der kostenfreie Groq-Zugang gerade
+ * funktioniert. So kann der Chat bei ungültigem/abgelaufenem Key automatisch
+ * auf den Fallback-Anbieter wechseln, statt eine Fehlermeldung zu streamen.
+ */
+let groqHealth: { at: number; ok: boolean } | null = null;
+const HEALTH_TTL_MS = 5 * 60_000;
+
+export async function isGroqHealthy(apiKey: string): Promise<boolean> {
+  if (groqHealth && Date.now() - groqHealth.at < HEALTH_TTL_MS) return groqHealth.ok;
+  let ok = false;
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    ok = res.ok;
+  } catch {
+    ok = false;
+  }
+  groqHealth = { at: Date.now(), ok };
+  return ok;
+}

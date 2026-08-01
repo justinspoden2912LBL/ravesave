@@ -6,7 +6,7 @@ import { createGroqProvider, GROQ_DEFAULT_MODEL } from "@/lib/groq-provider";
 import { SUBSTANCES, CATEGORY_LABEL } from "@/lib/substances";
 import { AI_MODEL, AI_PERSONA_BLOCK } from "@/lib/ai-config";
 import { guardRequest } from "@/lib/apiGuard";
-import { loadAiSettings } from "@/lib/aiSettings.server";
+import { loadAiSettings, isGroqHealthy } from "@/lib/aiSettings.server";
 
 // Kompakter Index: nur Name + Kategorie + 1-Zeiler. Evidenz-Links holt sich
 // das Modell bei Bedarf über den Verweis auf /substances — sonst sprengt der
@@ -97,7 +97,8 @@ export const Route = createFileRoute("/api/chat")({
         // Fallback: Lovable AI Gateway (Gemini 2.5 Flash).
         const groqKey = process.env.GROQ_API_KEY;
         const lovableKey = process.env.LOVABLE_API_KEY;
-        const useGroq = settings.provider !== "lovable" && !!groqKey;
+        const useGroq =
+          settings.provider !== "lovable" && !!groqKey && (await isGroqHealthy(groqKey));
         const useLovable = settings.provider !== "groq" && !!lovableKey;
         let model;
         if (useGroq) {
