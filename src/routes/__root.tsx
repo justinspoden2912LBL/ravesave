@@ -15,6 +15,7 @@ import { Nav, Footer } from "../components/Nav";
 import { EmergencyButton } from "../components/EmergencyButton";
 import { AiAskButton } from "../components/AiAskButton";
 import { WelcomeOnboarding } from "../components/WelcomeOnboarding";
+import { SplashGreeting } from "../components/SplashGreeting";
 import { BottomNav } from "../components/BottomNav";
 import { trackPageView, trackEvent } from "@/lib/analytics";
 import { initI18n, refreshI18n } from "@/lib/i18n";
