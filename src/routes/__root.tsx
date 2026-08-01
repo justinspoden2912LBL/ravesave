@@ -89,6 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Rave Safe, have Fun — Der Copilot für Psychonauten" },
       { name: "description", content: "Modernes Safer Use / Harmreduction Tool \nFaktenbasiert / Substanz-Wiki \nKi unterstützt von psychonauten-für psychonauten" },
       { name: "author", content: "Rave Safe, have Fun" },
+      { name: "google-site-verification", content: "8zd5q1onAZPjcC8x2xqBOhDizbBdr-GlepN4l-qzmG0" },
       { name: "theme-color", content: "#0c0a1c" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
