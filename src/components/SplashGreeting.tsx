@@ -29,8 +29,10 @@ export function SplashGreeting() {
       /* ignore */
     }
     setPhase("in");
-    const t1 = setTimeout(() => setPhase("out"), 1500);
-    const t2 = setTimeout(() => setPhase("hidden"), 2100);
+    // bewusst langsam: genug Zeit zum Lesen, ruhiges Ausblenden
+    const t1 = setTimeout(() => setPhase("out"), 3200);
+    const t2 = setTimeout(() => setPhase("hidden"), 4400);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
