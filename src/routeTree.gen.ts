@@ -41,6 +41,7 @@ import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
 import { Route as ErfahrungenIndexRouteImport } from './routes/erfahrungen.index'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
+import { Route as ErfahrungenEinsendenRouteImport } from './routes/erfahrungen.einsenden'
 import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -208,6 +209,11 @@ const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
   path: '/erfahrungen/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErfahrungenEinsendenRoute = ErfahrungenEinsendenRouteImport.update({
+  id: '/erfahrungen/einsenden',
+  path: '/erfahrungen/einsenden',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SessionActiveRoute = SessionActiveRouteImport.update({
   id: '/session/active',
   path: '/session/active',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
   '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
   '/erfahrungen': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -339,6 +347,7 @@ export interface FileRoutesById {
   '/api/tts': typeof ApiTtsRoute
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
+  '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
   '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
+    | '/erfahrungen/einsenden'
     | '/session/active'
     | '/erfahrungen/'
     | '/.lovable/oauth/consent'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
+    | '/erfahrungen/einsenden'
     | '/session/active'
     | '/erfahrungen'
     | '/.lovable/oauth/consent'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/voice-token'
     | '/erfahrungen/$slug'
+    | '/erfahrungen/einsenden'
     | '/session/active'
     | '/erfahrungen/'
     | '/.lovable/oauth/consent'
@@ -494,6 +506,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
   ErfahrungenSlugRoute: typeof ErfahrungenSlugRoute
+  ErfahrungenEinsendenRoute: typeof ErfahrungenEinsendenRoute
   SessionActiveRoute: typeof SessionActiveRoute
   ErfahrungenIndexRoute: typeof ErfahrungenIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -727,6 +740,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErfahrungenSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/erfahrungen/einsenden': {
+      id: '/erfahrungen/einsenden'
+      path: '/erfahrungen/einsenden'
+      fullPath: '/erfahrungen/einsenden'
+      preLoaderRoute: typeof ErfahrungenEinsendenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/session/active': {
       id: '/session/active'
       path: '/session/active'
@@ -791,6 +811,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
   ErfahrungenSlugRoute: ErfahrungenSlugRoute,
+  ErfahrungenEinsendenRoute: ErfahrungenEinsendenRoute,
   SessionActiveRoute: SessionActiveRoute,
   ErfahrungenIndexRoute: ErfahrungenIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
