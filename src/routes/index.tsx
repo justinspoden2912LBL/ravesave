@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
 import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
+import { useText } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   component: Home,
