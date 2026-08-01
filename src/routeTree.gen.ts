@@ -17,7 +17,6 @@ import { Route as AkutRouteImport } from './routes/akut'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ChecklisteRouteImport } from './routes/checkliste'
 import { Route as DrugcheckingRouteImport } from './routes/drugchecking'
-import { Route as ErfahrungenRouteImport } from './routes/erfahrungen'
 import { Route as InstallRouteImport } from './routes/install'
 import { Route as KniggeRouteImport } from './routes/knigge'
 import { Route as LogRouteImport } from './routes/log'
@@ -40,6 +39,7 @@ import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiVoiceTokenRouteImport } from './routes/api/voice-token'
+import { Route as ErfahrungenIndexRouteImport } from './routes/erfahrungen.index'
 import { Route as ErfahrungenSlugRouteImport } from './routes/erfahrungen.$slug'
 import { Route as SessionActiveRouteImport } from './routes/session.active'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -84,11 +84,6 @@ const ChecklisteRoute = ChecklisteRouteImport.update({
 const DrugcheckingRoute = DrugcheckingRouteImport.update({
   id: '/drugchecking',
   path: '/drugchecking',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ErfahrungenRoute = ErfahrungenRouteImport.update({
-  id: '/erfahrungen',
-  path: '/erfahrungen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InstallRoute = InstallRouteImport.update({
@@ -203,10 +198,15 @@ const ApiVoiceTokenRoute = ApiVoiceTokenRouteImport.update({
   path: '/api/voice-token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErfahrungenIndexRoute = ErfahrungenIndexRouteImport.update({
+  id: '/erfahrungen/',
+  path: '/erfahrungen/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ErfahrungenSlugRoute = ErfahrungenSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ErfahrungenRoute,
+  id: '/erfahrungen/$slug',
+  path: '/erfahrungen/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SessionActiveRoute = SessionActiveRouteImport.update({
   id: '/session/active',
@@ -239,7 +239,6 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
-  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
@@ -264,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
@@ -277,7 +277,6 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
-  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
@@ -302,6 +301,7 @@ export interface FileRoutesByTo {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/erfahrungen': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
@@ -316,7 +316,6 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/checkliste': typeof ChecklisteRoute
   '/drugchecking': typeof DrugcheckingRoute
-  '/erfahrungen': typeof ErfahrungenRouteWithChildren
   '/install': typeof InstallRoute
   '/knigge': typeof KniggeRoute
   '/log': typeof LogRoute
@@ -341,6 +340,7 @@ export interface FileRoutesById {
   '/api/voice-token': typeof ApiVoiceTokenRoute
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/session/active': typeof SessionActiveRoute
+  '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/track': typeof ApiPublicTrackRoute
@@ -356,7 +356,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/checkliste'
     | '/drugchecking'
-    | '/erfahrungen'
     | '/install'
     | '/knigge'
     | '/log'
@@ -381,6 +380,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/erfahrungen/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
@@ -394,7 +394,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/checkliste'
     | '/drugchecking'
-    | '/erfahrungen'
     | '/install'
     | '/knigge'
     | '/log'
@@ -419,6 +418,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/erfahrungen'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
@@ -432,7 +432,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/checkliste'
     | '/drugchecking'
-    | '/erfahrungen'
     | '/install'
     | '/knigge'
     | '/log'
@@ -457,6 +456,7 @@ export interface FileRouteTypes {
     | '/api/voice-token'
     | '/erfahrungen/$slug'
     | '/session/active'
+    | '/erfahrungen/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/track'
@@ -471,7 +471,6 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   ChecklisteRoute: typeof ChecklisteRoute
   DrugcheckingRoute: typeof DrugcheckingRoute
-  ErfahrungenRoute: typeof ErfahrungenRouteWithChildren
   InstallRoute: typeof InstallRoute
   KniggeRoute: typeof KniggeRoute
   LogRoute: typeof LogRoute
@@ -494,7 +493,9 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoiceTokenRoute: typeof ApiVoiceTokenRoute
+  ErfahrungenSlugRoute: typeof ErfahrungenSlugRoute
   SessionActiveRoute: typeof SessionActiveRoute
+  ErfahrungenIndexRoute: typeof ErfahrungenIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
@@ -556,13 +557,6 @@ declare module '@tanstack/react-router' {
       path: '/drugchecking'
       fullPath: '/drugchecking'
       preLoaderRoute: typeof DrugcheckingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/erfahrungen': {
-      id: '/erfahrungen'
-      path: '/erfahrungen'
-      fullPath: '/erfahrungen'
-      preLoaderRoute: typeof ErfahrungenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/install': {
@@ -719,12 +713,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVoiceTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/erfahrungen/': {
+      id: '/erfahrungen/'
+      path: '/erfahrungen'
+      fullPath: '/erfahrungen/'
+      preLoaderRoute: typeof ErfahrungenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/erfahrungen/$slug': {
       id: '/erfahrungen/$slug'
-      path: '/$slug'
+      path: '/erfahrungen/$slug'
       fullPath: '/erfahrungen/$slug'
       preLoaderRoute: typeof ErfahrungenSlugRouteImport
-      parentRoute: typeof ErfahrungenRoute
+      parentRoute: typeof rootRouteImport
     }
     '/session/active': {
       id: '/session/active'
@@ -757,18 +758,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ErfahrungenRouteChildren {
-  ErfahrungenSlugRoute: typeof ErfahrungenSlugRoute
-}
-
-const ErfahrungenRouteChildren: ErfahrungenRouteChildren = {
-  ErfahrungenSlugRoute: ErfahrungenSlugRoute,
-}
-
-const ErfahrungenRouteWithChildren = ErfahrungenRoute._addFileChildren(
-  ErfahrungenRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -778,7 +767,6 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   ChecklisteRoute: ChecklisteRoute,
   DrugcheckingRoute: DrugcheckingRoute,
-  ErfahrungenRoute: ErfahrungenRouteWithChildren,
   InstallRoute: InstallRoute,
   KniggeRoute: KniggeRoute,
   LogRoute: LogRoute,
@@ -802,7 +790,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiVoiceTokenRoute: ApiVoiceTokenRoute,
+  ErfahrungenSlugRoute: ErfahrungenSlugRoute,
   SessionActiveRoute: SessionActiveRoute,
+  ErfahrungenIndexRoute: ErfahrungenIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,

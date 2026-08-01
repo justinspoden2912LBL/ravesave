@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight, ShieldAlert, Sparkles } from "lucide-react";
 import { listPublishedPosts, formatDate, type Post } from "@/lib/posts";
 
-export const Route = createFileRoute("/erfahrungen")({
+export const Route = createFileRoute("/erfahrungen/")({
   component: ExperiencesPage,
   head: () => ({
     meta: [
