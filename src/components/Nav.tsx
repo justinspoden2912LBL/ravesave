@@ -1,273 +1,329 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   BookOpen,
-  ChevronLeft,
-  ChevronRight,
+  Clock,
   Download,
   FlaskConical,
   GitMerge,
   HandHeart,
   Heart,
+  HeartPulse,
   Home,
   Info,
   ListChecks,
+  MapPin,
   MessageCircle,
+  Newspaper,
   Search,
   Settings as SettingsIcon,
+  Shield,
   ShieldAlert,
+  Sparkles,
+  TestTube,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 
 /**
- * Top-Nav mit horizontal scrollbarer Kategorien-Leiste.
- * Verbesserungen:
- *  - Kategorien sind nach Bereich (Hilfe / Wissen / Mein) farblich getönt,
- *    bleiben aber konsistent in Form & Größe.
- *  - Aktiver Tab: gefüllter Aurora-Pill mit Glow + dünner Top-Indikator.
- *  - Inaktive Tabs: Glas-Pill mit dezenter Tönung, klar lesbar.
- *  - Scroll-Affordance: Edge-Fades links/rechts werden nur eingeblendet,
- *    wenn in diese Richtung noch gescrollt werden kann; auf md+ zusätzlich
- *    Pfeil-Buttons. So sieht man sofort, dass die Leiste wischbar ist.
- *  - Aktiver Tab scrollt sich automatisch in den Sichtbereich.
- *  - Tiefe-Schalter (Kurz · Erweitert · Experte) ist visuell abgesetzt
- *    sichtbar — auf md+ rechts neben der Leiste, auf Mobile am Ende der
- *    Scroll-Reihe nach einem Trenner.
+ * Navigation in zwei Ebenen — entlang der Nutzungs-Situation statt entlang
+ * der Feature-Liste:
+ *
+ *  Primär-Nav (immer sichtbar):
+ *    Home · Akute Hilfe · Vor dem Rave · Während · Danach · Für andere · Wissen
+ *
+ *  Sekundär-Nav (kontextabhängig):
+ *    zeigt die Seiten der aktiven Gruppe. Keine Seite geht verloren —
+ *    sie ist nur nicht mehr alles gleichzeitig sichtbar.
+ *
+ * Ruhige Bewegung, große Touch-Targets (min-h-11), hoher Kontrast.
  */
 
 type Tone = "primary" | "secondary" | "accent" | "danger" | "neutral";
 
-type NavLink = {
-  to: string;
+type NavItem = { to: string; label: string; icon: LucideIcon; desc?: string };
+
+type NavGroup = {
+  id: string;
   label: string;
   icon: LucideIcon;
   tone: Tone;
+  /** Direkt-Ziel beim Klick auf die Gruppe */
+  to: string;
+  items: NavItem[];
 };
 
-const links: readonly NavLink[] = [
-  { to: "/", label: "Home", icon: Home, tone: "neutral" },
-  // Hilfe / Schutz — warme, dringliche Töne
-  { to: "/akut", label: "Akute Hilfe", icon: Heart, tone: "danger" },
-  { to: "/risks", label: "Risiken", icon: ShieldAlert, tone: "danger" },
-  { to: "/checkliste", label: "Checkliste", icon: ListChecks, tone: "accent" },
-  // Wissen — kühlere, sachliche Töne
-  { to: "/substances", label: "Substanzen", icon: BookOpen, tone: "secondary" },
-  { to: "/mix", label: "Mix-Check", icon: GitMerge, tone: "secondary" },
-  { to: "/knigge", label: "Knigge", icon: HandHeart, tone: "secondary" },
-  // Persönlich / KI — primärfarben
-  { to: "/chat", label: "KI-Chat", icon: MessageCircle, tone: "primary" },
-  { to: "/log", label: "Protokoll", icon: Activity, tone: "primary" },
-  { to: "/stats", label: "Statistik", icon: FlaskConical, tone: "primary" },
-  // Meta
-  { to: "/install", label: "App installieren", icon: Download, tone: "neutral" },
-  { to: "/about", label: "Über", icon: Info, tone: "neutral" },
-  { to: "/settings", label: "Profil", icon: SettingsIcon, tone: "neutral" },
+export const NAV_GROUPS: readonly NavGroup[] = [
+  {
+    id: "akut",
+    label: "Akute Hilfe",
+    icon: HeartPulse,
+    tone: "danger",
+    to: "/akut",
+    items: [
+      { to: "/akut", label: "Ruhig werden", icon: HeartPulse, desc: "Atmen, erden, Comedown" },
+      { to: "/notfall", label: "Notfall & 112", icon: ShieldAlert, desc: "Erste Hilfe, stabile Seitenlage" },
+      { to: "/risks", label: "Risiken", icon: Shield, desc: "Was wirklich gefährlich wird" },
+    ],
+  },
+  {
+    id: "vorher",
+    label: "Vor dem Rave",
+    icon: ListChecks,
+    tone: "accent",
+    to: "/checkliste",
+    items: [
+      { to: "/checkliste", label: "Checkliste", icon: ListChecks, desc: "Set & Setting, Wasser, Kontakte" },
+      { to: "/safety-plan", label: "Safety-Plan", icon: Shield, desc: "Vorsätze festhalten" },
+      { to: "/drugchecking", label: "Drug-Checking", icon: MapPin, desc: "Stellen in DE / AT / CH" },
+      { to: "/reagenztest", label: "Reagenztest", icon: TestTube, desc: "Marquis, Mecke & Co." },
+      { to: "/tolerance", label: "Toleranz", icon: Clock, desc: "Wann ist wieder ok?" },
+    ],
+  },
+  {
+    id: "waehrend",
+    label: "Während",
+    icon: Activity,
+    tone: "primary",
+    to: "/session/active",
+    items: [
+      { to: "/session/active", label: "Aktive Session", icon: Activity, desc: "Anflug → Peak → Comedown" },
+      { to: "/mix", label: "Mix-Check", icon: GitMerge, desc: "Ampel für Mischkonsum" },
+      { to: "/knigge", label: "Knigge", icon: HandHeart, desc: "Respektvolles Nightlife" },
+      { to: "/chat", label: "KI-Chat", icon: MessageCircle, desc: "Marleen fragen" },
+    ],
+  },
+  {
+    id: "danach",
+    label: "Danach",
+    icon: Heart,
+    tone: "secondary",
+    to: "/aftercare",
+    items: [
+      { to: "/aftercare", label: "Aftercare", icon: Heart, desc: "Schlaf, Essen, Mood" },
+      { to: "/log", label: "Protokoll", icon: Activity, desc: "Konsum & Stimmung" },
+      { to: "/stats", label: "Statistik", icon: FlaskConical, desc: "Deine Muster" },
+    ],
+  },
+  {
+    id: "wissen",
+    label: "Wissen",
+    icon: BookOpen,
+    tone: "secondary",
+    to: "/substances",
+    items: [
+      { to: "/substances", label: "Substanzen", icon: BookOpen, desc: "Evidenzbasierte Profile" },
+      { to: "/mix", label: "Mix-Check", icon: GitMerge, desc: "Wechselwirkungen" },
+      { to: "/risks", label: "Risiken", icon: Shield, desc: "Grundlagen & Mischkonsum" },
+      { to: "/erfahrungen", label: "Blog", icon: Newspaper, desc: "Berichte & Artikel" },
+    ],
+  },
+  {
+    id: "andere",
+    label: "Für andere",
+    icon: Users,
+    tone: "danger",
+    to: "/notfall",
+    items: [
+      { to: "/notfall", label: "Erste Hilfe", icon: ShieldAlert, desc: "Wenn es jemandem schlecht geht" },
+      { to: "/akut", label: "Beruhigen & begleiten", icon: HeartPulse, desc: "Da sein ohne Panik" },
+      { to: "/knigge", label: "Knigge", icon: HandHeart, desc: "Konsens & Rücksicht" },
+      { to: "/chat", label: "Marleen fragen", icon: MessageCircle, desc: "Einschätzung holen" },
+    ],
+  },
 ] as const;
 
-const toneClasses: Record<Tone, { idle: string; iconIdle: string; ring: string }> = {
-  primary: {
-    idle: "bg-primary/8 hover:bg-primary/15 border-primary/20",
-    iconIdle: "text-primary",
-    ring: "ring-primary/30",
-  },
-  secondary: {
-    idle: "bg-secondary/8 hover:bg-secondary/15 border-secondary/20",
-    iconIdle: "text-secondary",
-    ring: "ring-secondary/30",
-  },
-  accent: {
-    idle: "bg-accent/8 hover:bg-accent/15 border-accent/25",
-    iconIdle: "text-accent",
-    ring: "ring-accent/30",
-  },
-  danger: {
-    idle: "bg-destructive/8 hover:bg-destructive/15 border-destructive/25",
-    iconIdle: "text-destructive",
-    ring: "ring-destructive/30",
-  },
-  neutral: {
-    idle: "bg-muted/30 hover:bg-muted/50 border-border/40",
-    iconIdle: "text-muted-foreground",
-    ring: "ring-border",
-  },
+const META_ITEMS: NavItem[] = [
+  { to: "/about", label: "Über uns", icon: Info },
+  { to: "/install", label: "App installieren", icon: Download },
+  { to: "/settings", label: "Profil", icon: SettingsIcon },
+];
+
+const toneClasses: Record<Tone, { idle: string; iconIdle: string }> = {
+  primary: { idle: "bg-primary/10 hover:bg-primary/20 border-primary/30", iconIdle: "text-primary" },
+  secondary: { idle: "bg-secondary/10 hover:bg-secondary/20 border-secondary/30", iconIdle: "text-secondary" },
+  accent: { idle: "bg-accent/10 hover:bg-accent/20 border-accent/30", iconIdle: "text-accent" },
+  danger: { idle: "bg-destructive/10 hover:bg-destructive/20 border-destructive/35", iconIdle: "text-destructive" },
+  neutral: { idle: "bg-muted/40 hover:bg-muted/60 border-border/50", iconIdle: "text-muted-foreground" },
 };
 
-function useScrollAffordance() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const update = () => {
-      setCanLeft(el.scrollLeft > 4);
-      setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      ro.disconnect();
-      window.removeEventListener("resize", update);
-    };
-  }, []);
-
-  const scrollBy = (delta: number) => {
-    ref.current?.scrollBy({ left: delta, behavior: "smooth" });
-  };
-  return { ref, canLeft, canRight, scrollBy };
+function groupForPath(path: string): string | null {
+  for (const g of NAV_GROUPS) {
+    if (g.items.some((i) => i.to === path)) return g.id;
+  }
+  return null;
 }
 
 export function Nav() {
   const loc = useLocation();
-  const { ref, canLeft, canRight, scrollBy } = useScrollAffordance();
-  const activeRef = useRef<HTMLAnchorElement | null>(null);
+  const path = loc.pathname;
+  const detected = useMemo(() => groupForPath(path), [path]);
+  const [openGroup, setOpenGroup] = useState<string | null>(detected);
+  const rowRef = useRef<HTMLDivElement | null>(null);
 
-  // aktiven Tab horizontal in den Sichtbereich scrollen (ohne Seiten-Scroll)
   useEffect(() => {
-    const el = activeRef.current;
-    const box = ref.current;
-    if (!el || !box) return;
-    const target = el.offsetLeft - box.clientWidth / 2 + el.offsetWidth / 2;
-    box.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
-  }, [loc.pathname, ref]);
+    setOpenGroup(detected);
+  }, [detected]);
 
+  const active = NAV_GROUPS.find((g) => g.id === openGroup) ?? null;
 
   return (
     <header className="sticky top-0 z-40 glass border-b">
-      <div className="mx-auto max-w-6xl px-3 sm:px-4 py-2.5 flex items-center gap-2 sm:gap-3">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-2.5 pb-2 flex items-center gap-2 sm:gap-3">
         <Link
           to="/"
-          className="flex items-center gap-2 shrink-0 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="flex items-center gap-2 shrink-0 rounded-full min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           aria-label="Rave Safe, have Fun — zur Startseite"
-          title="Zur Startseite"
         >
           <div className="h-8 w-8 rounded-full bg-aurora animate-aurora glow" aria-hidden="true" />
           <span className="hidden sm:inline text-base sm:text-lg font-bold tracking-tight whitespace-nowrap">
             Rave Safe<span className="text-aurora">,</span> have Fun
           </span>
-          <span className="hidden lg:inline-flex items-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-            Open Beta
-          </span>
         </Link>
 
-        {/* Scrollable category row */}
-        <div className="relative flex-1 min-w-0">
-          {/* Pfeil links — md+ */}
-          <button
-            type="button"
-            aria-label="Kategorien nach links scrollen"
-            onClick={() => scrollBy(-220)}
-            className={`hidden md:grid absolute left-0 top-1/2 -translate-y-1/2 z-20 h-7 w-7 place-items-center rounded-full glass border border-border/60 text-muted-foreground hover:text-foreground transition ${
-              canLeft ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-
-          <nav
-            ref={ref}
-            className="overflow-x-auto overflow-y-hidden overscroll-x-contain scrollbar-hide scroll-smooth touch-pan-x py-1.5 -my-1.5"
-            aria-label="Hauptnavigation"
-            style={{
-              WebkitMaskImage: `linear-gradient(to right, ${
-                canLeft ? "transparent 0px, black 28px" : "black 0px"
-              }, ${canRight ? "black calc(100% - 28px), transparent 100%" : "black 100%"})`,
-              maskImage: `linear-gradient(to right, ${
-                canLeft ? "transparent 0px, black 28px" : "black 0px"
-              }, ${canRight ? "black calc(100% - 28px), transparent 100%" : "black 100%"})`,
-            }}
-          >
-            <ul className="flex items-center gap-1.5 px-1 md:px-8">
-              {links.map(({ to, label, icon: Icon, tone }) => {
-                const active = loc.pathname === to;
-                const t = toneClasses[tone];
-                return (
-                  <li key={to} className="shrink-0">
-                    <Link
-                      ref={active ? activeRef : undefined}
-                      to={to}
-                      aria-current={active ? "page" : undefined}
-                      className={`group relative flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                        active
-                          ? "bg-aurora animate-aurora text-primary-foreground border-transparent"
-                          : `${t.idle} text-foreground/85 hover:text-foreground`
-                      }`}
-                    >
-                      <Icon
-                        className={`h-4 w-4 shrink-0 transition-colors ${
-                          active ? "text-primary-foreground" : t.iconIdle
-                        }`}
-                      />
-                      <span>{label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-
-              {/* Mobile: Trenner + Tiefe-Schalter inline am Ende */}
-              <li
-                aria-hidden="true"
-                className="md:hidden mx-1 h-6 w-px shrink-0 bg-border/60"
-              />
-              <li className="md:hidden shrink-0 pr-1">
-                <DetailLevelSwitch size="sm" />
-              </li>
-            </ul>
-          </nav>
-
-
-          {/* Pfeil rechts — md+ */}
-          <button
-            type="button"
-            aria-label="Kategorien nach rechts scrollen"
-            onClick={() => scrollBy(220)}
-            className={`hidden md:grid absolute right-0 top-1/2 -translate-y-1/2 z-20 h-7 w-7 place-items-center rounded-full glass border border-border/60 text-muted-foreground hover:text-foreground transition ${
-              canRight ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
+        <div className="flex-1" />
 
         <div className="hidden md:block shrink-0">
           <DetailLevelSwitch size="sm" />
         </div>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent("ravesave:open-spotlight"))}
-          className="shrink-0 inline-flex items-center justify-center rounded-full p-2 min-h-9 min-w-9 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition"
+          className="shrink-0 inline-flex items-center justify-center rounded-full min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition"
           aria-label="Suche öffnen (⌘K)"
           title="Suche (⌘K / Strg+K)"
         >
-          <Search className="h-4 w-4" />
+          <Search className="h-5 w-5" />
         </button>
+        <Link
+          to="/notfall"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full min-h-11 px-3 bg-destructive/20 border border-destructive/50 text-destructive text-xs font-bold uppercase tracking-wide hover:bg-destructive/30 transition"
+        >
+          <ShieldAlert className="h-4 w-4" /> <span className="hidden xs:inline sm:inline">112</span>
+        </Link>
       </div>
+
+      {/* Primär-Nav */}
+      <div
+        ref={rowRef}
+        className="mx-auto max-w-6xl overflow-x-auto overscroll-x-contain scrollbar-hide touch-pan-x px-3 sm:px-4 pb-2"
+        aria-label="Hauptnavigation"
+      >
+        <ul className="flex items-center gap-2 w-max">
+          <li>
+            <Link
+              to="/"
+              aria-current={path === "/" ? "page" : undefined}
+              className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors ${
+                path === "/"
+                  ? "bg-aurora text-primary-foreground border-transparent"
+                  : "bg-muted/40 hover:bg-muted/60 border-border/50 text-foreground"
+              }`}
+            >
+              <Home className="h-4 w-4" /> Home
+            </Link>
+          </li>
+          {NAV_GROUPS.map((g) => {
+            const t = toneClasses[g.tone];
+            const isOpen = openGroup === g.id;
+            return (
+              <li key={g.id}>
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpenGroup(isOpen ? null : g.id)}
+                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                    isOpen
+                      ? "bg-aurora text-primary-foreground border-transparent"
+                      : `${t.idle} text-foreground`
+                  }`}
+                >
+                  <g.icon className={`h-4 w-4 ${isOpen ? "text-primary-foreground" : t.iconIdle}`} />
+                  {g.label}
+                </button>
+              </li>
+            );
+          })}
+          <li aria-hidden="true" className="mx-1 h-6 w-px bg-border/60" />
+          <li className="md:hidden pr-1">
+            <DetailLevelSwitch size="sm" />
+          </li>
+        </ul>
+      </div>
+
+      {/* Sekundär-Nav */}
+      {active && (
+        <div className="border-t border-border/50 bg-background/40">
+          <div className="mx-auto max-w-6xl overflow-x-auto scrollbar-hide touch-pan-x px-3 sm:px-4 py-2">
+            <ul className="flex items-center gap-2 w-max" aria-label={`Unternavigation ${active.label}`}>
+              {active.items.map((i) => {
+                const isActive = path === i.to;
+                return (
+                  <li key={`${active.id}-${i.to}`}>
+                    <Link
+                      to={i.to}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm transition-colors ${
+                        isActive
+                          ? "bg-primary/20 text-foreground font-semibold ring-1 ring-primary/40"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      <i.icon className="h-4 w-4 shrink-0" />
+                      {i.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
 
 export function Footer() {
+  const cols: { title: string; items: NavItem[] }[] = [
+    ...NAV_GROUPS.filter((g) => g.id !== "andere").map((g) => ({ title: g.label, items: g.items.slice(0, 4) })),
+    { title: "Mehr", items: META_ITEMS },
+  ];
+
   return (
-    <footer className="mx-auto max-w-6xl px-4 py-10 text-xs text-muted-foreground space-y-3">
-      <p className="leading-relaxed">
-        <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein Harm-Reduction-Werkzeug — aktuell in der <strong className="text-secondary">Open Beta</strong>.
-        Alle Daten bleiben lokal in deinem Browser. Dosis-Angaben sind grobe Orientierungswerte
-        aus PsychonautWiki, TripSit, EMCDDA und Fachliteratur — keine medizinische Empfehlung.
-        Reinheit und individuelle Verträglichkeit sind nicht abschätzbar; nutze Drug-Checking,
-        beginne mit niedrigen Dosen, sei nicht allein. Im Notfall: <strong>112</strong>.
-      </p>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <Link to="/install" className="text-secondary hover:underline">App installieren</Link>
-        <span className="text-border">·</span>
-        <Link to="/about" className="text-secondary hover:underline">Über uns</Link>
-        <span className="text-border">·</span>
-        <Link to="/settings" className="text-secondary hover:underline">Einstellungen</Link>
+    <footer className="mx-auto max-w-6xl px-4 py-10 text-sm text-muted-foreground space-y-8">
+      <nav aria-label="Footernavigation" className="grid gap-6 grid-cols-2 md:grid-cols-5">
+        {cols.map((c) => (
+          <div key={c.title}>
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/80">{c.title}</h2>
+            <ul className="mt-2 space-y-0.5">
+              {c.items.map((i) => (
+                <li key={`${c.title}-${i.to}`}>
+                  <Link
+                    to={i.to}
+                    className="inline-flex min-h-11 items-center text-sm hover:text-foreground transition-colors"
+                  >
+                    {i.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <div className="space-y-3 border-t border-border/50 pt-6 text-xs">
+        <p className="inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1.5 text-secondary">
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+          Alles bleibt lokal auf deinem Gerät — kein Tracking deiner Eingaben.
+        </p>
+        <p className="leading-relaxed">
+          <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein
+          Harm-Reduction-Companion — aktuell in der <strong className="text-secondary">Open Beta</strong>.
+          Dosis-Angaben sind grobe Orientierungswerte aus PsychonautWiki, TripSit, EMCDDA und
+          Fachliteratur — keine medizinische Empfehlung. Start low, go slow. Teste, was du nimmst.
+          Sei nicht allein. Im Notfall: <strong className="text-foreground">112</strong>.
+        </p>
       </div>
     </footer>
   );
