@@ -222,6 +222,7 @@ function RootComponent() {
         <AiAskButton />
         <BottomNav />
         <WelcomeOnboarding />
+        <SplashGreeting />
       </div>
     </QueryClientProvider>
   );
