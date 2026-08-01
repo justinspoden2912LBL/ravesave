@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { loadAiSettings, isGroqHealthy } from "@/lib/aiSettings.server";
 
 const SYSTEM_PROMPT = `Du bist Marleen, eine ruhige, evidenzbasierte Harm-Reduction-Begleiterin in der App "Rave Safe, have Fun".
 Eine Person beschreibt eine akute Situation auf einem Rave / im Konsumkontext. Sie ist (noch) kein medizinischer Notfall — sonst würden wir sofort 112 sagen.
@@ -109,12 +110,22 @@ export const Route = createFileRoute("/api/akut-coach")({
 
           // Bevorzugt Lovable AI (Gemini 2.5 Flash — günstig, großer Context,
           // Gratis-Quota). Groq nur als Fallback (12k TPM auf Free-Tier).
-          const useGroq = !lovableKey && !!groqKey;
+          // Bevorzugt das kostenfreie Modell (Admin-Einstellung), Fallback nur,
+          // wenn der Free-Anbieter gerade nicht erreichbar ist.
+          const aiSettings = await loadAiSettings();
+          const useGroq =
+            aiSettings.provider !== "lovable" && !!groqKey && (await isGroqHealthy(groqKey));
           const endpoint = useGroq
             ? "https://api.groq.com/openai/v1/chat/completions"
             : "https://ai.gateway.lovable.dev/v1/chat/completions";
-          const modelName = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-flash";
+          const modelName = useGroq ? aiSettings.model : aiSettings.fallback_model;
           const authKey = useGroq ? groqKey! : lovableKey!;
+          if (!authKey) {
+            return new Response(JSON.stringify({ error: "unavailable" }), {
+              status: 503,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
 
           const resp = await fetch(endpoint, {
             method: "POST",
