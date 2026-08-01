@@ -48,25 +48,24 @@ function Home() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl px-4">
+    <div className="mx-auto max-w-5xl px-4 pb-4">
       {showPrompt && (
-        <div className="mt-6 rounded-2xl glass p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5 border border-primary/30">
-          <div className="flex-1 space-y-2">
-            <div className="inline-flex items-center gap-2 text-xs text-secondary">
+        <div className="mt-5 rounded-3xl glass-strong glass-shine p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-secondary">
               <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
             </div>
-            <h2 className="text-lg md:text-xl font-semibold leading-snug">
+            <h2 className="text-base font-semibold leading-snug">
               Richte dein Profil ein — ca. 2 Minuten.
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-prose">
-              Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen.
-              Komplett lokal, jederzeit löschbar.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => navigate({ to: "/onboarding" })}
-              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow ring-2 ring-primary/40 hover:scale-[1.02] transition"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-5 py-3 text-sm font-semibold text-primary-foreground glow hover:scale-[1.02] transition"
             >
               <Sparkles className="h-4 w-4" /> Jetzt starten
             </button>
@@ -82,45 +81,49 @@ function Home() {
         </div>
       )}
 
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl glass mt-8 p-8 md:p-14">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-aurora animate-aurora opacity-40 blur-3xl animate-float" />
-        <div className="pointer-events-none absolute -bottom-32 -left-10 h-80 w-80 rounded-full bg-aurora animate-aurora opacity-30 blur-3xl animate-float" style={{ animationDelay: "-3s" }} />
-
-        <div className="relative">
-          <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs">
-            <Shield className="h-3.5 w-3.5 text-secondary" />
-            <span>100% lokal — keine Daten verlassen dein Gerät</span>
-          </div>
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+      {/* Kopfzeile + Notfall-Anker */}
+      <header className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+        <div className="min-w-0">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Rave Safe</span>
             <span className="text-foreground">, have </span>
             <span className="text-aurora animate-aurora bg-aurora bg-clip-text">Fun</span>
             <span className="sr-only"> — Harm Reduction Companion für Raver:innen in DE/AT/CH</span>
           </h1>
-          <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-secondary/15 px-3 py-1 text-sm font-medium text-secondary ring-1 ring-secondary/30">
-            <Sparkles className="h-3.5 w-3.5" /> Wissen statt Bauchgefühl.
+          <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+            Harm Reduction · DE / AT / CH
           </p>
-          <p className="mt-5 max-w-2xl text-muted-foreground text-lg">
-            Safer-Use-Wissen, Notfallhilfe &amp; AI-Begleitung für Raver:innen in DE/AT/CH —
-            evidenzbasiert, lokal, ohne Belehrung.
+        </div>
+        <Link
+          to="/notfall"
+          className="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-destructive/20 border border-destructive/50 px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-destructive-foreground backdrop-blur-md hover:bg-destructive/30 active:scale-95 transition"
+        >
+          <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+          Notfall
+        </Link>
+      </header>
+
+      {/* Kompakter Hero */}
+      <section className="relative overflow-hidden rounded-3xl glass-strong glass-shine mt-5 p-6 md:p-8">
+        <div className="pointer-events-none absolute -top-24 -right-16 h-56 w-56 rounded-full bg-aurora animate-aurora opacity-25 blur-3xl" />
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1 text-xs text-secondary">
+            <Shield className="h-3.5 w-3.5" />
+            100% lokal — keine Daten verlassen dein Gerät
+          </div>
+          <p className="mt-4 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
+            Safer-Use-Wissen, Notfallhilfe &amp; KI-Begleitung — evidenzbasiert und ohne Belehrung.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/notfall"
-              className="inline-flex items-center gap-2 rounded-full bg-destructive px-6 py-3 text-sm font-semibold text-destructive-foreground shadow-lg ring-2 ring-destructive/40 hover:brightness-110 active:scale-95 transition"
-            >
-              <ShieldAlert className="h-4 w-4" /> Notfall jetzt
-            </Link>
+          <div className="mt-5 flex flex-wrap gap-2.5">
             <Link
               to="/substances"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-5 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-[1.03] active:scale-95"
             >
               <BookOpen className="h-4 w-4" /> Safer Use lernen
             </Link>
             <Link
               to="/mix"
-              className="inline-flex items-center gap-2 rounded-full glass px-6 py-3 text-sm font-semibold transition-colors hover:bg-muted/40 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm font-semibold transition-colors hover:bg-muted/40 active:scale-95"
             >
               <GitMerge className="h-4 w-4" /> Mischkonsum prüfen
             </Link>
@@ -128,87 +131,98 @@ function Home() {
         </div>
       </section>
 
-      {/* Akute Hilfe — Zwischenstufe zwischen normal und 112 */}
-      <section className="mt-6">
+      {/* Informationstiefe */}
+      <section className="mt-4 rounded-3xl glass p-4 md:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="section-label">Informations­tiefe</h2>
+          <DetailLevelSwitch size="sm" />
+        </div>
+      </section>
+
+      {/* Featured: Akute Hilfe + Marleen */}
+      <section className="mt-4 grid gap-3 sm:grid-cols-2">
         <Link
           to="/akut"
-          className="group block rounded-2xl glass p-5 border border-secondary/30 hover:border-secondary/60 transition flex items-start gap-4"
+          className="group rounded-3xl glass-strong p-5 border border-secondary/30 hover:border-secondary/60 hover-lift transition"
         >
-          <div className="h-12 w-12 shrink-0 rounded-xl bg-secondary/20 grid place-items-center text-secondary">
-            <HeartPulse className="h-6 w-6" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs uppercase tracking-wider text-secondary font-semibold">
-                Akute Hilfe
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                zwischen Alltag und 112
-              </span>
+          <div className="flex items-start justify-between">
+            <div className="h-11 w-11 rounded-2xl bg-secondary/20 grid place-items-center text-secondary">
+              <HeartPulse className="h-6 w-6" />
             </div>
-            <h2 className="font-semibold mt-1 leading-tight">
-              Wenn's gerade nicht gut ist — atme, du bist hier richtig.
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Überforderung, schlechter Trip, Comedown-Crash. Ruhige Schritte, in Sekunden zur Hand.
-            </p>
+            <span className="text-[10px] font-bold uppercase rounded-full bg-secondary/20 text-secondary px-2 py-1">
+              Sofort
+            </span>
           </div>
+          <h2 className="mt-3 font-semibold leading-snug">Wenn's gerade nicht gut ist</h2>
+          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+            Atmen, erden, Comedown — ruhige Schritte zwischen Alltag und 112.
+          </p>
+        </Link>
+
+        <Link
+          to="/chat"
+          className="group rounded-3xl p-5 border border-primary/30 hover:border-primary/60 hover-lift transition bg-primary/10 backdrop-blur-xl"
+        >
+          <div className="flex items-start justify-between">
+            <div className="h-11 w-11 rounded-2xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
+              <MessageCircle className="h-6 w-6" />
+            </div>
+            <span className="text-[10px] font-bold uppercase rounded-full bg-primary/20 text-primary px-2 py-1">
+              KI
+            </span>
+          </div>
+          <h2 className="mt-3 font-semibold leading-snug">Frag Marleen</h2>
+          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+            Fragen zu Substanzen, Wechselwirkungen und Studienlage — jederzeit.
+          </p>
         </Link>
       </section>
 
-      {/* Mobiler Detail-Level-Switch (auf Desktop ist er im Header) */}
-      <section className="mt-6 md:hidden flex items-center justify-between gap-3 rounded-2xl glass p-3 px-4">
-        <div className="text-xs text-muted-foreground">
-          Informations­tiefe
-        </div>
-        <DetailLevelSwitch size="sm" />
-      </section>
-
-      {/* Direkter Quick-Hub — keine versteckten Accordions */}
-      <section className="mt-8 space-y-3">
-        <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
-          Schnellzugriff
-        </h2>
+      {/* Schnellzugriff */}
+      <section className="mt-7 space-y-3">
+        <h2 className="section-label">Schnellzugriff</h2>
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           <QuickTile to="/notfall" icon={ShieldAlert} title="Notfall" desc="112, Erste Hilfe, Naloxon." tone="emergency" />
-          <QuickTile to="/akut" icon={HeartPulse} title="Akute Hilfe" desc="Atmung, Erden, Comedown." />
-          <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="aurora" />
-          <QuickTile to="/checkliste" icon={ListChecks} title="Pre-Rave-Check" desc="Zwei Minuten vor dem Start." />
-          <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe, gruppiert.`} />
-          <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung tracken." />
-
+          <QuickTile to="/mix" icon={GitMerge} title="Mix-Check" desc="Ampel für 2+ Substanzen." tone="primary" />
+          <QuickTile to="/substances" icon={BookOpen} title="Substanz-Wiki" desc={`${SUBSTANCES.length}+ Stoffe`} tone="secondary" />
+          <QuickTile to="/checkliste" icon={ListChecks} title="Pre-Rave-Check" desc="Zwei Minuten vorher." tone="accent" />
         </div>
       </section>
 
-      {/* Praxis-Werkzeuge */}
-      <section className="mt-8 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground">
-            Praxis-Werkzeuge
-          </h2>
-          <span className="text-xs text-muted-foreground">Vor, während &amp; nach der Session</span>
+      {/* Während der Session */}
+      <section className="mt-7 space-y-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+          <h2 className="section-label">Während der Session</h2>
+          <span className="text-[11px] text-muted-foreground shrink-0">live &amp; unterwegs</span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Live-Phasen, Anflug → Peak → Comedown." tone="aurora" />
-          <QuickTile to="/risks" icon={ShieldAlert} title="Risiko-Übersicht" desc="Alle Paarungen pro Substanz." />
-          <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke, Mandelin & Co." />
-          <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Anlaufstellen DE / AT / CH." />
-          <QuickTile to="/tolerance" icon={Clock} title="Toleranz & Cooldown" desc="Wann ist die nächste Session ok?" />
-          <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Tag danach: Schlaf, Essen, Mood." />
-          <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze für die nächste Session." />
-          <QuickTile to="/chat" icon={MessageCircle} title="Marleen (KI)" desc="Fragen zur Studienlage." />
-          <QuickTile to="/stats" icon={Sparkles} title="Statistik" desc="Muster, Häufigkeiten, Trends." />
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          <QuickTile to="/session/active" icon={Activity} title="Aktive Session" desc="Anflug → Peak → Comedown." tone="primary" />
+          <QuickTile to="/log" icon={Activity} title="Protokoll" desc="Konsum & Stimmung." tone="secondary" />
+          <QuickTile to="/risks" icon={ShieldAlert} title="Risiken" desc="Paarungen pro Substanz." tone="emergency" />
+          <QuickTile to="/drugchecking" icon={MapPin} title="Drug-Checking" desc="Stellen DE / AT / CH." tone="accent" />
         </div>
       </section>
 
+      {/* Vorher & danach */}
+      <section className="mt-7 space-y-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
+          <h2 className="section-label">Vorher &amp; danach</h2>
+          <span className="text-[11px] text-muted-foreground shrink-0">Planung &amp; Erholung</span>
+        </div>
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          <QuickTile to="/reagenztest" icon={TestTube} title="Reagent-Test" desc="Marquis, Mecke & Co." tone="secondary" />
+          <QuickTile to="/tolerance" icon={Clock} title="Toleranz" desc="Wann ist ok?" tone="accent" />
+          <QuickTile to="/aftercare" icon={Heart} title="Aftercare" desc="Schlaf, Essen, Mood." tone="secondary" />
+          <QuickTile to="/safety-plan" icon={Shield} title="Safety-Plan" desc="Vorsätze fürs nächste Mal." tone="primary" />
+        </div>
+      </section>
 
-
-      {/* Principles */}
-      <section className="mt-12 rounded-3xl glass p-8">
-        <h2 className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-accent" /> Grundprinzipien
+      {/* Grundprinzipien */}
+      <section className="mt-8 rounded-3xl glass p-6 md:p-8">
+        <h2 className="section-label flex items-center gap-2">
+          <Sparkles className="h-3.5 w-3.5 text-accent" /> Grundprinzipien
         </h2>
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
+        <div className="mt-4 grid gap-5 md:grid-cols-2">
           <Principle title="Start low, go slow.">
             Beginne immer mit der niedrigsten Dosis — besonders bei neuen Substanzen oder Chargen.
           </Principle>
@@ -231,47 +245,58 @@ function Principle({ title, children }: { title: string; children: React.ReactNo
   return (
     <div>
       <h3 className="font-semibold">{title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{children}</p>
+      <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{children}</p>
     </div>
   );
 }
+
+const TILE_TONES: Record<string, { chip: string; ring: string }> = {
+  emergency: {
+    chip: "bg-destructive/20 text-destructive ring-1 ring-destructive/40",
+    ring: "border-destructive/25 hover:border-destructive/50",
+  },
+  primary: {
+    chip: "bg-primary/20 text-primary ring-1 ring-primary/40",
+    ring: "border-white/10 hover:border-primary/50",
+  },
+  secondary: {
+    chip: "bg-secondary/20 text-secondary ring-1 ring-secondary/40",
+    ring: "border-white/10 hover:border-secondary/50",
+  },
+  accent: {
+    chip: "bg-accent/20 text-accent ring-1 ring-accent/40",
+    ring: "border-white/10 hover:border-accent/50",
+  },
+};
 
 function QuickTile({
   to,
   icon: Icon,
   title,
   desc,
-  tone,
+  tone = "primary",
 }: {
   to: string;
   icon: LucideIcon;
   title: string;
   desc: string;
-  tone?: "aurora" | "emergency";
+  tone?: "primary" | "secondary" | "accent" | "emergency";
 }) {
-  const iconBg =
-    tone === "emergency"
-      ? "bg-destructive ring-2 ring-destructive/40 animate-pulse"
-      : tone === "aurora"
-      ? "bg-aurora animate-aurora glow"
-      : "bg-aurora animate-aurora opacity-80";
-  const ring =
-    tone === "emergency"
-      ? "ring-1 ring-destructive/40 hover:ring-destructive/60"
-      : "hover:ring-1 hover:ring-primary/30";
+  const t = TILE_TONES[tone];
   return (
     <Link
       to={to}
-      className={`group rounded-2xl glass p-4 hover-lift transition flex items-start gap-3 min-h-[88px] ${ring}`}
+      className={`group rounded-3xl glass p-4 hover-lift transition flex flex-col gap-3 min-h-[112px] ${t.ring}`}
     >
-      <div className={`h-11 w-11 shrink-0 rounded-xl grid place-items-center text-primary-foreground ${iconBg}`}>
-        <Icon className="h-5 w-5" />
+      <div className={`h-9 w-9 shrink-0 rounded-xl grid place-items-center ${t.chip}`}>
+        <Icon className="h-4.5 w-4.5" />
       </div>
       <div className="min-w-0">
-        <div className="font-semibold group-hover:text-foreground">{title}</div>
-        <div className="text-xs text-muted-foreground">{desc}</div>
+        <div className="font-semibold text-sm leading-tight">{title}</div>
+        <div className="mt-0.5 text-[11px] text-muted-foreground leading-snug">{desc}</div>
       </div>
     </Link>
   );
 }
+
 
