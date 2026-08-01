@@ -168,10 +168,12 @@ function Home() {
           <span className="text-aurora bg-aurora bg-clip-text">Rave Safe</span>
           <span className="text-foreground">, have </span>
           <span className="text-aurora bg-aurora bg-clip-text">Fun</span>
+          <span className="text-foreground"> — Dein Harm-Reduction-Companion</span>
         </h1>
         <p className="mt-2 text-lg md:text-xl font-semibold text-foreground">
-          Dein Harm-Reduction-Companion.
+          Safer Use, akute Hilfe und Substanzwissen an einem Ort.
         </p>
+
         <p className="mt-1 text-sm text-muted-foreground leading-relaxed max-w-2xl">
           Safer-Use-Wissen, akute Hilfe und KI-Begleitung — evidenzbasiert, lokal und ohne Belehrung.
         </p>

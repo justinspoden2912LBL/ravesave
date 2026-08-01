@@ -123,7 +123,7 @@ function AkutPage() {
     <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
       <header className="space-y-2">
         <p className="text-xs uppercase tracking-wider text-secondary">Akute Hilfe</p>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Atme. Du bist hier richtig.</h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Akute Hilfe — Atme. Du bist hier richtig.</h1>
         <p className="text-muted-foreground leading-relaxed">
           Wenn dir gerade viel ist, aber es (noch) kein Notfall ist. Wähle ein Szenario oder beschreib
           es selbst — Marleen baut dir personalisierte Schritte.

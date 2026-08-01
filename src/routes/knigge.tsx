@@ -120,7 +120,7 @@ function KniggePage() {
         <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs text-muted-foreground">
           <HandHeart className="h-3.5 w-3.5 text-secondary" /> Verhaltenskodex
         </div>
-        <h1 className="text-4xl font-bold tracking-tight">Drogenknigge</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Drogenknigge — Verhaltenskodex</h1>
         <p className="text-lg text-muted-foreground">
           Harm Reduction ist nicht nur Pharmakologie — es ist auch eine Frage des Umgangs
           miteinander. Diese Regeln sind keine Moralpredigt, sondern das, was erfahrene
