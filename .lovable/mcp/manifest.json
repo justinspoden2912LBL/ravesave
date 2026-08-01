@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "rave-safe",
+      "version": "0.1.0",
+      "title": "Rave Safe"
+    },
+    "tools": [
+      {
+        "name": "search_substances",
+        "title": "Substanzen suchen",
+        "description": "Durchsucht das Rave-Safe-Substanz-Wiki nach Name, Slang/Alias oder Kategorie und liefert passende Treffer mit Kurzbeschreibung.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Suchbegriff: Substanzname, Slang (z. B. 'Molly', 'Pep') oder Kategorie."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_substance",
+        "title": "Substanz-Details",
+        "description": "Liefert das vollständige Harm-Reduction-Profil einer Substanz: Wirkmechanismus, Wirkdauer, Dosisbereiche pro Konsumform, Warnhinweise und Quellen.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substanz-ID, Name oder Slang, z. B. 'mdma', 'Ketamin', 'Molly'."
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "check_mix",
+        "title": "Mischkonsum prüfen",
+        "description": "Bewertet die Kombination von zwei oder mehr Substanzen mit der Rave-Safe-Ampel (sicher bis lebensgefährlich), inklusive Mechanismus und Harm-Reduction-Checkliste.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "substances": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Zwei oder mehr Substanznamen, IDs oder Slangbegriffe, z. B. ['mdma','alkohol']."
+            }
+          },
+          "required": [
+            "substances"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "reagent_test_info",
+        "title": "Reagenztest-Reaktionen",
+        "description": "Zeigt die erwarteten Farbreaktionen von Reagenztests (Marquis, Mecke, Mandelin, Simon's usw.) für eine Substanz.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "substance": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substanz-ID oder Name, z. B. 'mdma', 'ketamin', 'lsd'."
+            }
+          },
+          "required": [
+            "substance"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "find_drug_checking",
+        "title": "Drug-Checking-Stellen finden",
+        "description": "Listet Drug-Checking- und Beratungsstellen in Deutschland, Österreich, der Schweiz und der EU, optional gefiltert nach Land oder Stadt.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "enum": [
+                "DE",
+                "AT",
+                "CH",
+                "EU",
+                "ALL"
+              ],
+              "description": "Land filtern: DE, AT, CH, EU oder ALL für alle."
+            },
+            "city": {
+              "type": "string",
+              "description": "Optionaler Stadt-/Ortsfilter. Leerer String = kein Filter."
+            }
+          },
+          "required": [
+            "country",
+            "city"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "emergency_steps",
+        "title": "Notfall-Schritte",
+        "description": "Liefert die Erste-Hilfe-Schritte aus dem Rave-Safe-Notfallbereich für typische Notlagen (Bewusstlosigkeit, Überhitzung, Panik, Brustschmerz, GHB). Ersetzt keinen Notruf.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "scenario": {
+              "type": "string",
+              "enum": [
+                "unconscious",
+                "overheating",
+                "panic",
+                "chest_pain",
+                "ghb"
+              ],
+              "description": "Notfallszenario."
+            }
+          },
+          "required": [
+            "scenario"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
