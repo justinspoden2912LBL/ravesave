@@ -105,40 +105,24 @@ function Home() {
       </header>
 
       {/* Kompakter Hero */}
-      <section className="relative overflow-hidden rounded-3xl glass-strong glass-shine mt-5 p-6 md:p-8">
+      <section className="relative overflow-hidden rounded-3xl glass-strong glass-shine mt-4 p-5">
         <div className="pointer-events-none absolute -top-24 -right-16 h-56 w-56 rounded-full bg-aurora animate-aurora opacity-25 blur-3xl" />
-        <div className="relative">
-          <div className="inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1 text-xs text-secondary">
-            <Shield className="h-3.5 w-3.5" />
-            100% lokal — keine Daten verlassen dein Gerät
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="max-w-2xl text-sm md:text-base text-muted-foreground leading-relaxed">
+              Safer-Use-Wissen, Notfallhilfe &amp; KI-Begleitung — evidenzbasiert und ohne Belehrung.
+            </p>
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1 text-[11px] text-secondary">
+              <Shield className="h-3.5 w-3.5" />
+              100% lokal — keine Daten verlassen dein Gerät
+            </div>
           </div>
-          <p className="mt-4 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-            Safer-Use-Wissen, Notfallhilfe &amp; KI-Begleitung — evidenzbasiert und ohne Belehrung.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2.5">
-            <Link
-              to="/substances"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora animate-aurora px-5 py-3 text-sm font-semibold text-primary-foreground glow transition-transform hover:scale-[1.03] active:scale-95"
-            >
-              <BookOpen className="h-4 w-4" /> Safer Use lernen
-            </Link>
-            <Link
-              to="/mix"
-              className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm font-semibold transition-colors hover:bg-muted/40 active:scale-95"
-            >
-              <GitMerge className="h-4 w-4" /> Mischkonsum prüfen
-            </Link>
+          <div className="shrink-0">
+            <DetailLevelSwitch size="sm" />
           </div>
         </div>
       </section>
 
-      {/* Informationstiefe */}
-      <section className="mt-4 rounded-3xl glass p-4 md:hidden">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="section-label">Informations­tiefe</h2>
-          <DetailLevelSwitch size="sm" />
-        </div>
-      </section>
 
       {/* Featured: Akute Hilfe + Marleen */}
       <section className="mt-4 grid gap-3 sm:grid-cols-2">
