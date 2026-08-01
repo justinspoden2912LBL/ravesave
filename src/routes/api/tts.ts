@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { guardRequest } from "@/lib/apiGuard";
 
 // ElevenLabs TTS — realistische, weibliche deutsche Stimme für Marlene.
 // Voice "Sarah" (EXAVITQu4vr4xnSDxMaL) klingt warm, weiblich, multilingual.
@@ -12,6 +13,9 @@ export const Route = createFileRoute("/api/tts")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
+        const blocked = guardRequest(request, { name: "tts", limit: 10, windowMs: 60_000 });
+        if (blocked) return blocked;
+
         const apiKey = process.env.ELEVENLABS_API_KEY;
         if (!apiKey) return new Response("Missing ELEVENLABS_API_KEY", { status: 500 });
 

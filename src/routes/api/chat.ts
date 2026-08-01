@@ -5,6 +5,7 @@ import { createLovableAiGatewayProvider } from "@/lib/ai-gateway";
 import { createGroqProvider, GROQ_DEFAULT_MODEL } from "@/lib/groq-provider";
 import { SUBSTANCES, CATEGORY_LABEL } from "@/lib/substances";
 import { AI_MODEL, AI_PERSONA_BLOCK } from "@/lib/ai-config";
+import { guardRequest } from "@/lib/apiGuard";
 
 // Kompakter Index: nur Name + Kategorie + 1-Zeiler. Evidenz-Links holt sich
 // das Modell bei Bedarf über den Verweis auf /substances — sonst sprengt der
