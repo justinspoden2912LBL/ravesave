@@ -129,12 +129,15 @@ export function Nav() {
   const { ref, canLeft, canRight, scrollBy } = useScrollAffordance();
   const activeRef = useRef<HTMLAnchorElement | null>(null);
 
-  // aktiven Tab in den Sichtbereich scrollen
+  // aktiven Tab horizontal in den Sichtbereich scrollen (ohne Seiten-Scroll)
   useEffect(() => {
     const el = activeRef.current;
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [loc.pathname]);
+    const box = ref.current;
+    if (!el || !box) return;
+    const target = el.offsetLeft - box.clientWidth / 2 + el.offsetWidth / 2;
+    box.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [loc.pathname, ref]);
+
 
   return (
     <header className="sticky top-0 z-40 glass border-b">
@@ -170,22 +173,30 @@ export function Nav() {
 
           <nav
             ref={ref}
-            className="overflow-x-auto scrollbar-hide scroll-smooth"
+            className="overflow-x-auto overflow-y-hidden overscroll-x-contain scrollbar-hide scroll-smooth touch-pan-x py-1.5 -my-1.5"
             aria-label="Hauptnavigation"
+            style={{
+              WebkitMaskImage: `linear-gradient(to right, ${
+                canLeft ? "transparent 0px, black 28px" : "black 0px"
+              }, ${canRight ? "black calc(100% - 28px), transparent 100%" : "black 100%"})`,
+              maskImage: `linear-gradient(to right, ${
+                canLeft ? "transparent 0px, black 28px" : "black 0px"
+              }, ${canRight ? "black calc(100% - 28px), transparent 100%" : "black 100%"})`,
+            }}
           >
-            <ul className="flex items-center gap-1.5 px-1 md:px-7 snap-x snap-mandatory">
+            <ul className="flex items-center gap-1.5 px-1 md:px-8">
               {links.map(({ to, label, icon: Icon, tone }) => {
                 const active = loc.pathname === to;
                 const t = toneClasses[tone];
                 return (
-                  <li key={to} className="snap-start">
+                  <li key={to} className="shrink-0">
                     <Link
                       ref={active ? activeRef : undefined}
                       to={to}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all ${
+                      className={`group relative flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                         active
-                          ? "bg-aurora animate-aurora text-primary-foreground border-transparent glow shadow-[0_4px_16px_-4px_var(--aurora-1)]"
+                          ? "bg-aurora animate-aurora text-primary-foreground border-transparent"
                           : `${t.idle} text-foreground/85 hover:text-foreground`
                       }`}
                     >
@@ -195,12 +206,6 @@ export function Nav() {
                         }`}
                       />
                       <span>{label}</span>
-                      {active && (
-                        <span
-                          aria-hidden="true"
-                          className="absolute -bottom-1 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary-foreground/70"
-                        />
-                      )}
                     </Link>
                   </li>
                 );
@@ -211,23 +216,12 @@ export function Nav() {
                 aria-hidden="true"
                 className="md:hidden mx-1 h-6 w-px shrink-0 bg-border/60"
               />
-              <li className="md:hidden snap-start pr-1">
+              <li className="md:hidden shrink-0 pr-1">
                 <DetailLevelSwitch size="sm" />
               </li>
             </ul>
           </nav>
 
-          {/* Edge fades */}
-          <div
-            className={`pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background/95 via-background/70 to-transparent transition-opacity ${
-              canLeft ? "opacity-100" : "opacity-0"
-            }`}
-          />
-          <div
-            className={`pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background/95 via-background/70 to-transparent transition-opacity ${
-              canRight ? "opacity-100" : "opacity-0"
-            }`}
-          />
 
           {/* Pfeil rechts — md+ */}
           <button
