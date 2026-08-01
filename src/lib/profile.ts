@@ -93,7 +93,9 @@ export function emptyProfile(): UserProfile {
     pastAddiction: "none",
     inTreatment: false,
     saferUseGoals: "",
-    shareWithAI: true,
+    // Opt-in: sensitive health data (medication, conditions, addiction history)
+    // is only sent to the AI after explicit consent.
+    shareWithAI: false,
   };
 }
 
