@@ -300,7 +300,7 @@ export const adminUpdateSubmission = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     if (!(await useAdminSessionGate())) return { ok: false, authRequired: true as const };
-    const patch: Record<string, unknown> = {};
+    const patch: { status?: string; admin_note?: string | null } = {};
     if (data.status) patch.status = data.status;
     if (data.admin_note !== undefined) patch.admin_note = data.admin_note;
     const { error } = await supabaseAdmin.from("post_submissions").update(patch).eq("id", data.id);
