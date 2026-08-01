@@ -19,9 +19,9 @@ export const Route = createFileRoute("/checkliste")({
         property: "og:description",
         content: "Vor dem Rave kurz durchgehen — sicherer und entspannter starten.",
       },
-      { property: "og:url", content: "https://ravesave.fun/checkliste" },
+      { property: "og:url", content: "https://ravesave.de/checkliste" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/checkliste" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/checkliste" }],
   }),
 });
 

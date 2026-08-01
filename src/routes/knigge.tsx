@@ -25,9 +25,9 @@ export const Route = createFileRoute("/knigge")({
       },
       { property: "og:title", content: "Drogenknigge — Verhaltenskodex" },
       { property: "og:description", content: "Konsens, Aufklärung, Verantwortung: 9 Regeln für bewussten Konsum." },
-      { property: "og:url", content: "https://ravesave.fun/knigge" },
+      { property: "og:url", content: "https://ravesave.de/knigge" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/knigge" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/knigge" }],
     scripts: [
       {
         type: "application/ld+json",

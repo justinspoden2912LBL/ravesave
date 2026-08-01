@@ -40,7 +40,7 @@ export const Route = createFileRoute("/erfahrungen/$slug")({
   ),
   head: ({ params, loaderData }) => {
     const post = loaderData?.post;
-    const url = `https://ravesave.fun/erfahrungen/${params.slug}`;
+    const url = `https://ravesave.de/erfahrungen/${params.slug}`;
     const title = post
       ? `${post.title} — RaveSave`
       : `Erfahrungsbericht — RaveSave`;

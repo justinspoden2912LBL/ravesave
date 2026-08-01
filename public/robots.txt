@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://ravesave.fun/sitemap.xml
+Sitemap: https://ravesave.de/sitemap.xml

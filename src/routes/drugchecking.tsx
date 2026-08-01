@@ -11,9 +11,9 @@ export const Route = createFileRoute("/drugchecking")({
       { name: "description", content: "Kuratierte Liste echter Drug-Checking-Stellen in Deutschland, Österreich und der Schweiz." },
       { property: "og:title", content: "Drug-Checking-Anlaufstellen — Rave Safe, have Fun" },
       { property: "og:description", content: "checkit!, Saferparty, drugchecking.berlin & Co. — Stellen mit Adresse und Link." },
-      { property: "og:url", content: "https://ravesave.fun/drugchecking" },
+      { property: "og:url", content: "https://ravesave.de/drugchecking" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/drugchecking" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/drugchecking" }],
   }),
 });
 

@@ -34,9 +34,9 @@ export const Route = createFileRoute("/akut")({
         property: "og:description",
         content: "Ruhige Soforthilfe zwischen Alltag und 112 — personalisiert von Marleen.",
       },
-      { property: "og:url", content: "https://ravesave.fun/akut" },
+      { property: "og:url", content: "https://ravesave.de/akut" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/akut" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/akut" }],
   }),
 });
 

@@ -130,7 +130,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "WebSite",
               name: "Rave Safe, have Fun",
-              url: "https://ravesave.fun",
+              url: "https://ravesave.de",
               inLanguage: "de",
               description:
                 "Harm-Reduction-Begleiter: Konsum protokollieren, Mischkonsum prüfen, Substanzen verstehen — alles lokal im Browser.",
@@ -138,7 +138,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "Rave Safe, have Fun",
-              url: "https://ravesave.fun",
+              url: "https://ravesave.de",
             },
           ],
         }),

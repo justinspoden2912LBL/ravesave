@@ -32,9 +32,9 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Modernes Safer Use / Harmreduction Tool \nFaktenbasiert / Substanz-Wiki \nKi unterstützt von psychonauten-für psychonauten" },
       { property: "og:title", content: "Rave Safe, have Fun — Der Copilot für Psychonauten" },
       { property: "og:description", content: "Modernes Safer Use / Harmreduction Tool \nFaktenbasiert / Substanz-Wiki \nKi unterstützt von psychonauten-für psychonauten" },
-      { property: "og:url", content: "https://ravesave.fun/" },
+      { property: "og:url", content: "https://ravesave.de/" },
     ],
-    links: [{ rel: "canonical", href: "https://ravesave.fun/" }],
+    links: [{ rel: "canonical", href: "https://ravesave.de/" }],
   }),
 });
 
