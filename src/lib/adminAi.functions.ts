@@ -23,6 +23,16 @@ function sessionConfig() {
   };
 }
 
+async function isAdmin(): Promise<boolean> {
+  const s = await getTanstackSession<AdminSession>(sessionConfig());
+  if (!s.data.admin) return false;
+  if (s.data.loginAt && Date.now() - s.data.loginAt > SESSION_MAX_AGE * 1000) {
+    await s.clear();
+    return false;
+  }
+  return true;
+}
+
 async function requireAdmin() {
   const s = await getTanstackSession<AdminSession>(sessionConfig());
   if (!s.data.admin) throw new Error("Nicht angemeldet");
@@ -32,8 +42,9 @@ async function requireAdmin() {
   }
 }
 
+/** Liest die Einstellungen; ohne Admin-Sitzung `null` statt Fehler (kein Crash im Panel). */
 export const adminGetAiSettings = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAdmin();
+  if (!(await isAdmin())) return null;
   const { data } = await supabaseAdmin
     .from("ai_settings")
     .select("*")

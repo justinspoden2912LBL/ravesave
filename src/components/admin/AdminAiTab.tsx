@@ -13,8 +13,13 @@ export function AdminAiTab() {
   async function load() {
     setLoading(true);
     try {
-      setS((await adminGetAiSettings()) as AiSettings);
-      setErr(null);
+      const res = (await adminGetAiSettings()) as AiSettings | null;
+      if (!res) {
+        setErr("Admin-Sitzung abgelaufen — bitte neu anmelden.");
+      } else {
+        setS(res);
+        setErr(null);
+      }
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Fehler");
     } finally {
