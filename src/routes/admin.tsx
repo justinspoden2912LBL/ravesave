@@ -135,8 +135,10 @@ function AdminPage() {
         {(
           [
             { id: "pages", label: "Seiten" },
+            { id: "copilot", label: "Copilot (Live-Änderungen)" },
             { id: "info", label: "Info-Texte" },
             { id: "ai", label: "KI (Marleen)" },
+
             { id: "sessions", label: "Live-Sessions" },
             { id: "stats", label: "Statistik" },
             { id: "texts", label: "Alle Texte" },
