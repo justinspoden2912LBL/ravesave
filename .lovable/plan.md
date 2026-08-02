@@ -1,156 +1,45 @@
-# RaveSave — Produktreife-Plan
+# Marleen Admin-Copilot: Änderungen per Prompt
 
-Vor der Umsetzung: ich habe einen Runtime-Fehler im Preview gesehen (`Invariant failed: Expected to find a match below the root match in SPA mode`) — wahrscheinlich fehlt ein `<Outlet />` oder eine Route. Das fixe ich als allerersten Schritt, **bevor** irgendetwas anderes passiert.
+Ziel: Du als Admin änderst RaveSave selbst — per einfachem Prompt, mit einem kostenfreien KI-Modell (Groq, Fallback Lovable AI), ohne dass ich eingreifen muss.
 
----
+## Was du bekommst
 
-## 1. Audit der aktuellen App
+Ein neuer Tab „Copilot" im Admin-Panel: ein Chatfeld, in das du schreibst, z. B.
+- „Mach die Akzentfarbe wärmer, mehr orange"
+- „Blende die Seite Tolerance aus"
+- „Ändere die Überschrift auf der Startseite zu ‚Sicher feiern beginnt hier'"
+- „Schreib den Infotext zu Ketamin kürzer und ruhiger"
 
-### Funktioniert gut
-- Routen-Kern: `/notfall`, `/substances`, `/mix`, `/log`, `/aftercare`, `/drugchecking`, `/reagenztest`, `/tolerance`, `/session/active`, `/safety-plan`, `/chat`, `/stats`, `/erfahrungen`.
-- Lokale Persistenz: Logbuch, Safety-Plan, Emergency-Info, Aftercare — alles `localStorage`, sauber getrennt.
-- Active-Session-HUD, Spotlight (⌘K), Backup, Onboarding, Marleen-AI mit Modi (Einfach/Normal/Experte) für den Chat.
-- Substanzdatenbank mit Mechanismus, Onset, Dauer, Dosierung, Quellen.
+Der Copilot schlägt konkrete Änderungen vor, zeigt sie als Liste („Vorher → Nachher"), und du bestätigst mit einem Klick. Erst dann wird gespeichert. Jede Änderung ist einzeln rückgängig machbar.
 
-### Vorhanden, aber schwach
-- **Expertenmodus** existiert nur im Chat (`aiContext.ts → AiMode`) — **nicht** in Substanzprofilen, Mix-Checker, Notfall, Recovery. Der Anspruch „abgestufte Informationsdichte überall" ist nicht eingelöst.
-- **Startseite-Hierarchie**: Hero + 2×4 QuickTiles ist besser als Accordion, aber „Akute Hilfe" als Zwischenstufe zwischen normal und 112 fehlt komplett.
-- **Notfall-Seite**: hat Tabs, aber keine klare Differenzierung Hyperthermie ↔ Serotonin-Syndrom als eigenständiger Block, und kein „Akut-aber-nicht-112"-Modus (Panik, Comedown-Krise, Überforderung).
-- **Recovery/Aftercare**: existiert, aber keine sofort scanbare Karte für die häufigsten 4 Bedürfnisse (Wasser, Essen, Schlaf, Reize runter).
-- **Vertrauensblock**: Disclaimer im Footer kurz, aber nirgendwo prominent „keine Cloud, kein Tracking, alles lokal" sichtbar.
+## Was der Copilot ändern darf
 
-### Fehlt komplett
-- **Akute Hilfe** (`/akut` o. ä.): ruhige Soforthilfe-Seite zwischen Alltag und Notfall — Atemtechnik, „du bist sicher", Symptom-Triage.
-- **Pre-Rave-Checkliste**: existiert nicht eigenständig (nur im Safety-Plan eingebettet).
-- **Warnsignale-Karten**: Hyperthermie/Dehydration/Panik/Atemprobleme als wiederverwendbare, einzeln verlinkbare Karten.
-- **Favoriten/Merkliste**: keine Möglichkeit, Substanzen oder Notfallkarten lokal zu pinnen.
-- **Globaler Detail-Level-Switch** für Inhaltsseiten.
+| Bereich | Beispiel |
+| --- | --- |
+| Design/Theme | Farben, Rundungen, Schriftgröße, Abstände, Glas-Effekt-Stärke |
+| Seiten an/aus | einzelne Seiten oder Funktionen sperren/freigeben |
+| Texte | jede Überschrift/Beschriftung der Oberfläche |
+| Redaktionelle Inhalte | Info-/Wissenstexte |
+| Substanz-Angaben | bestehende Overrides anpassen |
+| Marleens KI-Regeln | Persona, Antwortstil, gesperrte Themen |
 
-### Nur kosmetisch / nicht funktional
-- Einige QuickTiles auf der Startseite (z. B. „Statistik", „Toleranz") führen zu Seiten, die kaum mehr als ein Header sind — niedriger Nutzwert vs. Sichtbarkeit.
+Nicht erlaubt: Löschen von Nutzerdaten, Statistiken oder Einsendungen, und keine Änderung am Quellcode (Sicherheitsgrenze — Code-Änderungen bleiben beim Deploy-Weg im Dev-Tab).
 
----
+## Design-Steuerung (neu)
 
-## 2. Expertenmodus (das Kernstück)
+Bisher sind Farben fest im Stylesheet. Neu: eine Tabelle mit Theme-Tokens (Primärfarbe, Hintergrund, Radius, Schrift-Skalierung, Effektstärke). Diese werden beim Laden der Seite als CSS-Variablen gesetzt und überschreiben die Standardwerte. Dadurch kann der Copilot — und du auch manuell über Regler/Farbwähler im selben Tab — das Aussehen live ändern, ohne Deploy.
 
-### Architektur
-Erweitere `aiContext.ts` zu einem allgemeinen `useDetailLevel()`-Hook (oder neu: `src/lib/detailLevel.ts`):
+Es gibt „Vorschau" (nur für dich sichtbar), „Veröffentlichen" und „Auf Standard zurücksetzen".
 
-```ts
-type DetailLevel = "basic" | "extended" | "expert";
-// localStorage-Key: ravesave.detailLevel.v1
-// Default: "basic"
-```
+## Kosten & Verfügbarkeit
 
-Globaler Toggle in der Top-Nav (Segment-Control: Basis · Mehr · Experte). Existierender `AiMode` wird ein Alias auf denselben Store, damit Marleen weiter funktioniert.
+Der Copilot nutzt dieselbe Provider-Kette wie Marleen: zuerst Groq (kostenfreies Kontingent), bei Ausfall automatisch Lovable AI. Modell und Temperatur wählst du im KI-Tab. Fällt beides aus, bleiben alle manuellen Regler und Editoren im Tab voll nutzbar — du bist nie blockiert.
 
-### Wirkungsbereiche
-| Bereich | Basis | Erweitert | Experte |
-|---|---|---|---|
-| **Substanzprofil** | Was ist es, Wirkdauer grob, 3 Risiken | + Dosis-Tabelle, ROAs, Onset/Peak/Comedown | + Mechanismus, HWZ, CYP-Interaktionen, Quellen |
-| **Mix-Checker** | Ampel + 1-Satz-Erklärung | + Mechanismus warum riskant | + Pharmakologische Details, klinische Marker |
-| **Notfall** | Symptome + 3 Schritte + 112 | + Differentialdiagnose | + Vital-Schwellen, Antidot-Hinweise (info, keine Anleitung) |
-| **Recovery** | 4 Karten (Wasser/Essen/Schlaf/Reize) | + Timing, Mengen | + Neurochemie der Erholung, B12/5-HT-Refill |
-| **Marleen** | bereits vorhanden | bereits vorhanden | bereits vorhanden |
+## Technische Umsetzung
 
-Jede Seite bekommt ein einheitliches `<DetailGate level="expert">…</DetailGate>` Wrapping.
-
----
-
-## 3. Neue Bereiche & Verbesserungen
-
-### A. Akute Hilfe — neue Route `/akut`
-Zwischen normal & 112. 4 Sofort-Karten:
-- „Mir wird's zu viel" — Atemtechnik (Box 4-4-4-4), Reize runter.
-- „Schlechter Trip" — Erden, Person dabei, sicher hinsetzen.
-- „Comedown-Crash" — Wasser, Wärme, Reize runter, kein weiterer Konsum.
-- „Ich bin nicht sicher, ob ich 112 brauche" — Triage-Liste → wenn ja, ein Tap zu `/notfall`.
-
-Verlinkung prominent auf Startseite (rote Karte direkt unter dem 112-Pill).
-
-### B. Recovery polishen (`/aftercare`)
-4 große Karten mit Icon + Mikro-Aktion. Im Experten-Level: Refill-Tabelle (Magnesium, B-Komplex, 5-HTP-Kontroverse mit Quellenhinweis).
-
-### C. Pre-Rave-Checkliste — neue Route `/checkliste`
-Interaktive Liste mit lokalem Persist (genau wie Aftercare). Auch im Spotlight erreichbar.
-
-### D. Warnsignale-Karten
-Eigene Komponente `<WarnSign type="hyperthermia" />`, wiederverwendet auf Notfall-Seite und auf Akut-Seite.
-
-### E. Favoriten
-`src/lib/favorites.ts` (lokal). Stern-Icon auf Substanz-Detail, Notfall-Karten, Akut-Karten. Eigene Sektion auf Startseite („Deine Pins") — nur sichtbar, wenn nicht leer.
-
-### F. Vertrauensblock
-Komponente `<TrustBadge />` — eine kompakte 1-Zeile-Variante (Footer/Header) und eine ausführliche auf der About-Seite. Inhalt: keine Cloud, kein Tracking, kein Backend für Nutzerdaten, Open about Lovable-AI-Gateway.
-
----
-
-## 4. UI/UX-Politur
-- Startseite-Reihenfolge **neu**: Notfall → Akute Hilfe → Safer Use (Wiki) → Mix → Logbuch → Recovery → Tools (Drug-Checking/Reagent/Toleranz/Statistik in „Praxis"-Block).
-- Touch-Targets ≥ 48 px durchsetzen (audit + fix wo nötig).
-- Kontrast-Pass: alle `text-muted-foreground/50` ersetzen.
-- Konsistente `glass`-Karten-Klasse auf allen Hauptseiten.
-- Detail-Level-Switch sichtbar in Header (Desktop) / Settings (Mobile, plus FAB-Button auf Wiki-Seiten).
-
----
-
-## 5. Inhaltliche Feinschliffe
-- Mix-Checker: 1-Absatz „Warum Mischkonsum besonders riskant ist" (Synergie, Maskierung, Pharmakokinetik) — nur in Erweitert/Experte.
-- Drug-Checking-Seite: Sprache prüfen — ist HR-Hinweis, keine Anleitung. (vermutlich schon ok, kurzer Review.)
-
----
-
-## 6. Betroffene Dateien
-
-**Neu**
-- `src/lib/detailLevel.ts` (Store + Hook)
-- `src/lib/favorites.ts` (lokal)
-- `src/components/DetailLevelSwitch.tsx`
-- `src/components/DetailGate.tsx`
-- `src/components/TrustBadge.tsx`
-- `src/components/WarnSign.tsx`
-- `src/components/FavoriteButton.tsx`
-- `src/routes/akut.tsx`
-- `src/routes/checkliste.tsx`
-
-**Edits**
-- `src/routes/__root.tsx` (Header-Switch, Trust-Badge)
-- `src/routes/index.tsx` (neue Reihenfolge, Akut-Karte, Pins-Sektion)
-- `src/routes/substances.tsx` + Detail-View (DetailGate)
-- `src/routes/mix.tsx` (DetailGate + Erklärabsatz)
-- `src/routes/notfall.tsx` (WarnSign-Komponenten, DetailGate)
-- `src/routes/aftercare.tsx` (4-Karten-Layout)
-- `src/lib/aiContext.ts` (AiMode → DetailLevel-Alias)
-- `src/components/Spotlight.tsx` (neue Routen registrieren)
-- `src/lib/spotlight.ts`
-- evtl. `src/components/Nav.tsx` / `BottomNav.tsx`
-
----
-
-## 7. Reihenfolge der Umsetzung (inkrementell)
-
-1. **Runtime-Fix**: SPA-Match-Fehler beheben (vermutlich fehlender `<Outlet />` oder kaputte Route nach letzten Edits).
-2. **Detail-Level-System**: `detailLevel.ts` + Switch + Gate + Alias zu AiMode.
-3. **DetailGate auf Substanz-Detail**: erste echte Anwendung, als Referenzimplementierung.
-4. **Akute-Hilfe-Seite** + Startseiten-Karte.
-5. **Recovery-Karten-Layout**.
-6. **Pre-Rave-Checkliste**.
-7. **Warnsignal-Karten** + Einbau in Notfall + Akut.
-8. **Favoriten-System** + Pins-Sektion auf Startseite.
-9. **TrustBadge** sichtbar machen.
-10. **Mix-Checker Erklärung + DetailGate**.
-11. **UI-Polish-Pass**: Touch-Targets, Kontrast, Konsistenz.
-
-Jeder Schritt ist ein eigener kleiner Commit, einzeln testbar. Nach jedem Schritt kannst du im Preview prüfen, ob es sich richtig anfühlt, bevor wir weitermachen.
-
----
-
-## Was NICHT angefasst wird
-- Auth, Supabase-Schema, Backup-Logik, Active-Session-HUD-Kern, Spotlight-Engine.
-- Keine neuen Server-Abhängigkeiten — alle neuen Daten (Detail-Level, Favoriten, Checkliste) lokal.
-- Kein Service Worker.
-- `routeTree.gen.ts`, Supabase-Clients.
-
----
-
-**Sag mir bitte: Plan ok, oder willst du Schwerpunkte verschieben?** Z. B. wenn dir der Expertenmodus wichtiger ist als Favoriten, mache ich Schritt 2–3 zuerst und ziehe Favoriten ans Ende.
+1. **Migration**: `public.site_theme` (Token-Key/Wert, published/draft) und `public.admin_change_log` (Zeitpunkt, Tool, alter Wert, neuer Wert, für Undo). GRANTs + RLS: öffentlicher SELECT nur auf veröffentlichte Theme-Tokens, Schreiben ausschließlich über Service-Role in Server-Funktionen.
+2. **`src/lib/adminCopilot.functions.ts`**: `copilotPlan` (Prompt → Tool-Calls des Modells → Vorschlagsliste, nichts wird geschrieben) und `copilotApply` (führt bestätigte Änderungen aus, schreibt ins Change-Log). Beide hinter der bestehenden Admin-Session-Prüfung; identisches `isAdmin()`-Muster wie in `adminAi.functions.ts` (kein harter Throw beim Laden).
+3. **Tool-Layer** (`src/lib/copilotTools.server.ts`): definierte, eng validierte Zod-Tools — `set_theme_token`, `set_feature_flag`, `set_ui_text`, `set_site_content`, `set_substance_override`, `update_ai_rules`. Keine Freitext-SQL, keine Dateizugriffe.
+4. **Modellaufruf**: über die bestehende Groq/Lovable-Kette aus `aiSettings.server.ts` mit Tool-Calling; unbekannte Tools und Werte außerhalb der Schemas werden verworfen.
+5. **Theme-Runtime** (`src/lib/theme.ts`): lädt veröffentlichte Tokens (localStorage-Cache wie `featureFlags.ts`) und setzt sie als CSS-Variablen auf `:root` in `__root.tsx`.
+6. **UI** (`src/components/admin/AdminCopilotTab.tsx`): Chat + Diff-Bestätigung + manuelle Regler/Farbwähler + Verlauf mit Undo. Als neuer Tab in `src/routes/admin.tsx`.
