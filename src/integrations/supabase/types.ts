@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_change_log: {
+        Row: {
+          created_at: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          reverted: boolean
+          summary: string | null
+          target: string
+          tool: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reverted?: boolean
+          summary?: string | null
+          target: string
+          tool: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reverted?: boolean
+          summary?: string | null
+          target?: string
+          tool?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_settings: {
         Row: {
           answer_style: string
@@ -215,6 +251,33 @@ export type Database = {
           key?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      site_theme: {
+        Row: {
+          category: string
+          draft_value: string | null
+          key: string
+          label: string | null
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          category?: string
+          draft_value?: string | null
+          key: string
+          label?: string | null
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          category?: string
+          draft_value?: string | null
+          key?: string
+          label?: string | null
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
