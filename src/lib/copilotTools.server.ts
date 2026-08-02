@@ -253,7 +253,7 @@ export async function executeTool(tool: ToolName, rawArgs: unknown): Promise<{ t
       .select("patch")
       .eq("slug", slug)
       .maybeSingle();
-    const patch = { ...((data?.patch ?? {}) as Record<string, unknown>), [field]: value };
+    const patch = { ...((data?.patch ?? {}) as Record<string, string>), [field]: value };
     const { error } = await supabaseAdmin
       .from("substance_overrides")
       .upsert({ slug, patch, updated_at: now }, { onConflict: "slug" });
@@ -303,7 +303,7 @@ export async function revertChange(row: {
   if (kind === "substanz") {
     const [slug, field] = id.split(".");
     const { data } = await supabaseAdmin.from("substance_overrides").select("patch").eq("slug", slug).maybeSingle();
-    const patch = { ...((data?.patch ?? {}) as Record<string, unknown>) };
+    const patch = { ...((data?.patch ?? {}) as Record<string, string>) };
     if (old) patch[field] = old;
     else delete patch[field];
     await supabaseAdmin.from("substance_overrides").upsert({ slug, patch, updated_at: now }, { onConflict: "slug" });
