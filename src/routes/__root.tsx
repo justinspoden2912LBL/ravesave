@@ -21,6 +21,7 @@ import { trackPageView, trackEvent } from "@/lib/analytics";
 import { initI18n, refreshI18n } from "@/lib/i18n";
 import { initSubstanceOverrides, refreshSubstanceOverrides } from "@/lib/substancesRuntime";
 import { initFeatureFlags, refreshFeatureFlags } from "@/lib/featureFlags";
+import { initTheme, refreshTheme } from "@/lib/theme";
 import { PathFeatureGate } from "@/components/FeatureGate";
 
 
@@ -175,9 +176,11 @@ function RootComponent() {
     initI18n();
     initSubstanceOverrides();
     initFeatureFlags();
+    initTheme();
     void refreshI18n();
     void refreshSubstanceOverrides();
     void refreshFeatureFlags();
+    void refreshTheme();
   }, []);
 
   // PWA install tracking
