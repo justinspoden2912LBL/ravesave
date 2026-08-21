@@ -38,62 +38,60 @@
   --color-aurora-2: var(--aurora-2);
   --color-aurora-3: var(--aurora-3);
   --color-aurora-4: var(--aurora-4);
-  --font-display: "Sora", system-ui, sans-serif;
+  --font-display: "Archivo", system-ui, sans-serif;
   --font-body: "Manrope", system-ui, sans-serif;
   --font-sans: "Manrope", system-ui, sans-serif;
 }
 
 :root {
-  --radius: 1rem;
+  --radius: 0.5rem;
 
-  /* Psychedelic dark base */
-  --background: oklch(0.14 0.04 290);
-  --foreground: oklch(0.97 0.02 300);
+  /* Dark club editorial base */
+  --background: oklch(0.15 0.006 285);
+  --foreground: oklch(0.95 0.012 85);
 
-  --card: oklch(0.19 0.05 285 / 0.6);
-  --card-foreground: oklch(0.97 0.02 300);
+  --card: oklch(0.19 0.008 285);
+  --card-foreground: oklch(0.95 0.012 85);
 
-  --popover: oklch(0.18 0.05 285);
-  --popover-foreground: oklch(0.97 0.02 300);
+  --popover: oklch(0.18 0.008 285);
+  --popover-foreground: oklch(0.95 0.012 85);
 
-  --primary: oklch(0.78 0.22 320);
-  --primary-foreground: oklch(0.12 0.04 290);
+  --primary: oklch(0.6 0.23 300);
+  --primary-foreground: oklch(0.98 0.01 300);
 
-  --secondary: oklch(0.7 0.2 200);
-  --secondary-foreground: oklch(0.12 0.04 290);
+  --secondary: oklch(0.74 0.15 155);
+  --secondary-foreground: oklch(0.15 0.006 285);
 
-  --muted: oklch(0.25 0.05 285);
-  --muted-foreground: oklch(0.75 0.04 290);
+  --muted: oklch(0.24 0.008 285);
+  --muted-foreground: oklch(0.7 0.012 285);
 
-  --accent: oklch(0.82 0.22 90);
-  --accent-foreground: oklch(0.12 0.04 290);
+  --accent: oklch(0.66 0.22 345);
+  --accent-foreground: oklch(0.98 0.01 340);
 
-  --destructive: oklch(0.65 0.27 25);
+  --destructive: oklch(0.63 0.21 30);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.35 0.08 290 / 0.4);
-  --input: oklch(0.25 0.06 290 / 0.6);
-  --ring: oklch(0.78 0.22 320);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.08);
+  --ring: oklch(0.6 0.23 300);
 
   /* Risk semantic */
-  --risk-safe: oklch(0.78 0.18 155);
-  --risk-caution: oklch(0.82 0.18 85);
-  --risk-unsafe: oklch(0.72 0.22 35);
-  --risk-danger: oklch(0.62 0.28 20);
+  --risk-safe: oklch(0.74 0.15 155);
+  --risk-caution: oklch(0.78 0.15 80);
+  --risk-unsafe: oklch(0.7 0.19 45);
+  --risk-danger: oklch(0.63 0.22 28);
 
-  /* Aurora gradient stops */
-  --aurora-1: oklch(0.7 0.27 320);
-  --aurora-2: oklch(0.72 0.24 260);
-  --aurora-3: oklch(0.75 0.22 200);
-  --aurora-4: oklch(0.82 0.22 90);
+  /* Akzent-Stops (sparsam eingesetzt) */
+  --aurora-1: oklch(0.6 0.23 300);
+  --aurora-2: oklch(0.6 0.23 300);
+  --aurora-3: oklch(0.62 0.21 330);
+  --aurora-4: oklch(0.66 0.22 345);
 
-  --gradient-aurora: linear-gradient(135deg, var(--aurora-1), var(--aurora-2) 35%, var(--aurora-3) 65%, var(--aurora-4));
-  --gradient-trip: radial-gradient(ellipse at 20% 10%, oklch(0.5 0.3 320 / 0.4), transparent 50%),
-    radial-gradient(ellipse at 80% 20%, oklch(0.5 0.3 200 / 0.4), transparent 50%),
-    radial-gradient(ellipse at 50% 80%, oklch(0.5 0.3 90 / 0.3), transparent 60%);
+  --gradient-aurora: linear-gradient(100deg, var(--aurora-1), var(--aurora-3));
+  --gradient-trip: none;
 
-  --shadow-glow: 0 0 40px -10px oklch(0.7 0.27 320 / 0.5);
-  --shadow-elegant: 0 20px 60px -20px oklch(0.1 0.05 290 / 0.6);
+  --shadow-glow: 0 0 0 1px oklch(0.6 0.23 300 / 0.35);
+  --shadow-elegant: 0 24px 60px -30px oklch(0 0 0 / 0.9);
 }
 
 @layer base {
@@ -111,61 +109,44 @@
     font-synthesis-weight: none;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    letter-spacing: -0.015em;
-  }
-
-
   body {
-    background-image: var(--gradient-trip);
-    background-attachment: fixed;
+    font-size: 1.0625rem;
+    line-height: 1.65;
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
   }
 
-  /* Lava-lamp ambient blobs — purely decorative, no color shift.
-     Etwas lebendiger als zuvor, aber bewusst ruhig wie eine Lavalampe. */
-  body::before,
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+  h1 { font-weight: 800; }
+  h2 { font-weight: 700; }
+
+  /* Sehr dezentes Licht + Filmkorn statt Farbverläufen */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(60vw 40vh at 12% -5%, oklch(0.6 0.23 300 / 0.16), transparent 70%),
+      radial-gradient(50vw 35vh at 95% 8%, oklch(0.66 0.22 345 / 0.1), transparent 70%);
+  }
   body::after {
     content: "";
     position: fixed;
+    inset: 0;
     z-index: -1;
     pointer-events: none;
-    border-radius: 50%;
-    filter: blur(90px) saturate(145%);
-    opacity: 0.5;
-    will-change: transform, border-radius;
-  }
-  body::before {
-    top: -12%;
-    left: -10%;
-    width: 58vw;
-    height: 58vw;
-    max-width: 760px;
-    max-height: 760px;
-    background: radial-gradient(circle at 30% 30%, var(--aurora-1), transparent 70%);
-    animation: lava-drift-a 16s ease-in-out infinite;
-  }
-  body::after {
-    bottom: -15%;
-    right: -10%;
-    width: 62vw;
-    height: 62vw;
-    max-width: 800px;
-    max-height: 800px;
-    background: radial-gradient(circle at 60% 60%, var(--aurora-3), transparent 70%);
-    animation: lava-drift-b 20s ease-in-out infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    body::before,
-    body::after {
-      animation: none;
-    }
+    opacity: 0.32;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 }
+
 
 @layer utilities {
   .bg-aurora {
