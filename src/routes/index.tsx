@@ -287,12 +287,14 @@ function Home() {
       </section>
 
       {/* Phasen — Accordion, immer nur eine Ebene offen */}
-      <section className="mt-6 space-y-3" aria-label="Bereiche nach Situation">
+      <section className="mt-10 border-t border-border pt-5" aria-label="Bereiche nach Situation">
         <h2 className="section-label">Wo stehst du gerade?</h2>
+        <div className="mt-4 border-t border-border">
         {PHASES.map((p) => {
           const isOpen = open === p.id;
           return (
-            <div key={p.id} className="rounded-3xl glass overflow-hidden">
+            <div key={p.id} className="border-b border-border">
+
               <button
                 type="button"
                 aria-expanded={isOpen}
