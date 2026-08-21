@@ -319,3 +319,8 @@
     border-radius: 55% 45% 60% 40% / 50% 55% 45% 50%;
   }
 }
+
+@keyframes splash-line {
+  from { width: 0%; }
+  to { width: 100%; }
+}
