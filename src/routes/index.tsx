@@ -27,6 +27,8 @@ import { SUBSTANCES } from "@/lib/substances";
 import { loadProfile, isDismissed, dismissOnboarding } from "@/lib/profile";
 import { DetailLevelSwitch } from "@/components/DetailLevelSwitch";
 import { useText } from "@/lib/i18n";
+import heroImage from "@/assets/hero-rave.jpg";
+
 
 export const Route = createFileRoute("/")({
   component: Home,
