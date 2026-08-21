@@ -17,7 +17,7 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.47",
     "@ai-sdk/react": "^3.0.184",
-    "@cloudflare/vite-plugin": "^1.25.5",
+    "@cloudflare/vite-plugin": "^1.52.1",
     "@elevenlabs/react": "^1.6.3",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/mcp-js": "^0.26.1",
