@@ -331,22 +331,26 @@ function Home() {
   );
 }
 
-const TILE_TONES: Record<Tone, { chip: string; ring: string }> = {
+const TILE_TONES: Record<Tone, { chip: string; ring: string; text: string }> = {
   emergency: {
-    chip: "bg-destructive/20 text-destructive ring-1 ring-destructive/40",
-    ring: "border-destructive/25 hover:border-destructive/50",
+    chip: "border-destructive/45 text-destructive",
+    ring: "hover:bg-destructive/10",
+    text: "text-destructive",
   },
   primary: {
-    chip: "bg-primary/20 text-primary ring-1 ring-primary/40",
-    ring: "border-white/10 hover:border-primary/50",
+    chip: "border-primary/45 text-primary",
+    ring: "hover:bg-primary/10",
+    text: "text-primary",
   },
   secondary: {
-    chip: "bg-secondary/20 text-secondary ring-1 ring-secondary/40",
-    ring: "border-white/10 hover:border-secondary/50",
+    chip: "border-secondary/45 text-secondary",
+    ring: "hover:bg-secondary/10",
+    text: "text-secondary",
   },
   accent: {
-    chip: "bg-accent/20 text-accent ring-1 ring-accent/40",
-    ring: "border-white/10 hover:border-accent/50",
+    chip: "border-accent/45 text-accent",
+    ring: "hover:bg-accent/10",
+    text: "text-accent",
   },
 };
 
@@ -367,11 +371,10 @@ function QuickTile({
   return (
     <Link
       to={to}
-      className={`rounded-2xl glass-strong p-4 border transition flex flex-col gap-3 min-h-[112px] ${t.ring}`}
+      className={`bg-background p-4 transition-colors flex flex-col gap-3 min-h-[108px] ${t.ring}`}
     >
-      <div className={`h-9 w-9 shrink-0 rounded-xl grid place-items-center ${t.chip}`}>
-        <Icon className="h-5 w-5" />
-      </div>
+      <Icon className={`h-5 w-5 shrink-0 ${t.text}`} strokeWidth={1.5} />
+
       <div className="min-w-0">
         <div className="font-semibold text-sm leading-tight">{title}</div>
         <div className="mt-0.5 text-xs text-muted-foreground leading-snug">{desc}</div>
