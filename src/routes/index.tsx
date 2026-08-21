@@ -278,7 +278,7 @@ function Home() {
             </p>
             <Link
               to="/chat"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary/15 ring-1 ring-primary/30 px-4 text-sm font-semibold text-primary hover:bg-primary/25 transition"
+              className="inline-flex min-h-11 items-center gap-2 border border-primary/50 px-4 text-xs font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <MessageCircle className="h-4 w-4" /> Mit Marleen sprechen
             </Link>
