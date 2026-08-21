@@ -253,9 +253,11 @@ function Home() {
 
 
       {/* Marleen */}
-      <section className="mt-5 rounded-3xl glass-strong glass-shine p-5">
-        <div className="flex items-start gap-3">
-          <div className="h-11 w-11 shrink-0 rounded-2xl bg-aurora grid place-items-center text-primary-foreground glow">
+      <section className="mt-10 border-t border-border pt-5">
+        <h2 className="section-label">Dein Guide</h2>
+        <div className="mt-4 flex items-start gap-4 border border-border p-5">
+          <div className="h-11 w-11 shrink-0 border border-primary/50 grid place-items-center text-primary">
+
             <MessageCircle className="h-6 w-6" />
           </div>
           <div className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
