@@ -315,9 +315,9 @@ export function Footer() {
       </nav>
 
       <div className="space-y-3 border-t border-border/50 pt-6 text-xs">
-        <p className="inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1.5 text-secondary">
+        <p className="inline-flex items-center gap-2 border border-secondary/40 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-secondary">
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-          Alles bleibt lokal auf deinem Gerät — kein Tracking deiner Eingaben.
+          Alles bleibt lokal auf deinem Gerät
         </p>
         <p className="leading-relaxed">
           <strong className="text-foreground">Rave Safe, have Fun</strong> ist ein

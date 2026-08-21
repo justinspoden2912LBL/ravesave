@@ -44,21 +44,19 @@ export function SplashGreeting() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[120] grid place-items-center bg-background/95 backdrop-blur-xl transition-opacity duration-[1200ms] ease-in-out print:hidden ${
+      className={`fixed inset-0 z-[120] grid place-items-center bg-background transition-opacity duration-[1200ms] ease-in-out print:hidden ${
         phase === "out" ? "opacity-0" : "opacity-100"
       }`}
     >
-      <div className="pointer-events-none absolute -top-24 h-72 w-72 rounded-full bg-aurora animate-aurora opacity-30 blur-3xl" />
-      <div className="relative text-center px-6 animate-scale-in">
-        <div className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-aurora animate-aurora grid place-items-center text-primary-foreground glow">
-          <Sparkles className="h-7 w-7" />
+      <div className="relative w-full max-w-md px-8 animate-fade-in">
+        <span className="tag-label">Rave Safe / Harm Reduction</span>
+        <h1 className="mt-4 text-4xl font-extrabold leading-[0.95] tracking-tight">{title}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
+        <div className="mt-6 h-px w-full bg-border">
+          <div className="h-px bg-primary animate-[splash-line_3.2s_linear_forwards]" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-aurora animate-aurora bg-aurora bg-clip-text">
-          {title}
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground animate-fade-in">{subtitle}</p>
-
       </div>
     </div>
   );
 }
+

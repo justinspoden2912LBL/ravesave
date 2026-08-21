@@ -253,9 +253,11 @@ function Home() {
 
 
       {/* Marleen */}
-      <section className="mt-5 rounded-3xl glass-strong glass-shine p-5">
-        <div className="flex items-start gap-3">
-          <div className="h-11 w-11 shrink-0 rounded-2xl bg-aurora grid place-items-center text-primary-foreground glow">
+      <section className="mt-10 border-t border-border pt-5">
+        <h2 className="section-label">Dein Guide</h2>
+        <div className="mt-4 flex items-start gap-4 border border-border p-5">
+          <div className="h-11 w-11 shrink-0 border border-primary/50 grid place-items-center text-primary">
+
             <MessageCircle className="h-6 w-6" />
           </div>
           <div className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
@@ -276,7 +278,7 @@ function Home() {
             </p>
             <Link
               to="/chat"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary/15 ring-1 ring-primary/30 px-4 text-sm font-semibold text-primary hover:bg-primary/25 transition"
+              className="inline-flex min-h-11 items-center gap-2 border border-primary/50 px-4 text-xs font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <MessageCircle className="h-4 w-4" /> Mit Marleen sprechen
             </Link>
@@ -285,23 +287,25 @@ function Home() {
       </section>
 
       {/* Phasen — Accordion, immer nur eine Ebene offen */}
-      <section className="mt-6 space-y-3" aria-label="Bereiche nach Situation">
+      <section className="mt-10 border-t border-border pt-5" aria-label="Bereiche nach Situation">
         <h2 className="section-label">Wo stehst du gerade?</h2>
+        <div className="mt-4 border-t border-border">
         {PHASES.map((p) => {
           const isOpen = open === p.id;
           return (
-            <div key={p.id} className="rounded-3xl glass overflow-hidden">
+            <div key={p.id} className="border-b border-border">
+
               <button
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpen(isOpen ? null : p.id)}
-                className="w-full min-h-14 px-4 py-3 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
+                className="w-full min-h-14 py-4 flex items-center gap-4 text-left hover:bg-muted/20 transition-colors"
               >
-                <span className={`h-10 w-10 shrink-0 rounded-2xl grid place-items-center ${TILE_TONES[p.tone].chip}`}>
-                  <p.icon className="h-5 w-5" />
+                <span className={`h-9 w-9 shrink-0 grid place-items-center border ${TILE_TONES[p.tone].chip}`}>
+                  <p.icon className="h-4.5 w-4.5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-semibold leading-snug">{p.label}</span>
+                  <span className="block font-bold leading-snug">{p.label}</span>
                   <span className="block text-xs text-muted-foreground">{p.hint}</span>
                 </span>
                 <ChevronDown
@@ -311,7 +315,7 @@ function Home() {
                 />
               </button>
               {isOpen && (
-                <div className="px-3 pb-3 grid gap-3 grid-cols-2 lg:grid-cols-4">
+                <div className="pb-4 grid gap-px bg-border grid-cols-2 lg:grid-cols-4 border-t border-border">
                   {p.items.map((i) => (
                     <QuickTile key={`${p.id}-${i.to}`} {...i} tone={p.tone} />
                   ))}
@@ -320,27 +324,33 @@ function Home() {
             </div>
           );
         })}
+        </div>
       </section>
+
     </div>
   );
 }
 
-const TILE_TONES: Record<Tone, { chip: string; ring: string }> = {
+const TILE_TONES: Record<Tone, { chip: string; ring: string; text: string }> = {
   emergency: {
-    chip: "bg-destructive/20 text-destructive ring-1 ring-destructive/40",
-    ring: "border-destructive/25 hover:border-destructive/50",
+    chip: "border-destructive/45 text-destructive",
+    ring: "hover:bg-destructive/10",
+    text: "text-destructive",
   },
   primary: {
-    chip: "bg-primary/20 text-primary ring-1 ring-primary/40",
-    ring: "border-white/10 hover:border-primary/50",
+    chip: "border-primary/45 text-primary",
+    ring: "hover:bg-primary/10",
+    text: "text-primary",
   },
   secondary: {
-    chip: "bg-secondary/20 text-secondary ring-1 ring-secondary/40",
-    ring: "border-white/10 hover:border-secondary/50",
+    chip: "border-secondary/45 text-secondary",
+    ring: "hover:bg-secondary/10",
+    text: "text-secondary",
   },
   accent: {
-    chip: "bg-accent/20 text-accent ring-1 ring-accent/40",
-    ring: "border-white/10 hover:border-accent/50",
+    chip: "border-accent/45 text-accent",
+    ring: "hover:bg-accent/10",
+    text: "text-accent",
   },
 };
 
@@ -361,11 +371,10 @@ function QuickTile({
   return (
     <Link
       to={to}
-      className={`rounded-2xl glass-strong p-4 border transition flex flex-col gap-3 min-h-[112px] ${t.ring}`}
+      className={`bg-background p-4 transition-colors flex flex-col gap-3 min-h-[108px] ${t.ring}`}
     >
-      <div className={`h-9 w-9 shrink-0 rounded-xl grid place-items-center ${t.chip}`}>
-        <Icon className="h-5 w-5" />
-      </div>
+      <Icon className={`h-5 w-5 shrink-0 ${t.text}`} strokeWidth={1.5} />
+
       <div className="min-w-0">
         <div className="font-semibold text-sm leading-tight">{title}</div>
         <div className="mt-0.5 text-xs text-muted-foreground leading-snug">{desc}</div>
