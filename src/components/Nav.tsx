@@ -142,11 +142,11 @@ const META_ITEMS: NavItem[] = [
 ];
 
 const toneClasses: Record<Tone, { idle: string; iconIdle: string }> = {
-  primary: { idle: "bg-primary/10 hover:bg-primary/20 border-primary/30", iconIdle: "text-primary" },
-  secondary: { idle: "bg-secondary/10 hover:bg-secondary/20 border-secondary/30", iconIdle: "text-secondary" },
-  accent: { idle: "bg-accent/10 hover:bg-accent/20 border-accent/30", iconIdle: "text-accent" },
-  danger: { idle: "bg-destructive/10 hover:bg-destructive/20 border-destructive/35", iconIdle: "text-destructive" },
-  neutral: { idle: "bg-muted/40 hover:bg-muted/60 border-border/50", iconIdle: "text-muted-foreground" },
+  primary: { idle: "border-border/70 hover:border-primary/60", iconIdle: "text-primary/80" },
+  secondary: { idle: "border-border/70 hover:border-secondary/60", iconIdle: "text-secondary/80" },
+  accent: { idle: "border-border/70 hover:border-accent/60", iconIdle: "text-accent/80" },
+  danger: { idle: "border-destructive/35 hover:border-destructive/70", iconIdle: "text-destructive" },
+  neutral: { idle: "border-border/70 hover:border-foreground/40", iconIdle: "text-muted-foreground" },
 };
 
 function groupForPath(path: string): string | null {
@@ -170,16 +170,17 @@ export function Nav() {
   const active = NAV_GROUPS.find((g) => g.id === openGroup) ?? null;
 
   return (
-    <header className="sticky top-0 z-40 glass border-b">
-      <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-2.5 pb-2 flex items-center gap-2 sm:gap-3">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/92 backdrop-blur-md">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 h-14 flex items-center gap-3">
         <Link
           to="/"
-          className="flex items-center gap-2 shrink-0 rounded-full min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="flex items-center gap-2.5 shrink-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/60"
           aria-label="Rave Safe, have Fun — zur Startseite"
         >
-          <div className="h-8 w-8 rounded-full bg-aurora animate-aurora glow" aria-hidden="true" />
-          <span className="hidden sm:inline text-base sm:text-lg font-bold tracking-tight whitespace-nowrap">
-            Rave Safe<span className="text-aurora">,</span> have Fun
+          <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+          <span className="font-display text-sm font-800 uppercase tracking-[0.2em] whitespace-nowrap"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 800 }}>
+            Rave&nbsp;Safe
           </span>
         </Link>
 
@@ -190,7 +191,7 @@ export function Nav() {
         </div>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent("ravesave:open-spotlight"))}
-          className="shrink-0 inline-flex items-center justify-center rounded-full min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition"
+          className="shrink-0 inline-flex items-center justify-center h-11 w-11 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Suche öffnen (⌘K)"
           title="Suche (⌘K / Strg+K)"
         >
@@ -198,7 +199,7 @@ export function Nav() {
         </button>
         <Link
           to="/notfall"
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full min-h-11 px-3 bg-destructive/20 border border-destructive/50 text-destructive text-xs font-bold uppercase tracking-wide hover:bg-destructive/30 transition"
+          className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 border border-destructive/50 text-destructive text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-destructive/10 transition-colors"
         >
           <ShieldAlert className="h-4 w-4" /> <span className="hidden xs:inline sm:inline">112</span>
         </Link>
@@ -207,18 +208,18 @@ export function Nav() {
       {/* Primär-Nav */}
       <div
         ref={rowRef}
-        className="mx-auto max-w-6xl overflow-x-auto overscroll-x-contain scrollbar-hide touch-pan-x px-3 sm:px-4 pb-2"
+        className="mx-auto max-w-6xl overflow-x-auto overscroll-x-contain scrollbar-hide touch-pan-x px-3 sm:px-4 border-t border-border/50"
         aria-label="Hauptnavigation"
       >
-        <ul className="flex items-center gap-2 w-max">
+        <ul className="flex items-center gap-1 w-max">
           <li>
             <Link
               to="/"
               aria-current={path === "/" ? "page" : undefined}
-              className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors ${
+              className={`inline-flex min-h-11 items-center gap-1.5 px-3 text-[13px] font-semibold uppercase tracking-[0.08em] border-b-2 transition-colors ${
                 path === "/"
-                  ? "bg-aurora text-primary-foreground border-transparent"
-                  : "bg-muted/40 hover:bg-muted/60 border-border/50 text-foreground"
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
               <Home className="h-4 w-4" /> Home
@@ -233,20 +234,20 @@ export function Nav() {
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpenGroup(isOpen ? null : g.id)}
-                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                  className={`inline-flex min-h-11 items-center gap-1.5 px-3 text-[13px] font-semibold uppercase tracking-[0.08em] whitespace-nowrap border-b-2 transition-colors focus-visible:outline-none ${
                     isOpen
-                      ? "bg-aurora text-primary-foreground border-transparent"
-                      : `${t.idle} text-foreground`
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <g.icon className={`h-4 w-4 ${isOpen ? "text-primary-foreground" : t.iconIdle}`} />
+                  <g.icon className={`h-4 w-4 ${isOpen ? "text-primary" : t.iconIdle}`} />
                   {g.label}
                 </button>
               </li>
             );
           })}
-          <li aria-hidden="true" className="mx-1 h-6 w-px bg-border/60" />
-          <li className="md:hidden pr-1">
+          <li aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
+          <li className="md:hidden pr-1 py-1.5">
             <DetailLevelSwitch size="sm" />
           </li>
         </ul>
@@ -254,9 +255,9 @@ export function Nav() {
 
       {/* Sekundär-Nav */}
       {active && (
-        <div className="border-t border-border/50 bg-background/40">
-          <div className="mx-auto max-w-6xl overflow-x-auto scrollbar-hide touch-pan-x px-3 sm:px-4 py-2">
-            <ul className="flex items-center gap-2 w-max" aria-label={`Unternavigation ${active.label}`}>
+        <div className="border-t border-border/50 bg-muted/20">
+          <div className="mx-auto max-w-6xl overflow-x-auto scrollbar-hide touch-pan-x px-3 sm:px-4 py-1.5">
+            <ul className="flex items-center gap-1 w-max" aria-label={`Unternavigation ${active.label}`}>
               {active.items.map((i) => {
                 const isActive = path === i.to;
                 return (
@@ -264,13 +265,13 @@ export function Nav() {
                     <Link
                       to={i.to}
                       aria-current={isActive ? "page" : undefined}
-                      className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm transition-colors ${
+                      className={`inline-flex min-h-11 items-center gap-1.5 px-3 text-sm transition-colors ${
                         isActive
-                          ? "bg-primary/20 text-foreground font-semibold ring-1 ring-primary/40"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          ? "text-foreground font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      <i.icon className="h-4 w-4 shrink-0" />
+                      <i.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
                       {i.label}
                     </Link>
                   </li>
@@ -283,6 +284,7 @@ export function Nav() {
     </header>
   );
 }
+
 
 export function Footer() {
   const cols: { title: string; items: NavItem[] }[] = [
