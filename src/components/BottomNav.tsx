@@ -31,23 +31,24 @@ export function BottomNav() {
       className="md:hidden fixed bottom-0 left-0 right-0 z-30 print:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="mx-2 mb-2 rounded-2xl glass border border-border/60 shadow-2xl">
+      <div className="border-t border-border bg-background/95 backdrop-blur-md">
         <ul className="grid grid-cols-4">
           {tabs.map((t) => {
             const Icon = t.icon;
             const active =
               t.kind === "link" && (t.to === "/" ? path === "/" : path.startsWith(t.to!));
-            const cls = `flex flex-col items-center justify-center gap-0.5 py-2 min-h-14 text-[10px] font-medium transition ${
+            const cls = `flex flex-col items-center justify-center gap-1 py-2 min-h-14 text-[10px] font-bold uppercase tracking-[0.12em] transition-colors ${
               active
                 ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground active:scale-95"
+                : "text-muted-foreground hover:text-foreground"
             }`;
             const indicator = active ? (
               <span
                 aria-hidden="true"
-                className="absolute -top-px left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-aurora animate-aurora"
+                className="absolute top-0 left-1/2 h-0.5 w-10 -translate-x-1/2 bg-primary"
               />
             ) : null;
+
             if (t.kind === "link") {
               const iconTone =
                 t.id === "marlene"
