@@ -299,13 +299,13 @@ function Home() {
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpen(isOpen ? null : p.id)}
-                className="w-full min-h-14 px-4 py-3 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
+                className="w-full min-h-14 py-4 flex items-center gap-4 text-left hover:bg-muted/20 transition-colors"
               >
-                <span className={`h-10 w-10 shrink-0 rounded-2xl grid place-items-center ${TILE_TONES[p.tone].chip}`}>
-                  <p.icon className="h-5 w-5" />
+                <span className={`h-9 w-9 shrink-0 grid place-items-center border ${TILE_TONES[p.tone].chip}`}>
+                  <p.icon className="h-4.5 w-4.5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-semibold leading-snug">{p.label}</span>
+                  <span className="block font-bold leading-snug">{p.label}</span>
                   <span className="block text-xs text-muted-foreground">{p.hint}</span>
                 </span>
                 <ChevronDown
@@ -315,7 +315,7 @@ function Home() {
                 />
               </button>
               {isOpen && (
-                <div className="px-3 pb-3 grid gap-3 grid-cols-2 lg:grid-cols-4">
+                <div className="pb-4 grid gap-px bg-border grid-cols-2 lg:grid-cols-4 border-t border-border">
                   {p.items.map((i) => (
                     <QuickTile key={`${p.id}-${i.to}`} {...i} tone={p.tone} />
                   ))}
@@ -324,7 +324,9 @@ function Home() {
             </div>
           );
         })}
+        </div>
       </section>
+
     </div>
   );
 }
