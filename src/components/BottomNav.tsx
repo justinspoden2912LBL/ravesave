@@ -70,13 +70,8 @@ export function BottomNav() {
                   aria-label={`${t.label} öffnen`}
                 >
                   <Icon
-                    className={`h-5 w-5 ${
-                      t.id === "notfall"
-                        ? "text-destructive"
-                        : t.id === "marlene"
-                          ? "text-secondary"
-                          : ""
-                    }`}
+                    className={`h-5 w-5 ${t.id === "notfall" ? "text-destructive" : ""}`}
+                    strokeWidth={1.5}
                   />
                   <span>{t.label}</span>
                 </button>
