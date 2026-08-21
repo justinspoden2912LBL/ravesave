@@ -129,14 +129,14 @@ function Home() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-6">
+    <div className="mx-auto max-w-5xl px-4 pb-8">
       {showPrompt && (
-        <div className="mt-5 rounded-3xl glass-strong glass-shine p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="mt-5 border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4 bg-muted/20">
           <div className="min-w-0 flex-1 space-y-1.5">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-secondary">
-              <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier?
+            <div className="inline-flex items-center gap-2 tag-label">
+              <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier
             </div>
-            <h2 className="text-base font-semibold leading-snug">Richte dein Profil ein — ca. 2 Minuten.</h2>
+            <h2 className="text-lg font-bold leading-snug">Richte dein Profil ein — ca. 2 Minuten.</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal.
             </p>
@@ -144,16 +144,16 @@ function Home() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => navigate({ to: "/onboarding" })}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-aurora px-5 text-sm font-semibold text-primary-foreground glow transition"
+              className="inline-flex min-h-11 items-center gap-2 bg-primary px-5 text-sm font-semibold uppercase tracking-[0.1em] text-primary-foreground hover:bg-primary/85 transition-colors"
             >
-              <Sparkles className="h-4 w-4" /> Jetzt starten
+              <Sparkles className="h-4 w-4" /> Starten
             </button>
             <button
               onClick={() => {
                 dismissOnboarding();
                 setShowPrompt(false);
               }}
-              className="inline-flex items-center justify-center rounded-full min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition"
+              className="inline-flex items-center justify-center min-h-11 min-w-11 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Onboarding-Hinweis schließen"
             >
               <X className="h-5 w-5" />
@@ -162,71 +162,93 @@ function Home() {
         </div>
       )}
 
-      {/* Claim */}
+      {/* Hero — Foto + Editorial-Typo */}
       <header className="mt-6">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
-          <span className="text-aurora bg-aurora bg-clip-text">Rave Safe</span>
-          <span className="text-foreground">, have </span>
-          <span className="text-aurora bg-aurora bg-clip-text">Fun</span>
-          <span className="text-foreground"> — Dein Harm-Reduction-Companion</span>
-        </h1>
-        <p className="mt-2 text-lg md:text-xl font-semibold text-foreground">
-          Safer Use, akute Hilfe und Substanzwissen an einem Ort.
-        </p>
+        <div className="relative overflow-hidden border border-border">
+          <img
+            src={heroImage}
+            alt="Dunkle Crowd auf einem Rave, Lichtstrahl im Nebel"
+            width={1600}
+            height={1104}
+            className="h-[46vh] min-h-[300px] w-full object-cover opacity-70"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, var(--background) 8%, oklch(0.15 0.006 285 / 0.75) 55%, oklch(0.15 0.006 285 / 0.35))",
+            }}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8">
+            <span className="tag-label">Rave Safe / Harm Reduction</span>
+            <h1 className="mt-3 text-[2.4rem] sm:text-6xl font-extrabold leading-[0.95] tracking-tight">
+              Deine Nacht.
+              <br />
+              <span className="font-medium text-muted-foreground">Deine Entscheidung.</span>
+              <br />
+              <span className="text-primary">Deine Sicherheit.</span>
+            </h1>
+          </div>
+        </div>
 
-        <p className="mt-1 text-sm text-muted-foreground leading-relaxed max-w-2xl">
-          Safer-Use-Wissen, akute Hilfe und KI-Begleitung — evidenzbasiert, lokal und ohne Belehrung.
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-2 rounded-full bg-secondary/15 ring-1 ring-secondary/30 px-3 py-1.5 text-xs text-secondary">
-            <Shield className="h-3.5 w-3.5" /> 100 % lokal — keine Daten verlassen dein Gerät
-          </span>
-          <DetailLevelSwitch size="sm" />
+        <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <p className="max-w-xl text-base text-muted-foreground leading-relaxed">
+            Safer-Use-Wissen, akute Hilfe und Substanzprofile an einem Ort — evidenzbasiert, lokal
+            gespeichert und ohne Belehrung.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 border border-secondary/40 px-3 py-1.5 text-xs text-secondary">
+              <Shield className="h-3.5 w-3.5" /> 100 % lokal
+            </span>
+            <DetailLevelSwitch size="sm" />
+          </div>
         </div>
       </header>
 
-      {/* Vier Grundregeln — direkt unter dem Claim, maximal scanbar */}
-      <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label="Grundregeln">
-        {[
-          ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
-          ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
-          ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
-          ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
-        ].map(([title, body]) => (
-          <div key={title} className="rounded-2xl glass p-4">
-            <p className="font-semibold leading-snug">{title}</p>
-            <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{body}</p>
-          </div>
-        ))}
+      {/* Vier Grundregeln — nummeriert, editorial */}
+      <section className="mt-10 border-t border-border" aria-label="Grundregeln">
+        <h2 className="section-label pt-5">Vier Grundregeln</h2>
+        <div className="mt-4 grid gap-px bg-border sm:grid-cols-2">
+          {[
+            ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
+            ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
+            ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
+            ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
+          ].map(([title, body], idx) => (
+            <div key={title} className="bg-background p-5">
+              <span className="num-marker">{String(idx + 1).padStart(2, "0")}</span>
+              <p className="mt-2 text-lg font-bold leading-snug">{title}</p>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Akute Hilfe — immer als erstes Handlungsangebot */}
-      <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label="Sofort-Hilfe">
+      <section className="mt-10 grid gap-4 sm:grid-cols-2" aria-label="Sofort-Hilfe">
         <Link
           to="/akut"
-          className="rounded-3xl glass-strong p-5 border border-secondary/40 hover:border-secondary/70 transition"
+          className="group border border-border p-6 hover:border-secondary/70 transition-colors"
         >
-          <div className="h-11 w-11 rounded-2xl bg-secondary/20 grid place-items-center text-secondary">
-            <HeartPulse className="h-6 w-6" />
-          </div>
-          <h2 className="mt-3 font-semibold leading-snug">Ich brauche akute Hilfe</h2>
-          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+          <HeartPulse className="h-6 w-6 text-secondary" strokeWidth={1.5} />
+          <h2 className="mt-4 text-xl font-bold leading-snug">Ich brauche akute Hilfe</h2>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
             Ruhige Schritte zwischen Alltag und 112: Atmung, Erden, Comedown. Bei echter Gefahr immer 112 rufen.
           </p>
         </Link>
         <Link
           to="/notfall"
-          className="rounded-3xl p-5 border border-destructive/45 bg-destructive/10 backdrop-blur-xl hover:border-destructive/70 transition"
+          className="group border border-destructive/45 p-6 hover:border-destructive transition-colors"
         >
-          <div className="h-11 w-11 rounded-2xl bg-destructive/20 grid place-items-center text-destructive">
-            <ShieldAlert className="h-6 w-6" />
-          </div>
-          <h2 className="mt-3 font-semibold leading-snug">Notfall — 112</h2>
-          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+          <ShieldAlert className="h-6 w-6 text-destructive" strokeWidth={1.5} />
+          <h2 className="mt-4 text-xl font-bold leading-snug">Notfall — 112</h2>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
             Bewusstlosigkeit, Krampf, Atemnot, sehr hohe Temperatur: sofort Notruf. Hier stehen die Schritte.
           </p>
         </Link>
       </section>
+
 
       {/* Marleen */}
       <section className="mt-5 rounded-3xl glass-strong glass-shine p-5">
