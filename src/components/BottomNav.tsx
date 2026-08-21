@@ -50,17 +50,12 @@ export function BottomNav() {
             ) : null;
 
             if (t.kind === "link") {
-              const iconTone =
-                t.id === "marlene"
-                  ? `text-secondary ${active ? "drop-shadow-[0_0_8px_var(--aurora-1)]" : ""}`
-                  : active
-                  ? "text-secondary drop-shadow-[0_0_8px_var(--aurora-1)]"
-                  : "";
+              const iconTone = active ? "text-primary" : "";
               return (
                 <li key={t.id} className="relative">
                   {indicator}
                   <Link to={t.to!} className={cls} aria-current={active ? "page" : undefined}>
-                    <Icon className={`h-5 w-5 ${iconTone}`} />
+                    <Icon className={`h-5 w-5 ${iconTone}`} strokeWidth={1.5} />
                     <span>{t.label}</span>
                   </Link>
                 </li>
