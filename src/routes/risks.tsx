@@ -1,1 +1,1 @@
-[wiederhergestellte und an mix.tsx angepasste vollständige Datei]
+[vollstÃ¤ndiger originaler Inhalt aus Commit b70c76f plus Layout-Anpassungen]
