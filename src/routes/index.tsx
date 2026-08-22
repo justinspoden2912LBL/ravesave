@@ -17,7 +17,7 @@ import {
   ShieldAlert,
   Sparkles,
   TestTube,
-  UserCircle2,
+  
   Users,
   X,
   type LucideIcon,
@@ -131,48 +131,47 @@ function Home() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-8">
+    <div className="mx-auto max-w-5xl px-4 pb-12">
       {showPrompt && (
-        <div className="mt-5 border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4 bg-muted/20">
-          <div className="min-w-0 flex-1 space-y-1.5">
-            <div className="inline-flex items-center gap-2 tag-label">
-              <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier
-            </div>
-            <h2 className="text-lg font-bold leading-snug">Richte dein Profil ein — ca. 2 Minuten.</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+        <div className="mt-4 border-l-2 border-primary/60 bg-muted/15 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold leading-snug">
+              Profil einrichten — ca. 2 Minuten.
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
               Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => navigate({ to: "/onboarding" })}
-              className="inline-flex min-h-11 items-center gap-2 bg-primary px-5 text-sm font-semibold uppercase tracking-[0.1em] text-primary-foreground hover:bg-primary/85 transition-colors"
+              className="inline-flex min-h-10 items-center gap-2 bg-primary px-4 text-xs font-semibold uppercase tracking-[0.1em] text-primary-foreground hover:bg-primary/85 transition-colors"
             >
-              <Sparkles className="h-4 w-4" /> Starten
+              <Sparkles className="h-3.5 w-3.5" /> Starten
             </button>
             <button
               onClick={() => {
                 dismissOnboarding();
                 setShowPrompt(false);
               }}
-              className="inline-flex items-center justify-center min-h-11 min-w-11 text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center justify-center min-h-10 min-w-10 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Onboarding-Hinweis schließen"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
       )}
 
       {/* Hero — Foto + Editorial-Typo */}
-      <header className="mt-6">
+      <header className="mt-5">
         <div className="relative overflow-hidden border border-border">
           <img
             src={heroImage}
             alt="Dunkle Crowd auf einem Rave, Lichtstrahl im Nebel"
             width={1600}
             height={1104}
-            className="h-[46vh] min-h-[300px] w-full object-cover opacity-70"
+            className="h-[34vh] min-h-[220px] sm:h-[40vh] w-full object-cover opacity-70"
           />
           <div
             className="absolute inset-0"
@@ -184,7 +183,7 @@ function Home() {
           />
           <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8">
             <span className="tag-label">Rave Safe / Harm Reduction</span>
-            <h1 className="mt-3 text-[2.4rem] sm:text-6xl font-extrabold leading-[0.95] tracking-tight">
+            <h1 className="mt-2.5 text-[2rem] sm:text-5xl font-extrabold leading-[0.95] tracking-tight">
               Deine Nacht.
               <br />
               <span className="font-medium text-muted-foreground">Deine Entscheidung.</span>
@@ -194,102 +193,47 @@ function Home() {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-          <p className="max-w-xl text-base text-muted-foreground leading-relaxed">
-            Safer-Use-Wissen, akute Hilfe und Substanzprofile an einem Ort — evidenzbasiert, lokal
-            gespeichert und ohne Belehrung.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 border border-secondary/40 px-3 py-1.5 text-xs text-secondary">
-              <Shield className="h-3.5 w-3.5" /> 100 % lokal
-            </span>
-            <DetailLevelSwitch size="sm" />
-          </div>
+        <p className="mt-4 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
+          Safer-Use-Wissen, akute Hilfe und Substanzprofile an einem Ort — evidenzbasiert, lokal
+          gespeichert und ohne Belehrung.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="inline-flex items-center gap-1.5 text-xs text-secondary">
+            <Shield className="h-3.5 w-3.5" /> 100 % lokal
+          </span>
+          <span className="text-border" aria-hidden="true">·</span>
+          <DetailLevelSwitch size="sm" />
         </div>
       </header>
 
-      {/* Vier Grundregeln — nummeriert, editorial */}
-      <section className="mt-10 border-t border-border" aria-label="Grundregeln">
-        <h2 className="section-label pt-5">Vier Grundregeln</h2>
-        <div className="mt-4 grid gap-px bg-border sm:grid-cols-2">
-          {[
-            ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
-            ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
-            ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
-            ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
-          ].map(([title, body], idx) => (
-            <div key={title} className="bg-background p-5">
-              <span className="num-marker">{String(idx + 1).padStart(2, "0")}</span>
-              <p className="mt-2 text-lg font-bold leading-snug">{title}</p>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Akute Hilfe — immer als erstes Handlungsangebot */}
-      <section className="mt-10 grid gap-4 sm:grid-cols-2" aria-label="Sofort-Hilfe">
+      {/* Akute Hilfe — wichtigste Handlungsangebote zuerst */}
+      <section className="mt-10 grid gap-px bg-border sm:grid-cols-2" aria-label="Sofort-Hilfe">
         <Link
           to="/akut"
-          className="group border border-border p-6 hover:border-secondary/70 transition-colors"
+          className="group bg-background p-5 sm:p-6 hover:bg-secondary/10 transition-colors"
         >
           <HeartPulse className="h-6 w-6 text-secondary" strokeWidth={1.5} />
-          <h2 className="mt-4 text-xl font-bold leading-snug">Ich brauche akute Hilfe</h2>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          <h2 className="mt-3 text-lg sm:text-xl font-bold leading-snug">Ich brauche akute Hilfe</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
             Ruhige Schritte zwischen Alltag und 112: Atmung, Erden, Comedown. Bei echter Gefahr immer 112 rufen.
           </p>
         </Link>
         <Link
           to="/notfall"
-          className="group border border-destructive/45 p-6 hover:border-destructive transition-colors"
+          className="group bg-background p-5 sm:p-6 hover:bg-destructive/10 transition-colors"
         >
           <ShieldAlert className="h-6 w-6 text-destructive" strokeWidth={1.5} />
-          <h2 className="mt-4 text-xl font-bold leading-snug">Notfall — 112</h2>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          <h2 className="mt-3 text-lg sm:text-xl font-bold leading-snug text-destructive">Notfall — 112</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
             Bewusstlosigkeit, Krampf, Atemnot, sehr hohe Temperatur: sofort Notruf. Hier stehen die Schritte.
           </p>
         </Link>
       </section>
 
-
-      {/* Marleen */}
-      <section className="mt-10 border-t border-border pt-5">
-        <h2 className="section-label">Dein Guide</h2>
-        <div className="mt-4 flex items-start gap-4 border border-border p-5">
-          <div className="h-11 w-11 shrink-0 border border-primary/50 grid place-items-center text-primary">
-
-            <MessageCircle className="h-6 w-6" />
-          </div>
-          <div className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
-            <p className="text-foreground">
-              {useText(
-                "home.marleen.intro",
-                "Hi, ich bin Marleen — dein Guide zum Thema Schadensminderung (Harm Reduction).",
-              )}
-            </p>
-            <p>
-              {useText(
-                "home.marleen.body",
-                "Ich gebe dir einen realistischen Check über Substanzen, Dosierungen und Risiken — ausschließlich neutral, ohne Bevormundung und ohne Ermutigung. Faktenbasiert, auf Grundlage anerkannter Quellen und Studien.",
-              )}
-            </p>
-            <p className="text-foreground font-medium">
-              {useText("home.marleen.claim", "Ich bin quasi dein Anschnallgurt für Psychonauten.")}
-            </p>
-            <Link
-              to="/chat"
-              className="inline-flex min-h-11 items-center gap-2 border border-primary/50 px-4 text-xs font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
-              <MessageCircle className="h-4 w-4" /> Mit Marleen sprechen
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Phasen — Accordion, immer nur eine Ebene offen */}
-      <section className="mt-10 border-t border-border pt-5" aria-label="Bereiche nach Situation">
+      <section className="mt-12 border-t border-border pt-5" aria-label="Bereiche nach Situation">
         <h2 className="section-label">Wo stehst du gerade?</h2>
-        <div className="mt-4 border-t border-border">
+        <div className="mt-3 border-t border-border">
         {PHASES.map((p) => {
           const isOpen = open === p.id;
           return (
@@ -299,7 +243,7 @@ function Home() {
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpen(isOpen ? null : p.id)}
-                className="w-full min-h-14 py-4 flex items-center gap-4 text-left hover:bg-muted/20 transition-colors"
+                className="w-full min-h-14 py-3.5 flex items-center gap-3.5 text-left hover:bg-muted/20 transition-colors"
               >
                 <span className={`h-9 w-9 shrink-0 grid place-items-center border ${TILE_TONES[p.tone].chip}`}>
                   <p.icon className="h-4.5 w-4.5" />
@@ -327,9 +271,61 @@ function Home() {
         </div>
       </section>
 
+      {/* Vier Grundregeln — nummeriert, editorial */}
+      <section className="mt-12 border-t border-border" aria-label="Grundregeln">
+        <h2 className="section-label pt-5">Vier Grundregeln</h2>
+        <div className="mt-3 grid gap-px bg-border sm:grid-cols-2">
+          {[
+            ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
+            ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
+            ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
+            ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
+          ].map(([title, body], idx) => (
+            <div key={title} className="bg-background px-5 py-4">
+              <span className="num-marker">{String(idx + 1).padStart(2, "0")}</span>
+              <p className="mt-1.5 text-base font-bold leading-snug">{title}</p>
+              <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Marleen */}
+      <section className="mt-12 border-t border-border pt-5">
+        <h2 className="section-label">Dein Guide</h2>
+        <div className="mt-3 flex items-start gap-4">
+          <div className="h-10 w-10 shrink-0 border border-primary/50 grid place-items-center text-primary">
+            <MessageCircle className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 space-y-2 text-sm leading-relaxed text-muted-foreground">
+            <p className="text-foreground">
+              {useText(
+                "home.marleen.intro",
+                "Hi, ich bin Marleen — dein Guide zum Thema Schadensminderung (Harm Reduction).",
+              )}
+            </p>
+            <p>
+              {useText(
+                "home.marleen.body",
+                "Ich gebe dir einen realistischen Check über Substanzen, Dosierungen und Risiken — ausschließlich neutral, ohne Bevormundung und ohne Ermutigung. Faktenbasiert, auf Grundlage anerkannter Quellen und Studien.",
+              )}
+            </p>
+            <p className="text-foreground font-medium">
+              {useText("home.marleen.claim", "Ich bin quasi dein Anschnallgurt für Psychonauten.")}
+            </p>
+            <Link
+              to="/chat"
+              className="inline-flex min-h-11 items-center gap-2 border border-primary/50 px-4 text-xs font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" /> Mit Marleen sprechen
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
+
 
 const TILE_TONES: Record<Tone, { chip: string; ring: string; text: string }> = {
   emergency: {
