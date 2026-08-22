@@ -35,3 +35,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Check for tracked environment files
+        shell: bash
+        run: |
+          if git ls-files -z | grep -Ez '(^|/)(\.env|\.env\.[^.]*)$'; then
+            echo "Tracked environment files are not allowed."
+            exit 1
+          fi
