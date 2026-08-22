@@ -131,14 +131,14 @@ function Home() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-12">
+    <div className="mx-auto max-w-5xl px-4 pb-8">
       {showPrompt && (
-        <div className="mt-4 border border-border bg-muted/15 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="min-w-0 flex-1 space-y-1">
+        <div className="mt-5 border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4 bg-muted/20">
+          <div className="min-w-0 flex-1 space-y-1.5">
             <div className="inline-flex items-center gap-2 tag-label">
               <UserCircle2 className="h-3.5 w-3.5" /> Erstes Mal hier
             </div>
-            <h2 className="text-base font-bold leading-snug">Richte dein Profil ein — ca. 2 Minuten.</h2>
+            <h2 className="text-lg font-bold leading-snug">Richte dein Profil ein — ca. 2 Minuten.</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Damit Dosis-Hinweise, Mischkonsum-Checks und KI-Antworten zu dir passen. Komplett lokal.
             </p>
@@ -164,15 +164,15 @@ function Home() {
         </div>
       )}
 
-      {/* Hero — kompakter, Foto + Editorial-Typo */}
-      <header className="mt-5">
+      {/* Hero — Foto + Editorial-Typo */}
+      <header className="mt-6">
         <div className="relative overflow-hidden border border-border">
           <img
             src={heroImage}
             alt="Dunkle Crowd auf einem Rave, Lichtstrahl im Nebel"
             width={1600}
             height={1104}
-            className="h-[32vh] min-h-[220px] sm:h-[38vh] w-full object-cover opacity-70"
+            className="h-[46vh] min-h-[300px] w-full object-cover opacity-70"
           />
           <div
             className="absolute inset-0"
@@ -182,9 +182,9 @@ function Home() {
             }}
             aria-hidden="true"
           />
-          <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-7">
+          <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8">
             <span className="tag-label">Rave Safe / Harm Reduction</span>
-            <h1 className="mt-2 text-[2rem] sm:text-5xl font-extrabold leading-[0.95] tracking-tight">
+            <h1 className="mt-3 text-[2.4rem] sm:text-6xl font-extrabold leading-[0.95] tracking-tight">
               Deine Nacht.
               <br />
               <span className="font-medium text-muted-foreground">Deine Entscheidung.</span>
@@ -194,83 +194,70 @@ function Home() {
           </div>
         </div>
 
-        <p className="mt-4 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
-          Safer-Use-Wissen, akute Hilfe und Substanzprofile an einem Ort — evidenzbasiert, lokal
-          gespeichert und ohne Belehrung.
-        </p>
+        <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <p className="max-w-xl text-base text-muted-foreground leading-relaxed">
+            Safer-Use-Wissen, akute Hilfe und Substanzprofile an einem Ort — evidenzbasiert, lokal
+            gespeichert und ohne Belehrung.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 border border-secondary/40 px-3 py-1.5 text-xs text-secondary">
+              <Shield className="h-3.5 w-3.5" /> 100 % lokal
+            </span>
+            <DetailLevelSwitch size="sm" />
+          </div>
+        </div>
       </header>
 
-      {/* Akute Hilfe — wichtigste Handlung zuerst */}
-      <section className="mt-8" aria-label="Sofort-Hilfe">
-        <div className="grid gap-px bg-border sm:grid-cols-2 border border-border">
-          <Link
-            to="/akut"
-            className="group bg-background p-5 sm:p-6 hover:bg-secondary/10 transition-colors"
-          >
-            <HeartPulse className="h-6 w-6 text-secondary" strokeWidth={1.5} />
-            <h2 className="mt-3 text-lg sm:text-xl font-bold leading-snug">Ich brauche akute Hilfe</h2>
-            <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-              Ruhige Schritte zwischen Alltag und 112: Atmung, Erden, Comedown. Bei echter Gefahr immer 112 rufen.
-            </p>
-          </Link>
-          <Link
-            to="/notfall"
-            className="group bg-background p-5 sm:p-6 hover:bg-destructive/10 transition-colors"
-          >
-            <ShieldAlert className="h-6 w-6 text-destructive" strokeWidth={1.5} />
-            <h2 className="mt-3 text-lg sm:text-xl font-bold leading-snug">Notfall — 112</h2>
-            <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-              Bewusstlosigkeit, Krampf, Atemnot, sehr hohe Temperatur: sofort Notruf. Hier stehen die Schritte.
-            </p>
-          </Link>
+      {/* Vier Grundregeln — nummeriert, editorial */}
+      <section className="mt-10 border-t border-border" aria-label="Grundregeln">
+        <h2 className="section-label pt-5">Vier Grundregeln</h2>
+        <div className="mt-4 grid gap-px bg-border sm:grid-cols-2">
+          {[
+            ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
+            ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
+            ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
+            ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
+          ].map(([title, body], idx) => (
+            <div key={title} className="bg-background p-5">
+              <span className="num-marker">{String(idx + 1).padStart(2, "0")}</span>
+              <p className="mt-2 text-lg font-bold leading-snug">{title}</p>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Phasen — Accordion, immer nur eine Ebene offen */}
-      <section className="mt-12 border-t border-border pt-5" aria-label="Bereiche nach Situation">
-        <h2 className="section-label">Wo stehst du gerade?</h2>
-        <div className="mt-3 border-t border-border">
-          {PHASES.map((p) => {
-            const isOpen = open === p.id;
-            return (
-              <div key={p.id} className="border-b border-border">
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpen(isOpen ? null : p.id)}
-                  className="w-full min-h-14 py-3.5 flex items-center gap-3.5 text-left hover:bg-muted/20 transition-colors"
-                >
-                  <span className={`h-9 w-9 shrink-0 grid place-items-center border ${TILE_TONES[p.tone].chip}`}>
-                    <p.icon className="h-4.5 w-4.5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-bold leading-snug truncate">{p.label}</span>
-                    <span className="block text-xs text-muted-foreground truncate">{p.hint}</span>
-                  </span>
-                  <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="pb-4 grid gap-px bg-border grid-cols-2 lg:grid-cols-4 border-t border-border">
-                    {p.items.map((i) => (
-                      <QuickTile key={`${p.id}-${i.to}`} {...i} tone={p.tone} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      {/* Akute Hilfe — immer als erstes Handlungsangebot */}
+      <section className="mt-10 grid gap-4 sm:grid-cols-2" aria-label="Sofort-Hilfe">
+        <Link
+          to="/akut"
+          className="group border border-border p-6 hover:border-secondary/70 transition-colors"
+        >
+          <HeartPulse className="h-6 w-6 text-secondary" strokeWidth={1.5} />
+          <h2 className="mt-4 text-xl font-bold leading-snug">Ich brauche akute Hilfe</h2>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            Ruhige Schritte zwischen Alltag und 112: Atmung, Erden, Comedown. Bei echter Gefahr immer 112 rufen.
+          </p>
+        </Link>
+        <Link
+          to="/notfall"
+          className="group border border-destructive/45 p-6 hover:border-destructive transition-colors"
+        >
+          <ShieldAlert className="h-6 w-6 text-destructive" strokeWidth={1.5} />
+          <h2 className="mt-4 text-xl font-bold leading-snug">Notfall — 112</h2>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            Bewusstlosigkeit, Krampf, Atemnot, sehr hohe Temperatur: sofort Notruf. Hier stehen die Schritte.
+          </p>
+        </Link>
       </section>
+
 
       {/* Marleen */}
-      <section className="mt-12 border-t border-border pt-5">
+      <section className="mt-10 border-t border-border pt-5">
         <h2 className="section-label">Dein Guide</h2>
-        <div className="mt-3 flex items-start gap-4 border border-border p-5">
+        <div className="mt-4 flex items-start gap-4 border border-border p-5">
           <div className="h-11 w-11 shrink-0 border border-primary/50 grid place-items-center text-primary">
+
             <MessageCircle className="h-6 w-6" />
           </div>
           <div className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
@@ -299,32 +286,47 @@ function Home() {
         </div>
       </section>
 
-      {/* Vier Grundregeln — sekundär, zurückhaltender */}
-      <section className="mt-12 border-t border-border pt-5" aria-label="Grundregeln">
-        <h2 className="section-label">Vier Grundregeln</h2>
-        <div className="mt-3 grid gap-px bg-border sm:grid-cols-2 border border-border">
-          {[
-            ["Start low, go slow.", "Niedrig dosieren, besonders bei neuen Chargen. Warte, bevor du nachlegst."],
-            ["Test, was du nimmst.", "Drug-Checking oder mindestens ein Reagenztest."],
-            ["Mischkonsum ist der größte Risikofaktor.", "Vor allem alles, was die Atmung dämpft."],
-            ["Sei nicht allein.", "Eine nüchterne Vertrauensperson in der Nähe. Im Notfall: 112."],
-          ].map(([title, body], idx) => (
-            <div key={title} className="bg-background p-5">
-              <span className="num-marker">{String(idx + 1).padStart(2, "0")}</span>
-              <p className="mt-2 text-base font-bold leading-snug">{title}</p>
-              <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{body}</p>
+      {/* Phasen — Accordion, immer nur eine Ebene offen */}
+      <section className="mt-10 border-t border-border pt-5" aria-label="Bereiche nach Situation">
+        <h2 className="section-label">Wo stehst du gerade?</h2>
+        <div className="mt-4 border-t border-border">
+        {PHASES.map((p) => {
+          const isOpen = open === p.id;
+          return (
+            <div key={p.id} className="border-b border-border">
+
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setOpen(isOpen ? null : p.id)}
+                className="w-full min-h-14 py-4 flex items-center gap-4 text-left hover:bg-muted/20 transition-colors"
+              >
+                <span className={`h-9 w-9 shrink-0 grid place-items-center border ${TILE_TONES[p.tone].chip}`}>
+                  <p.icon className="h-4.5 w-4.5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-bold leading-snug">{p.label}</span>
+                  <span className="block text-xs text-muted-foreground">{p.hint}</span>
+                </span>
+                <ChevronDown
+                  className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {isOpen && (
+                <div className="pb-4 grid gap-px bg-border grid-cols-2 lg:grid-cols-4 border-t border-border">
+                  {p.items.map((i) => (
+                    <QuickTile key={`${p.id}-${i.to}`} {...i} tone={p.tone} />
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
+          );
+        })}
         </div>
       </section>
 
-      {/* Meta — sekundär */}
-      <section className="mt-10 border-t border-border pt-4 flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 border border-secondary/40 px-3 py-1.5 text-xs text-secondary">
-          <Shield className="h-3.5 w-3.5" /> 100 % lokal
-        </span>
-        <DetailLevelSwitch size="sm" />
-      </section>
     </div>
   );
 }
