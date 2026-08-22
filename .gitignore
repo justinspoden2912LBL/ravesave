@@ -1,32 +1,31 @@
-# Logs
-logs
+# dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# build output
+dist/
+build/
+.cache/
+.vite/
+
+# local environment files
+.env
+.env.*
+!.env.example
+
+# logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
-.tanstack/**
-.nitro
-*.local
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# editor and OS files
+.vscode/
+.idea/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+*.swp
+
+# local tooling
+.vercel/
+.wrangler/
