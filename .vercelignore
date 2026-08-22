@@ -1,0 +1,41 @@
+# Development files
+.env.local
+.env.development
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn
+.yarn-integrity
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Test files
+__tests__/**/*.test.*
+**/*.spec.*
+
+# Coverage
+coverage
+
+# Build output (Vercel handles this)
+# .next
+# dist
+# build
