@@ -2,36 +2,32 @@ name: CI
 
 on:
   push:
-    branches: [main, 'fix/**']
+    branches: ["**"]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
+    branches: ["**"]
 
 jobs:
-  quality:
+  build:
+    name: Clean Build & Typecheck
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 9
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: npm
+          bun-version: latest
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
-      - name: Lint
-        run: npm run lint
+      - name: Clean caches
+        run: bun run clean
+
+      - name: Typecheck
+        run: bun run typecheck
 
       - name: Build
-        run: npm run build
+        run: bun run build
