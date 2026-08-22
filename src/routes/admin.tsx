@@ -1,107 +1,84 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import AdminAuth from '../components/AdminAuth'
 
 export const Route = createFileRoute('/admin')()
 
-const stats = [
-  { label: 'AI Requests', value: '0', change: '+0%' },
-  { label: 'Groq API Key', value: 'Not Set', change: '' },
-  { label: 'Last Used', value: 'Never', change: '' },
-  { label: 'Uptime', value: '99.9%', change: '' },
-]
+function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalChats: 0,
+    totalArtists: 0,
+  })
 
-const features = [
-  {
-    title: 'AI Chat Integration',
-    description: 'Chat-Begleitung für Users mit AI-Unterstitzung',
-    href: '/admin/chat',
-    status: 'Coming Soon',
-  },
-  {
-    title: 'API Key Management',
-    description: 'Groq und andere AI-APIs verwalten',
-    href: '/admin-key',
-    status: 'Active',
-  },
-  {
-    title: 'Design Studio',
-    description: 'UI/UX Design-Anpassungen',
-    href: '/admin-design',
-    status: 'Active',
-  },
-  {
-    title: 'AI Settings',
-    description: 'AI-Parameter und Modelle konfigurieren',
-    href: '/admin/settings',
-    status: 'Coming Soon',
-  },
-]
+  useEffect(() => {
+    // Fetch stats from Supabase
+    const fetchStats = async () => {
+      // Placeholder - actual stats fetching
+      setStats({
+        totalUsers: 0,
+        totalChats: 0,
+        totalArtists: 0,
+      })
+    }
+    fetchStats()
+  }, [])
 
-export default function AdminPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
-          <p className="text-gray-300">AI-Management und System-Ü°bersicht</p>
-        </header>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
-              <p className="text-3xl font-bold text-white">{stat.value}</p>
-              {stat.change && <p className="text-green-400 text-sm mt-1">{stat.change}</p>}
+    <AdminAuth>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-8">Admin Dashboard</h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h3 className="text-gray-300 text-sm mb-2">Total Users</h3>
+              <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
             </div>
-          ))}
-        </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h3 className="text-gray-300 text-sm mb-2">Total Chats</h3>
+              <p className="text-3xl font-bold text-white">{stats.totalChats}</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h3 className="text-gray-300 text-sm mb-2">Total Artists</h3>
+              <p className="text-3xl font-bold text-white">{stats.totalArtists}</p>
+            </div>
+          </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {features.map((feature) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <a
-              key={feature.title}
-              href={feature.href}
-              className="block bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all group"
+              href="/admin/chat"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-colors block"
             >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
-                  {feature.title}
-                </h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  feature.status === 'Active' 
-                    ? 'bg-green-500/20 text-green-300' 
-                    : 'bg-yellow-500/20 text-yellow-300'
-                }`}>
-                  {feature.status}
-                </span>
-              </div>
-              <p className="text-gray-300">{feature.description}</p>
+              <h3 className="text-xl font-semibold text-white mb-2">AI Chat Management</h3>
+              <p className="text-gray-300">Manage AI conversations and settings</p>
             </a>
-          ))}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-          <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
-          <div className="flex flex-wrap gap-3">
-            <a href="/admin-key" className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
-              API Keys
+            <a
+              href="/admin/settings"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-colors block"
+            >
+              <h3 className="text-xl font-semibold text-white mb-2">AI Settings</h3>
+              <p className="text-gray-300">Configure AI behavior and parameters</p>
             </a>
-            <a href="/admin-design" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-              Design Studio
+            <a
+              href="/admin-key"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-colors block"
+            >
+              <h3 className="text-xl font-semibold text-white mb-2">API Key Management</h3>
+              <p className="text-gray-300">Manage API keys and access</p>
             </a>
-            <a href="/chat" className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-              AI Chat
-            </a>
-            <a href="/" className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
-              Back to Site
+            <a
+              href="/admin-design"
+              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-colors block"
+            >
+              <h3 className="text-xl font-semibold text-white mb-2">Design Studio</h3>
+              <p className="text-gray-300">Customize site appearance</p>
             </a>
           </div>
         </div>
       </div>
-    </div>
+    </AdminAuth>
   )
 }
+
+export default AdminDashboard
