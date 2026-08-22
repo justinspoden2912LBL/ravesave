@@ -1,13 +1,36 @@
 import { createClient, User } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+function createAuthClient() {
+  const supabaseUrl =
+    import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
+  const supabaseAnonKey =
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables')
+  if (!supabaseUrl || !supabaseAnonKey) {
+    const missing = [
+      ...(!supabaseUrl ? ['VITE_SUPABASE_URL'] : []),
+      ...(!supabaseAnonKey ? ['VITE_SUPABASE_ANON_KEY'] : []),
+    ]
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}.`
+    console.error(`[auth] ${message}`)
+    throw new Error(message)
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey)
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '')
+let _supabase: ReturnType<typeof createAuthClient> | undefined
+
+// Lazily instantiated: constructing the client at module scope crashes SSR
+// when env vars are absent, because createClient throws on an empty URL.
+export const supabase = new Proxy({} as ReturnType<typeof createAuthClient>, {
+  get(_, prop, receiver) {
+    if (!_supabase) _supabase = createAuthClient()
+    return Reflect.get(_supabase, prop, receiver)
+  },
+})
 
 // Admin whitelist
 const ADMIN_EMAILS = ['justin.spoden2912@gmail.com']
@@ -61,7 +84,15 @@ export async function checkAdminAccess(): Promise<boolean> {
 }
 
 export async function onAuthStateChange(callback: (user: User | null) => void) {
-  return supabase.auth.onAuthStateChange((event, session) => {
-    callback(session?.user ?? null)
-  })
+  try {
+    return supabase.auth.onAuthStateChange((event, session) => {
+      callback(session?.user ?? null)
+    })
+  } catch (error) {
+    // Supabase is not configured — report signed-out and hand back a no-op
+    // unsubscribe so callers can still clean up unconditionally.
+    console.error('Auth state change subscription error:', error)
+    callback(null)
+    return { data: { subscription: { unsubscribe() {} } } }
+  }
 }

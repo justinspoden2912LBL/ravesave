@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminDesignRouteImport } from './routes/admin-design'
+import { Route as AdminKeyRouteImport } from './routes/admin-key'
 import { Route as AftercareRouteImport } from './routes/aftercare'
 import { Route as AkutRouteImport } from './routes/akut'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -36,6 +37,9 @@ import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as ToleranceRouteImport } from './routes/tolerance'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AdminChatRouteImport } from './routes/admin/chat'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
@@ -66,6 +70,11 @@ const AdminRoute = AdminRouteImport.update({
 const AdminDesignRoute = AdminDesignRouteImport.update({
   id: '/admin-design',
   path: '/admin-design',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminKeyRoute = AdminKeyRouteImport.update({
+  id: '/admin-key',
+  path: '/admin-key',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AftercareRoute = AftercareRouteImport.update({
@@ -185,6 +194,21 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminChatRoute = AdminChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   id: '/api/akut-coach',
   path: '/api/akut-coach',
@@ -245,8 +269,9 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-design': typeof AdminDesignRoute
+  '/admin-key': typeof AdminKeyRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -270,6 +295,9 @@ export interface FileRoutesByFullPath {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/chat': typeof AdminChatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -285,8 +313,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-design': typeof AdminDesignRoute
+  '/admin-key': typeof AdminKeyRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -310,6 +339,9 @@ export interface FileRoutesByTo {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/chat': typeof AdminChatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -326,8 +358,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-design': typeof AdminDesignRoute
+  '/admin-key': typeof AdminKeyRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -351,6 +384,9 @@ export interface FileRoutesById {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/chat': typeof AdminChatRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -370,6 +406,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin-design'
+    | '/admin-key'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -393,6 +430,9 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/chat'
+    | '/admin/login'
+    | '/admin/settings'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -410,6 +450,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin-design'
+    | '/admin-key'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -433,6 +474,9 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/chat'
+    | '/admin/login'
+    | '/admin/settings'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -450,6 +494,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin-design'
+    | '/admin-key'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -473,6 +518,9 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/chat'
+    | '/admin/login'
+    | '/admin/settings'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -489,8 +537,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AdminDesignRoute: typeof AdminDesignRoute
+  AdminKeyRoute: typeof AdminKeyRoute
   AftercareRoute: typeof AftercareRoute
   AkutRoute: typeof AkutRoute
   ChatRoute: typeof ChatRoute
@@ -555,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-design'
       fullPath: '/admin-design'
       preLoaderRoute: typeof AdminDesignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-key': {
+      id: '/admin-key'
+      path: '/admin-key'
+      fullPath: '/admin-key'
+      preLoaderRoute: typeof AdminKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aftercare': {
@@ -718,6 +774,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/chat': {
+      id: '/admin/chat'
+      path: '/chat'
+      fullPath: '/admin/chat'
+      preLoaderRoute: typeof AdminChatRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/akut-coach': {
       id: '/api/akut-coach'
       path: '/api/akut-coach'
@@ -798,11 +875,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminChatRoute: typeof AdminChatRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminChatRoute: AdminChatRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AdminDesignRoute: AdminDesignRoute,
+  AdminKeyRoute: AdminKeyRoute,
   AftercareRoute: AftercareRoute,
   AkutRoute: AkutRoute,
   ChatRoute: ChatRoute,
