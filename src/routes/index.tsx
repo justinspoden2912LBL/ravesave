@@ -17,7 +17,7 @@ import {
   ShieldAlert,
   Sparkles,
   TestTube,
-  UserCircle2,
+  
   Users,
   X,
   type LucideIcon,
