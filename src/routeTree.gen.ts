@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdminDesignRouteImport } from './routes/admin-design'
 import { Route as AftercareRouteImport } from './routes/aftercare'
 import { Route as AkutRouteImport } from './routes/akut'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -60,6 +61,11 @@ const AboutRoute = AboutRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDesignRoute = AdminDesignRouteImport.update({
+  id: '/admin-design',
+  path: '/admin-design',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AftercareRoute = AftercareRouteImport.update({
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -319,6 +327,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
   '/chat': typeof ChatRoute
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/admin-design'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -399,6 +409,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/admin-design'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/admin-design'
     | '/aftercare'
     | '/akut'
     | '/chat'
@@ -478,6 +490,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  AdminDesignRoute: typeof AdminDesignRoute
   AftercareRoute: typeof AftercareRoute
   AkutRoute: typeof AkutRoute
   ChatRoute: typeof ChatRoute
@@ -535,6 +548,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-design': {
+      id: '/admin-design'
+      path: '/admin-design'
+      fullPath: '/admin-design'
+      preLoaderRoute: typeof AdminDesignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aftercare': {
@@ -782,6 +802,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  AdminDesignRoute: AdminDesignRoute,
   AftercareRoute: AftercareRoute,
   AkutRoute: AkutRoute,
   ChatRoute: ChatRoute,
