@@ -93,19 +93,22 @@ function RisksPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <ShieldAlert className="h-7 w-7 text-aurora" />
-          Risiko-Übersicht
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Wähle eine Substanz — du siehst alle relevanten Mischkonsum-Risiken auf einen Blick, sortiert nach Schweregrad.
-        </p>
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <ShieldAlert className="h-7 w-7 text-aurora" />
+            Risiko-Übersicht
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Wähle eine Substanz — du siehst alle relevanten Mischkonsum-Risiken auf einen Blick, sortiert nach Schweregrad.
+          </p>
+        </div>
+        <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         {/* Substanz-Picker */}
-        <aside className="rounded-2xl glass p-4 space-y-3 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-auto">
+        <aside className="rounded-2xl glass p-5 border border-border/40 space-y-3 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -156,15 +159,12 @@ function RisksPage() {
                     <h2 className="text-2xl font-bold mt-0.5">{selected.name}</h2>
                     <p className="text-sm text-muted-foreground mt-1">{selected.shortDescription}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <DetailToggle value={detail} onChange={setDetail} profileDetail={profileDetail} />
-                    <Link
-                      to="/mix"
-                      className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
-                    >
-                      → Mehrfach-Mix
-                    </Link>
-                  </div>
+                  <Link
+                    to="/mix"
+                    className="text-xs rounded-full glass px-3 py-1.5 hover:bg-muted/40 transition"
+                  >
+                    → Mehrfach-Mix
+                  </Link>
                 </div>
 
                 {/* Risiko-Counts */}
