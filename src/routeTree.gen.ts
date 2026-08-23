@@ -36,6 +36,8 @@ import { Route as SubstancesRouteImport } from './routes/substances'
 import { Route as ToleranceRouteImport } from './routes/tolerance'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAiKeysRouteImport } from './routes/admin.ai-keys'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
@@ -185,6 +187,16 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiKeysRoute = AdminAiKeysRouteImport.update({
+  id: '/ai-keys',
+  path: '/ai-keys',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   id: '/api/akut-coach',
   path: '/api/akut-coach',
@@ -245,7 +257,7 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
@@ -270,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -277,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
+  '/admin/': typeof AdminIndexRoute
   '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -285,7 +299,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
@@ -310,6 +323,7 @@ export interface FileRoutesByTo {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -317,6 +331,7 @@ export interface FileRoutesByTo {
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
+  '/admin': typeof AdminIndexRoute
   '/erfahrungen': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -326,7 +341,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-design': typeof AdminDesignRoute
   '/aftercare': typeof AftercareRoute
   '/akut': typeof AkutRoute
@@ -351,6 +366,7 @@ export interface FileRoutesById {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -358,6 +374,7 @@ export interface FileRoutesById {
   '/erfahrungen/$slug': typeof ErfahrungenSlugRoute
   '/erfahrungen/einsenden': typeof ErfahrungenEinsendenRoute
   '/session/active': typeof SessionActiveRoute
+  '/admin/': typeof AdminIndexRoute
   '/erfahrungen/': typeof ErfahrungenIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -393,6 +410,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -400,6 +418,7 @@ export interface FileRouteTypes {
     | '/erfahrungen/$slug'
     | '/erfahrungen/einsenden'
     | '/session/active'
+    | '/admin/'
     | '/erfahrungen/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -408,7 +427,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/admin-design'
     | '/aftercare'
     | '/akut'
@@ -433,6 +451,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -440,6 +459,7 @@ export interface FileRouteTypes {
     | '/erfahrungen/$slug'
     | '/erfahrungen/einsenden'
     | '/session/active'
+    | '/admin'
     | '/erfahrungen'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -473,6 +493,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -480,6 +501,7 @@ export interface FileRouteTypes {
     | '/erfahrungen/$slug'
     | '/erfahrungen/einsenden'
     | '/session/active'
+    | '/admin/'
     | '/erfahrungen/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -489,7 +511,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AdminDesignRoute: typeof AdminDesignRoute
   AftercareRoute: typeof AftercareRoute
   AkutRoute: typeof AkutRoute
@@ -718,6 +740,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai-keys': {
+      id: '/admin/ai-keys'
+      path: '/ai-keys'
+      fullPath: '/admin/ai-keys'
+      preLoaderRoute: typeof AdminAiKeysRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/akut-coach': {
       id: '/api/akut-coach'
       path: '/api/akut-coach'
@@ -798,10 +834,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminAiKeysRoute: typeof AdminAiKeysRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAiKeysRoute: AdminAiKeysRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AdminDesignRoute: AdminDesignRoute,
   AftercareRoute: AftercareRoute,
   AkutRoute: AkutRoute,
