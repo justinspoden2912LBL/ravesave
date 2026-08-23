@@ -6,6 +6,7 @@ RaveSave is a harm-reduction web application for safer nightlife and informed de
 
 ```bash
 npm ci
+
 npm run dev
 ```
 
