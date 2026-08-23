@@ -37,6 +37,7 @@ import { Route as ToleranceRouteImport } from './routes/tolerance'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAiKeysRouteImport } from './routes/admin.ai-keys'
 import { Route as ApiAkutCoachRouteImport } from './routes/api/akut-coach'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
@@ -191,6 +192,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAiKeysRoute = AdminAiKeysRouteImport.update({
+  id: '/ai-keys',
+  path: '/ai-keys',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiAkutCoachRoute = ApiAkutCoachRouteImport.update({
   id: '/api/akut-coach',
   path: '/api/akut-coach',
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -316,6 +323,7 @@ export interface FileRoutesByTo {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/tolerance': typeof ToleranceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/ai-keys': typeof AdminAiKeysRoute
   '/api/akut-coach': typeof ApiAkutCoachRoute
   '/api/chat': typeof ApiChatRoute
   '/api/tts': typeof ApiTtsRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/tolerance'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/ai-keys'
     | '/api/akut-coach'
     | '/api/chat'
     | '/api/tts'
@@ -735,6 +747,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ai-keys': {
+      id: '/admin/ai-keys'
+      path: '/ai-keys'
+      fullPath: '/admin/ai-keys'
+      preLoaderRoute: typeof AdminAiKeysRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/akut-coach': {
       id: '/api/akut-coach'
       path: '/api/akut-coach'
@@ -816,10 +835,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAiKeysRoute: typeof AdminAiKeysRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAiKeysRoute: AdminAiKeysRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
