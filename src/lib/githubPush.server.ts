@@ -54,7 +54,7 @@ export async function listRepoPath(path = "src/routes"): Promise<RepoFile[]> {
   );
   return data
     .filter((item) => item.type === "file" || item.type === "dir")
-    .map((item) => ({
+    .map((item): RepoFile => ({
       path: item.path,
       type: item.type === "dir" ? "dir" : "file",
       size: item.size,

@@ -79,7 +79,7 @@ export const designStudioPropose = createServerFn({ method: "POST" })
     if (!isAllowedPath(data.path)) throw new Error("Datei nicht erlaubt.");
     const file = await getRepoFile(data.path);
     const settings = await loadAiSettings();
-    const apiKey = settings.groqApiKey || process.env.GROQ_API_KEY || "";
+    const apiKey = process.env.GROQ_API_KEY?.trim() || "";
     if (!apiKey) throw new Error("Kein Groq-API-Key hinterlegt.");
     if (!(await isGroqHealthy(apiKey))) throw new Error("Groq ist gerade nicht erreichbar.");
 
@@ -129,10 +129,10 @@ export const designStudioPush = createServerFn({ method: "POST" })
     try {
       const result = await pushRepoFile(data.path, data.content, data.message, data.sha);
       await supabaseAdmin.from("admin_change_log").insert({
-        action: "design_studio_push",
+        tool: "design_studio_push",
         target: data.path,
-        detail: data.prompt ?? data.message,
-        commit_sha: result.sha,
+        summary: data.prompt ?? data.message,
+        new_value: result.sha ?? null,
       });
       return result;
     } catch (error) {
