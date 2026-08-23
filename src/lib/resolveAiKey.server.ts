@@ -1,15 +1,11 @@
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-
-let cache: { at: number; value: string } | null = null;
-const TTL_MS = 20_000;
-
-export function invalidateGroqKeyCache() { cache = null; }
+/**
+ * Der Groq-API-Key kommt ausschliesslich aus serverseitigen Environment
+ * Variables. Keine Speicherung in der Datenbank, im Client oder LocalStorage.
+ */
+export function invalidateGroqKeyCache() {
+  /* no cache anymore — kept for API compatibility */
+}
 
 export async function resolveGroqApiKey(): Promise<string> {
-  if (cache && Date.now() - cache.at < TTL_MS) return cache.value;
-  const { data } = await supabaseAdmin.from("ai_settings").select("groq_api_key").eq("id", "default").maybeSingle();
-  const dbKey = String(data?.groq_api_key ?? "").trim();
-  const value = dbKey || process.env.GROQ_API_KEY?.trim() || "";
-  cache = { at: Date.now(), value };
-  return value;
+  return process.env.GROQ_API_KEY?.trim() ?? "";
 }
