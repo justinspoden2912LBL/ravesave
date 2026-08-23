@@ -14,3 +14,7 @@ export async function getAdminUser() {
   }
   return data.user;
 }
+
+export async function requireConfiguredAdmin() {
+  return getAdminUser();
+}
