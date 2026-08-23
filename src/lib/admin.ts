@@ -1,16 +1,16 @@
 import { supabase } from '@/integrations/supabase/client';
 
-const adminUserId = import.meta.env.VITE_ADMIN_USER_ID as string | undefined;
+const ADMIN_EMAIL = 'justin.spoden2912@gmail.com';
 
-export function isConfiguredAdmin(userId: string | undefined) {
-  return Boolean(userId && adminUserId && userId === adminUserId);
+export function isAdminEmail(email: string | undefined | null) {
+  return email?.trim().toLowerCase() === ADMIN_EMAIL;
 }
 
-export async function requireConfiguredAdmin() {
-  const { data: { user }, error } = await supabase.auth.getUser();
+export async function getAdminUser() {
+  const { data, error } = await supabase.auth.getUser();
   if (error) throw error;
-  if (!user || !isConfiguredAdmin(user.id)) {
+  if (!data.user || !isAdminEmail(data.user.email)) {
     throw new Error('Admin access denied.');
   }
-  return user;
+  return data.user;
 }
